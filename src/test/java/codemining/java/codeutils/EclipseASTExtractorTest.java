@@ -1,0 +1,69 @@
+/**
+ * 
+ */
+package codemining.java.codeutils;
+
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.junit.Before;
+import org.junit.Test;
+
+import codemining.languagetools.ParseKind;
+
+/**
+ * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
+ * 
+ */
+public class EclipseASTExtractorTest {
+
+	String classContent;
+	String methodContent;
+
+	@Before
+	public void setUp() throws IOException {
+		classContent = FileUtils.readFileToString(new File(
+				EclipseASTExtractorTest.class.getClassLoader()
+						.getResource("SampleClass.txt").getFile()));
+
+		methodContent = FileUtils.readFileToString(new File(
+				EclipseASTExtractorTest.class.getClassLoader()
+						.getResource("SampleMethod.txt").getFile()));
+	}
+
+	/**
+	 * Test method for
+	 * {@link codemining.java.codeutils.JavaASTExtractor#getAST(java.lang.String)}
+	 * .
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testGetASTString() {
+		final JavaASTExtractor ex = new JavaASTExtractor(false);
+		assertTrue(classContent.length() > 0);
+		final ASTNode classCU = ex.getASTNode(classContent,
+				ParseKind.COMPILATION_UNIT);
+		assertTrue(snippetMatchesAstTokens(classContent, classCU));
+
+		assertTrue(methodContent.length() > 0);
+		final ASTNode methodCU = ex.getASTNode(methodContent,
+				ParseKind.METHOD);
+		assertTrue(snippetMatchesAstTokens(methodContent, methodCU));
+	}
+
+	private boolean snippetMatchesAstTokens(final String snippetCode,
+			final ASTNode node) {
+		final JavaTokenizer tokenizer = new JavaTokenizer();
+		final List<String> snippetTokens = tokenizer
+				.tokenListFromCode(snippetCode.toCharArray());
+		final List<String> astTokens = tokenizer.tokenListFromCode(node
+				.toString().toCharArray());
+		return astTokens.equals(snippetTokens);
+	}
+}

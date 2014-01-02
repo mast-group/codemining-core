@@ -1,0 +1,131 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+        <groupId>codemining</groupId>
+        <artifactId>codemining-all</artifactId>
+        <version>1.1-SNAPSHOT</version>
+  </parent>
+
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>codemining-core</artifactId>
+  <name>Code Mining Base Package</name>
+  <packaging>jar</packaging>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+
+     <plugin>
+      <artifactId>maven-assembly-plugin</artifactId>
+      <configuration>
+        <archive>
+          <manifest>
+            <mainClass>codemining.languagetools.tui.TokenizerTUI</mainClass>
+          </manifest>
+        </archive>
+        <descriptorRefs>
+          <descriptorRef>jar-with-dependencies</descriptorRef>
+        </descriptorRefs>
+      </configuration>
+    </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>15.0</version>
+    </dependency>
+    <dependency>
+      <groupId>codemining</groupId>
+      <artifactId>codemining-utils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.6</version>
+    </dependency>
+    <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.0.1</version>
+    </dependency>
+    <dependency>
+	<groupId>commons-logging</groupId>
+	<artifactId>commons-logging</artifactId>
+	<version>1.1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+	<groupId>org.mockito</groupId>
+	<artifactId>mockito-all</artifactId>
+	<version>1.9.5</version>
+        <scope>test</scope>
+   </dependency>
+   <dependency>
+	<groupId>org.eclipse.jdt</groupId>
+	<artifactId>org.eclipse.jdt.core</artifactId>
+	<version>3.7.1</version>
+   </dependency>
+   <dependency>
+    <groupId>org.eclipe.cdt.core</groupId>
+    <artifactId>cdt</artifactId>
+    <version>UNKNOWN</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/../dependencies/eclipse.cdt/org.eclipse.cdt.core.jar</systemPath>
+  </dependency>
+ <dependency>
+    <groupId>org.eclipe.wst.jsdt.core</groupId>
+    <artifactId>jsdt</artifactId>
+    <version>UNKNOWN</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/../dependencies/eclipse.jsdt/org.eclipse.wst.jsdt.core.jar</systemPath>
+  </dependency>
+  <dependency>
+    <groupId>jygments</groupId>
+    <artifactId>jygments</artifactId>
+    <version>UNKNOWN</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/../dependencies/jygments/com.threecrickets.jygments.jar</systemPath>
+  </dependency>
+
+  <dependency>
+    <groupId>pydev-core</groupId>
+    <artifactId>pydev-core</artifactId>
+    <version>UNKNOWN</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/../dependencies/pydev/core.jar</systemPath>
+  </dependency>
+  <dependency>
+    <groupId>pydev-parser</groupId>
+    <artifactId>pydev-parser</artifactId>
+    <version>UNKNOWN</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/../dependencies/pydev/parser.jar</systemPath>
+  </dependency>
+  <dependency>
+    <groupId>pydev-sharedcore</groupId>
+    <artifactId>pydev-sharedcore</artifactId>
+    <version>UNKNOWN</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/../dependencies/pydev/shared_core.jar</systemPath>
+  </dependency>
+
+
+
+  </dependencies>
+</project>
