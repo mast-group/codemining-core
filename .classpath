@@ -1,38 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="resources"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.jdt.core_3.9.0.v20120916-160039.jar"/>
-	<classpathentry kind="lib" path="/dependencies/mockito-all-1.9.5.jar"/>
-	<classpathentry kind="lib" path="/dependencies/apache.commons/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="/dependencies/apache.commons/commons-configuration-1.6.jar"/>
-	<classpathentry kind="lib" path="/dependencies/apache.commons/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="/dependencies/apache.commons/commons-lang-2.5.jar"/>
-	<classpathentry kind="lib" path="/dependencies/apache.commons/commons-logging-1.1.1.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dependencies"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.core.resources_3.5.2.R35x_v20091203-1235.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.core.contenttype_3.4.1.R35x_v20090826-0451.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.core.jobs_3.4.100.v20090429-1800.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.core.runtime_3.5.0.v20090525.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.equinox.common_3.5.1.R35x_v20090807-1100.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.equinox.preferences_3.2.301.R35x_v20091117.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/org.eclipse.osgi_3.5.2.R35x_v20100126.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/ui-3.3.0-v20070607-0010.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jdt/ecj-4.3M2.jar"/>
-	<classpathentry kind="lib" path="/dependencies/jygments/com.fasterxml.jackson.annotation.jar"/>
-	<classpathentry kind="lib" path="/dependencies/jygments/com.fasterxml.jackson.databind.jar"/>
-	<classpathentry kind="lib" path="/dependencies/jygments/com.fasterxml.jackson.jar"/>
-	<classpathentry kind="lib" path="/dependencies/jygments/com.threecrickets.jygments.jar"/>
-	<classpathentry kind="lib" path="/dependencies/guava.jar"/>
-	<classpathentry kind="lib" path="/dependencies/kryo.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/utils"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.jsdt/org.eclipse.wst.jsdt.core.jar"/>
-	<classpathentry kind="lib" path="/dependencies/eclipse.cdt/org.eclipse.cdt.core.jar"/>
-	<classpathentry kind="lib" path="/dependencies/pydev/core.jar"/>
-	<classpathentry kind="lib" path="/dependencies/pydev/parser.jar"/>
-	<classpathentry kind="lib" path="/dependencies/pydev/shared_core.jar"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
