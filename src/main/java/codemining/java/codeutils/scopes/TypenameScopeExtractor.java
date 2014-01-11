@@ -30,14 +30,14 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 
 /**
- * Get all the class names (imports not included)
+ * Get all the class names (imports not included).
  * 
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
 public class TypenameScopeExtractor {
 
-	private static class ClassnameFinder extends ASTVisitor {
+	public static class ClassnameFinder extends ASTVisitor {
 
 		private final boolean methodsAsRoot;
 

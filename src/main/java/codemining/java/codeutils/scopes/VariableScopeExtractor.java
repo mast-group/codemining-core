@@ -24,6 +24,7 @@ import codemining.languagetools.Scope.ScopeType;
 import com.google.common.base.Objects;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.TreeMultimap;
 
@@ -35,9 +36,69 @@ import com.google.common.collect.TreeMultimap;
  */
 public class VariableScopeExtractor {
 
-	private static class ScopeFinder extends ASTVisitor {
-		private Multimap<ASTNode, Variable> variableScopes = HashMultimap
+	/**
+	 * A variable struct object.
+	 * 
+	 */
+	public static class Variable {
+		public final String name;
+
+		public final String type;
+
+		public final ScopeType scope;
+
+		public Variable(final String name, final String variableType,
+				final ScopeType scope) {
+			this.name = name;
+			this.scope = scope;
+			this.type = variableType;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) {
+				return true;
+			}
+			if (!(obj instanceof Variable)) {
+				return false;
+			}
+			final Variable other = (Variable) obj;
+			return ComparisonChain.start().compare(name, other.name)
+					.compare(type, other.type).compare(scope, other.scope)
+					.result() == 0;
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hashCode(name, type, scope);
+		}
+
+		@Override
+		public String toString() {
+			return name + "(" + type + ") at " + scope;
+		}
+	}
+
+	/**
+	 * An AST visitor that finds all the variables, along with the AST node
+	 * where they are scoped in.
+	 * 
+	 */
+	public static class VariableScopeFinder extends ASTVisitor {
+		private final Multimap<ASTNode, Variable> variableScopes = HashMultimap
 				.create();
+
+		/**
+		 * Return the variable scopes of the given node.
+		 * 
+		 * @param node
+		 * @return
+		 */
+		public Multimap<ASTNode, Variable> getVariableScopes(final ASTNode node) {
+			variableScopes.clear();
+			node.accept(this);
+			return ImmutableMultimap.copyOf(variableScopes);
+		}
 
 		@Override
 		public boolean visit(FieldDeclaration node) {
@@ -119,45 +180,6 @@ public class VariableScopeExtractor {
 
 	}
 
-	public static class Variable {
-		public final String name;
-
-		public final String type;
-
-		public final ScopeType scope;
-
-		public Variable(final String name, final String variableType,
-				final ScopeType scope) {
-			this.name = name;
-			this.scope = scope;
-			this.type = variableType;
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hashCode(name, type, scope);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == this) {
-				return true;
-			}
-			if (!(obj instanceof Variable)) {
-				return false;
-			}
-			final Variable other = (Variable) obj;
-			return ComparisonChain.start().compare(name, other.name)
-					.compare(type, other.type).compare(scope, other.scope)
-					.result() == 0;
-		}
-
-		@Override
-		public String toString() {
-			return name + "(" + type + ") at " + scope;
-		}
-	}
-
 	public static final class VariableScopeSnippetExtractor implements
 			IScopeExtractor {
 		@Override
@@ -182,6 +204,21 @@ public class VariableScopeExtractor {
 			.getLogger(VariableScopeExtractor.class.getName());
 
 	/**
+	 * Return the variables that are valid at each ASTNode.
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static Multimap<ASTNode, Variable> getDefinedVarsPerNode(
+			final ASTNode node) {
+		final Multimap<ASTNode, Variable> definedScopes = getVariableScopes(node);
+		final VariableScopeResolver resolver = new VariableScopeResolver(
+				definedScopes);
+		node.accept(resolver);
+		return resolver.variables;
+	}
+
+	/**
 	 * Return a multimap containing all the (local) variables of the given
 	 * scope.
 	 * 
@@ -189,7 +226,7 @@ public class VariableScopeExtractor {
 	 * @return Multimap<Snippet, VariableName>
 	 */
 	public static Multimap<Scope, String> getScopeSnippets(final ASTNode cu) {
-		final ScopeFinder scopeFinder = new ScopeFinder();
+		final VariableScopeFinder scopeFinder = new VariableScopeFinder();
 		cu.accept(scopeFinder);
 
 		final Multimap<Scope, String> scopes = TreeMultimap.create();
@@ -250,7 +287,7 @@ public class VariableScopeExtractor {
 	 */
 	public static Multimap<ASTNode, Variable> getVariableScopes(
 			final ASTNode rootNode) {
-		final ScopeFinder scopeFinder = new ScopeFinder();
+		final VariableScopeFinder scopeFinder = new VariableScopeFinder();
 		rootNode.accept(scopeFinder);
 		return scopeFinder.variableScopes;
 	}
@@ -273,20 +310,5 @@ public class VariableScopeExtractor {
 			final String code, final ParseKind parseKind) {
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
 		return getVariableScopes(ex.getAST(code, parseKind));
-	}
-
-	/**
-	 * Return the variables that are valid at each ASTNode.
-	 * 
-	 * @param node
-	 * @return
-	 */
-	public static Multimap<ASTNode, Variable> getDefinedVarsPerNode(
-			final ASTNode node) {
-		final Multimap<ASTNode, Variable> definedScopes = getVariableScopes(node);
-		final VariableScopeResolver resolver = new VariableScopeResolver(
-				definedScopes);
-		node.accept(resolver);
-		return resolver.variables;
 	}
 }
