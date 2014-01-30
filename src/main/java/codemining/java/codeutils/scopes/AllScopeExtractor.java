@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 
 import com.google.common.collect.Lists;
@@ -85,10 +85,10 @@ public class AllScopeExtractor {
 
 		@Override
 		public Multimap<Scope, String> getFromString(final String file,
-				final ParseKind parseKind) {
+				final ParseType parseType) {
 			final Multimap<Scope, String> scopes = TreeMultimap.create();
 			for (final IScopeExtractor extractor : allExtractors) {
-				scopes.putAll(extractor.getFromString(file, parseKind));
+				scopes.putAll(extractor.getFromString(file, parseType));
 			}
 			return scopes;
 		}

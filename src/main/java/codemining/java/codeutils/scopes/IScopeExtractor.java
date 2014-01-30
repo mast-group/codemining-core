@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 
 import com.google.common.collect.Multimap;
@@ -25,5 +25,5 @@ public interface IScopeExtractor {
 	Multimap<Scope, String> getFromNode(final ASTNode node);
 
 	Multimap<Scope, String> getFromString(final String code,
-			final ParseKind parseKind);
+			final ParseType parseType);
 }

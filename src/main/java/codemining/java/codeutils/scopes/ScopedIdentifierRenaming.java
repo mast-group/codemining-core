@@ -10,7 +10,7 @@ import java.util.Map;
 import codemining.java.codeutils.JavaASTExtractor;
 import codemining.java.codeutils.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 
 import com.google.common.collect.Maps;
@@ -28,12 +28,12 @@ public class ScopedIdentifierRenaming {
 
 	final ITokenizer tokenizer = new JavaTokenizer();
 
-	final ParseKind parseKindToUseOnOriginal;
+	final ParseType parseKindToUseOnOriginal;
 
 	public ScopedIdentifierRenaming(final IScopeExtractor scopeExtractor,
-			final ParseKind parseKind) {
+			final ParseType parseType) {
 		this.scopeExtractor = scopeExtractor;
-		parseKindToUseOnOriginal = parseKind;
+		parseKindToUseOnOriginal = parseType;
 	}
 
 	public String getFormattedRenamedCode(final String originalScopeCode,

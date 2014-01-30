@@ -14,7 +14,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 
 /**
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
@@ -48,12 +48,12 @@ public class EclipseASTExtractorTest {
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
 		assertTrue(classContent.length() > 0);
 		final ASTNode classCU = ex.getASTNode(classContent,
-				ParseKind.COMPILATION_UNIT);
+				ParseType.COMPILATION_UNIT);
 		assertTrue(snippetMatchesAstTokens(classContent, classCU));
 
 		assertTrue(methodContent.length() > 0);
 		final ASTNode methodCU = ex.getASTNode(methodContent,
-				ParseKind.METHOD);
+				ParseType.METHOD);
 		assertTrue(snippetMatchesAstTokens(methodContent, methodCU));
 	}
 

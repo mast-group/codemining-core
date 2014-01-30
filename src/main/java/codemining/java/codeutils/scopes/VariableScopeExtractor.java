@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import codemining.java.codeutils.JavaASTExtractor;
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 import codemining.languagetools.Scope.ScopeType;
 
@@ -195,8 +195,8 @@ public class VariableScopeExtractor {
 
 		@Override
 		public Multimap<Scope, String> getFromString(final String code,
-				final ParseKind parseKind) {
-			return getScopeSnippets(code, parseKind);
+				final ParseType parseType) {
+			return getScopeSnippets(code, parseType);
 		}
 	}
 
@@ -269,13 +269,13 @@ public class VariableScopeExtractor {
 	 * Retrieve the variable scopes for the given snippet.
 	 * 
 	 * @param code
-	 * @param parseKind
+	 * @param parseType
 	 * @return
 	 */
 	public static Multimap<Scope, String> getScopeSnippets(final String code,
-			final ParseKind parseKind) {
+			final ParseType parseType) {
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
-		return getScopeSnippets(ex.getAST(code, parseKind));
+		return getScopeSnippets(ex.getAST(code, parseType));
 	}
 
 	/**
@@ -307,7 +307,7 @@ public class VariableScopeExtractor {
 	 * @throws IOException
 	 */
 	public static Multimap<ASTNode, Variable> getVariableScopes(
-			final String code, final ParseKind parseKind) {
+			final String code, final ParseType parseKind) {
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
 		return getVariableScopes(ex.getAST(code, parseKind));
 	}

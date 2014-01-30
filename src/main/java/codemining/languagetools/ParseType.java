@@ -1,5 +1,5 @@
 package codemining.languagetools;
 
-public enum ParseKind {
+public enum ParseType {
 	COMPILATION_UNIT, CLASS_BODY, METHOD, STATEMENTS, EXPRESSION
 }

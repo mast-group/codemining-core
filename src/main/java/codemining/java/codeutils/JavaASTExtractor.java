@@ -19,7 +19,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 import codemining.languagetools.ITokenizer;
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 
 /**
  * A utility class to retrieve an Eclipse AST.
@@ -115,11 +115,11 @@ public class JavaASTExtractor {
 	 * Get a compilation unit of the given file content.
 	 * 
 	 * @param fileContent
-	 * @param kind
+	 * @param parseType
 	 * @return the compilation unit
 	 */
-	public final ASTNode getAST(final String fileContent, final ParseKind kind) {
-		return (ASTNode) getASTNode(fileContent, kind);
+	public final ASTNode getAST(final String fileContent, final ParseType parseType) {
+		return (ASTNode) getASTNode(fileContent, parseType);
 	}
 
 	/**
@@ -127,8 +127,8 @@ public class JavaASTExtractor {
 	 * @deprecated Use getASTNode specifying the parse kind.
 	 */
 	public final ASTNode getASTNode(final char[] content) {
-		for (final ParseKind kind : ParseKind.values()) {
-			final ASTNode node = getASTNode(content, kind);
+		for (final ParseType parseType : ParseType.values()) {
+			final ASTNode node = getASTNode(content, parseType);
 			if (normalizeCode(node.toString().toCharArray()).equals(
 					normalizeCode(content))) {
 				return node;
@@ -168,10 +168,10 @@ public class JavaASTExtractor {
 	 * @param content
 	 * @return
 	 */
-	public final ASTNode getASTNode(final char[] content, final ParseKind kind) {
+	public final ASTNode getASTNode(final char[] content, final ParseType parseType) {
 		final ASTParser parser = ASTParser.newParser(AST.JLS4);
 		final int astKind;
-		switch (kind) {
+		switch (parseType) {
 		case CLASS_BODY:
 		case METHOD:
 			astKind = ASTParser.K_CLASS_BODY_DECLARATIONS;
@@ -204,7 +204,7 @@ public class JavaASTExtractor {
 
 		parser.setStatementsRecovery(true);
 
-		if (kind != ParseKind.METHOD) {
+		if (parseType != ParseType.METHOD) {
 			return parser.createAST(null);
 		} else {
 			final ASTNode cu = parser.createAST(null);
@@ -244,13 +244,13 @@ public class JavaASTExtractor {
 	 * Get the AST of a string. Path variables cannot be set.
 	 * 
 	 * @param file
-	 * @param kind
+	 * @param parseType
 	 * @return an AST node for the given file content
 	 * @throws IOException
 	 */
 	public final ASTNode getASTNode(final String fileContent,
-			final ParseKind kind) {
-		return getASTNode(fileContent.toCharArray(), kind);
+			final ParseType parseType) {
+		return getASTNode(fileContent.toCharArray(), parseType);
 	}
 
 }

@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import codemining.java.codeutils.JavaASTExtractor;
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 import codemining.languagetools.Scope.ScopeType;
 
@@ -85,8 +85,8 @@ public class MethodScopeExtractor {
 
 		@Override
 		public final Multimap<Scope, String> getFromString(final String code,
-				final ParseKind parseKind) {
-			return getScopeSnippets(code, methodAsRoots, parseKind);
+				final ParseType parseType) {
+			return getScopeSnippets(code, methodAsRoots, parseType);
 		}
 	}
 
@@ -178,8 +178,8 @@ public class MethodScopeExtractor {
 	}
 
 	public static Multimap<Scope, String> getScopeSnippets(final String code,
-			final boolean methodAsRoots, final ParseKind parseKind) {
+			final boolean methodAsRoots, final ParseType parseType) {
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
-		return getScopeSnippets(ex.getAST(code, parseKind), methodAsRoots);
+		return getScopeSnippets(ex.getAST(code, parseType), methodAsRoots);
 	}
 }

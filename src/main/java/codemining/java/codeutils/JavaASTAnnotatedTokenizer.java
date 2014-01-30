@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 
 import codemining.languagetools.ITokenizer;
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 import codemining.util.SettingsLoader;
 
 import com.google.common.collect.Lists;
@@ -131,7 +131,7 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 	 */
 	private SortedMap<Integer, FullToken> getAnnotatedTokens(final char[] code) {
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
-		final ASTNode cu = ex.getASTNode(code, ParseKind.COMPILATION_UNIT);
+		final ASTNode cu = ex.getASTNode(code, ParseType.COMPILATION_UNIT);
 
 		final SortedMap<Integer, FullToken> baseTokens = baseTokenizer
 				.fullTokenListWithPos(code);

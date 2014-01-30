@@ -21,7 +21,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import codemining.java.codeutils.JavaASTExtractor;
-import codemining.languagetools.ParseKind;
+import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 import codemining.languagetools.Scope.ScopeType;
 
@@ -199,9 +199,9 @@ public class TypenameScopeExtractor {
 
 		@Override
 		public Multimap<Scope, String> getFromString(final String file,
-				final ParseKind parseKind) {
+				final ParseType parseType) {
 			final JavaASTExtractor ex = new JavaASTExtractor(false);
-			return getClassnames(ex.getAST(file, parseKind));
+			return getClassnames(ex.getAST(file, parseType));
 		}
 
 	}
