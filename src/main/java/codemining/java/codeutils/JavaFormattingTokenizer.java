@@ -90,7 +90,7 @@ public class JavaFormattingTokenizer implements ITokenizer {
 	}
 
 	/**
-	 * Return the position of the whitespaces in the code.
+	 * Return the position of just the whitespaces in the code.
 	 * 
 	 * @param code
 	 * @return

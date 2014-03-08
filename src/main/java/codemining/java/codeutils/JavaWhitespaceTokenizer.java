@@ -5,6 +5,7 @@ package codemining.java.codeutils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -12,7 +13,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -42,11 +42,24 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 
 		public final String token;
 
+		public final String tokenType;
+
+		/**
+		 * The column where this token starts.
+		 */
+		public final int column;
+
+		/**
+		 * The number of characters that this token has.
+		 */
 		public final int width;
 
-		public AnnotatedToken(final String value, final int width) {
+		public AnnotatedToken(final String value, final String tokenType,
+				final int column, final int width) {
 			token = value;
+			this.tokenType = tokenType;
 			this.width = width;
+			this.column = column;
 		}
 	}
 
@@ -54,7 +67,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 	 * The non-thread-safe implementation.
 	 * 
 	 */
-	private static class TokenizerImplementation implements ITokenizer {
+	static class TokenizerImplementation implements ITokenizer {
 
 		private static final long serialVersionUID = 3466332155585174404L;
 
@@ -71,7 +84,8 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		 * @see codemining.languagetools.ITokenizer#fullTokenListWithPos(char[])
 		 */
 		@Override
-		public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+		public SortedMap<Integer, FullToken> fullTokenListWithPos(
+				final char[] code) {
 			final SortedMap<Integer, FullToken> tokenList = Maps.newTreeMap();
 			for (final Entry<Integer, String> token : tokenListWithPos(code)
 					.entrySet()) {
@@ -92,7 +106,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 				final int token) throws InvalidInputException {
 			final List<String> tokens = Lists.newArrayList();
 			if (token == ITerminalSymbols.TokenNameEOF) {
-				return ListUtils.EMPTY_LIST;
+				return Collections.emptyList();
 			}
 			final String tokenString = scanner.getCurrentTokenString();
 
@@ -175,7 +189,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 					for (final String cToken : getConvertedToken(scanner, token)) {
 						tokens.add(new FullToken(cToken, ""));
 					}
-				} catch (InvalidInputException e) {
+				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());
@@ -183,9 +197,9 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			return tokens;
 		}
 
-		public List<AnnotatedToken> getTokensWithWidthData(char[] code) {
+		public List<AnnotatedToken> getTokensWithWidthData(final char[] code) {
 			final List<AnnotatedToken> tokens = Lists.newArrayList();
-			tokens.add(new AnnotatedToken(SENTENCE_START, 0));
+			tokens.add(new AnnotatedToken(SENTENCE_START, SENTENCE_START, 0, 0));
 			final PublicScanner scanner = prepareScanner(code);
 			do {
 				try {
@@ -194,19 +208,20 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 						break;
 					}
 					for (final String cToken : getConvertedToken(scanner, token)) {
-						int currentPosition = scanner
+						final int currentPosition = scanner
 								.getCurrentTokenStartPosition();
-						int currentLine = scanner
+						final int currentLine = scanner
 								.getLineNumber(currentPosition);
-						int lineStart = scanner.getLineStart(currentLine);
-						tokens.add(new AnnotatedToken(cToken, currentPosition
-								- lineStart));
+						final int lineStart = scanner.getLineStart(currentLine);
+						tokens.add(new AnnotatedToken(cToken, "",
+								currentPosition - lineStart, scanner
+										.getCurrentTokenString().length()));
 					}
-				} catch (InvalidInputException e) {
+				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());
-			tokens.add(new AnnotatedToken(SENTENCE_END, 0));
+			tokens.add(new AnnotatedToken(SENTENCE_END, SENTENCE_END, 0, 0));
 			return tokens;
 		}
 
@@ -235,7 +250,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 		 */
 		@Override
-		public List<String> tokenListFromCode(char[] code) {
+		public List<String> tokenListFromCode(final char[] code) {
 			final List<String> tokens = Lists.newArrayList();
 			tokens.add(SENTENCE_START);
 			final PublicScanner scanner = prepareScanner(code);
@@ -246,7 +261,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 						break;
 					}
 					tokens.addAll(getConvertedToken(scanner, token));
-				} catch (InvalidInputException e) {
+				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());
@@ -282,7 +297,47 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 							tokens.put(position + i, cToken);
 							i++;
 						}
-					} catch (InvalidInputException e) {
+					} catch (final InvalidInputException e) {
+						LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
+					}
+				} while (!scanner.atEnd());
+			}
+			return tokens;
+		}
+
+		public SortedMap<Integer, AnnotatedToken> tokenListWithPosAndWidth(
+				final char[] code) {
+			final SortedMap<Integer, AnnotatedToken> tokens = Maps.newTreeMap();
+			tokens.put(-1, new AnnotatedToken(SENTENCE_START, SENTENCE_START,
+					0, 0));
+			tokens.put(Integer.MAX_VALUE, new AnnotatedToken(SENTENCE_END,
+					SENTENCE_END, 0, 0));
+			final PublicScanner scanner = prepareScanner(code);
+
+			while (!scanner.atEnd()) {
+				do {
+					try {
+						final int token = scanner.getNextToken();
+						final int currentPosition = scanner
+								.getCurrentTokenStartPosition();
+						final int currentLine = scanner
+								.getLineNumber(currentPosition);
+						final int lineStart = scanner.getLineStart(currentLine);
+						final int position = scanner
+								.getCurrentTokenStartPosition();
+						if (token == ITerminalSymbols.TokenNameEOF) {
+							break;
+						}
+						int i = 0;
+						final List<String> cTokens = getConvertedToken(scanner,
+								token);
+						for (final String cToken : cTokens) {
+							tokens.put(position + i, new AnnotatedToken(cToken,
+									"", currentPosition - lineStart, scanner
+											.getCurrentTokenString().length()));
+							i++;
+						}
+					} catch (final InvalidInputException e) {
 						LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 					}
 				} while (!scanner.atEnd());
@@ -334,11 +389,6 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		}
 	}
 
-	private static final long serialVersionUID = -3956186603216801513L;
-
-	private static final Logger LOGGER = Logger
-			.getLogger(JavaWhitespaceTokenizer.class.getName());
-
 	/**
 	 * A utility stateful class for converting whitespace tokens to whitespace.
 	 * 
@@ -367,18 +417,25 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		public static final Pattern SPACE_PATTERN = Pattern
 				.compile("WS_s(\\d+)t(\\d+)");
 
-		private Whitespace convert(final String wsToken,
-				final Pattern patternToMatch) {
-			final Whitespace space = new Whitespace();
-			final Matcher m = patternToMatch.matcher(wsToken);
-			checkArgument(m.matches(), "Pattern " + patternToMatch.toString()
-					+ " does not match " + wsToken);
-			space.nSpace = Integer.parseInt(m.group(1));
-			space.nTabs = Integer.parseInt(m.group(2));
-			if (m.groupCount() == 3) {
-				space.nNewLines = Integer.parseInt(m.group(3));
+		/**
+		 * Append whitespace to StringBuffer, given the specifications.
+		 * 
+		 * @param nSpace
+		 * @param nTab
+		 * @param startAtNewLine
+		 * @return
+		 */
+		public static final void createWhitespace(final Whitespace space,
+				final StringBuffer sb) {
+			for (int i = 0; i < space.nNewLines; i++) {
+				sb.append(System.getProperty("line.separator"));
 			}
-			return space;
+			for (int i = 0; i < space.nSpace; i++) {
+				sb.append(" ");
+			}
+			for (int i = 0; i < space.nTabs; i++) {
+				sb.append("\t");
+			}
 		}
 
 		/**
@@ -415,30 +472,28 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			createWhitespace(space, buffer);
 		}
 
-		/**
-		 * Append whitespace to StringBuffer, given the specifications.
-		 * 
-		 * @param nSpace
-		 * @param nTab
-		 * @param startAtNewLine
-		 * @return
-		 */
-		public static final void createWhitespace(final Whitespace space,
-				final StringBuffer sb) {
-			for (int i = 0; i < space.nNewLines; i++) {
-				sb.append(System.getProperty("line.separator"));
+		private Whitespace convert(final String wsToken,
+				final Pattern patternToMatch) {
+			final Whitespace space = new Whitespace();
+			final Matcher m = patternToMatch.matcher(wsToken);
+			checkArgument(m.matches(), "Pattern " + patternToMatch.toString()
+					+ " does not match " + wsToken);
+			space.nSpace = Integer.parseInt(m.group(1));
+			space.nTabs = Integer.parseInt(m.group(2));
+			if (m.groupCount() == 3) {
+				space.nNewLines = Integer.parseInt(m.group(3));
 			}
-			for (int i = 0; i < space.nSpace; i++) {
-				sb.append(" ");
-			}
-			for (int i = 0; i < space.nTabs; i++) {
-				sb.append("\t");
-			}
+			return space;
 		}
 	}
 
+	private static final long serialVersionUID = -3956186603216801513L;
+
+	private static final Logger LOGGER = Logger
+			.getLogger(JavaWhitespaceTokenizer.class.getName());
+
 	@Override
-	public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.fullTokenListWithPos(code);
 	}
@@ -456,13 +511,13 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 	}
 
 	@Override
-	public FullToken getTokenFromString(String token) {
+	public FullToken getTokenFromString(final String token) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.getTokenFromString(token);
 	}
 
 	@Override
-	public List<FullToken> getTokenListFromCode(char[] code) {
+	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.getTokenListFromCode(code);
 	}
@@ -473,13 +528,13 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 	}
 
 	@Override
-	public List<String> tokenListFromCode(char[] code) {
+	public List<String> tokenListFromCode(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.tokenListFromCode(code);
 	}
 
 	@Override
-	public SortedMap<Integer, String> tokenListWithPos(char[] code) {
+	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.tokenListWithPos(code);
 	}

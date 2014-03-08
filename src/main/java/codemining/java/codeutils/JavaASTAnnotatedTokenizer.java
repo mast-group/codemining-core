@@ -95,7 +95,7 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 		try {
 			final Class<? extends ITokenizer> tokenizerClass = (Class<? extends ITokenizer>) Class
 					.forName(SettingsLoader.getStringSetting("baseTokenizer",
-							"codemining.java.codeutils.JavaCodeTokenizer"));
+							JavaTokenizer.class.getName()));
 			baseTokenizer = tokenizerClass.newInstance();
 		} catch (final ClassNotFoundException e) {
 			LOGGER.severe(ExceptionUtils.getFullStackTrace(e));
