@@ -16,7 +16,10 @@ import com.google.common.base.Objects;
  */
 public interface ITokenizer extends Serializable {
 
-	public static class FullToken {
+	public static class FullToken implements Serializable {
+
+		private static final long serialVersionUID = -49456240173307314L;
+
 		public final String token;
 
 		public final String tokenType;
@@ -32,9 +35,10 @@ public interface ITokenizer extends Serializable {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof FullToken))
+		public boolean equals(final Object obj) {
+			if (!(obj instanceof FullToken)) {
 				return false;
+			}
 			final FullToken other = (FullToken) obj;
 			return other.token.equals(token)
 					&& other.tokenType.equals(tokenType);
