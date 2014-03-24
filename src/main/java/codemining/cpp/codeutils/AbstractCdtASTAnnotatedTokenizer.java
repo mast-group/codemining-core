@@ -50,7 +50,7 @@ import com.google.common.collect.Maps;
  */
 public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 
-	private class TokenDecorator extends ASTVisitor {
+	private static class TokenDecorator extends ASTVisitor {
 		final SortedMap<Integer, FullToken> baseTokens;
 		final SortedMap<Integer, FullToken> annotatedTokens;
 
