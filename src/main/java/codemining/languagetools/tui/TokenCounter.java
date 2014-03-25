@@ -12,6 +12,7 @@ import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import codemining.languagetools.ITokenizer;
+import codemining.languagetools.TokenizerUtils;
 
 /**
  * Utility for counting all the tokens in a folder.
@@ -41,8 +42,7 @@ public class TokenCounter {
 
 		long tokenCount = 0;
 
-		final ITokenizer tokenizer = (ITokenizer) Class.forName(args[1])
-				.newInstance();
+		final ITokenizer tokenizer = TokenizerUtils.tokenizerForClass(args[1]);
 
 		for (final File fi : FileUtils.listFiles(new File(args[0]),
 				tokenizer.getFileFilter(), DirectoryFileFilter.DIRECTORY)) {
@@ -52,7 +52,7 @@ public class TokenCounter {
 				tokenCount += tokenizer.tokenListFromCode(code).size() - 2; // Remove
 																			// sentence
 																			// start/end
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 			}
 		}

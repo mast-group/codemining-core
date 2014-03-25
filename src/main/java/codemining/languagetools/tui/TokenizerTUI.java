@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.compiler.InvalidInputException;
 
 import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ITokenizer.FullToken;
+import codemining.languagetools.TokenizerUtils;
 
 import com.google.common.collect.Lists;
 
@@ -36,11 +37,12 @@ public class TokenizerTUI {
 		}
 
 		final ITokenizer tok;
+		final String tokenizerClass = args[1];
 		if (args.length == 2) {
-			tok = (ITokenizer) Class.forName(args[1]).newInstance();
+			tok = TokenizerUtils.tokenizerForClass(tokenizerClass);
 		} else {
-			tok = (ITokenizer) Class.forName(args[1])
-					.getDeclaredConstructor(String.class).newInstance(args[2]);
+			final String tokenizerArguments = args[2];
+			tok = TokenizerUtils.tokenizerForClass(tokenizerClass, tokenizerArguments);
 		}
 
 		final File baseFile = new File(args[0]);

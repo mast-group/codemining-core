@@ -6,6 +6,7 @@ package codemining.languagetools;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkPositionIndex;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -124,6 +125,40 @@ public class TokenizerUtils {
 
 	private TokenizerUtils() {
 		// Utilty class
+	}
+
+	/**
+	 * @param tokenizerClass
+	 * @param tokenizerArguments
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws ClassNotFoundException
+	 */
+	public static ITokenizer tokenizerForClass(final String tokenizerClass,
+			final String tokenizerArguments) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, ClassNotFoundException {
+		return (ITokenizer) Class.forName(tokenizerClass)
+				.getDeclaredConstructor(String.class).newInstance(tokenizerArguments);
+	}
+
+	/**
+	 * @param tokenizerClass
+	 * @return
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 */
+	public static ITokenizer tokenizerForClass(final String tokenizerClass)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		return (ITokenizer) Class.forName(tokenizerClass).newInstance();
 	}
 
 }

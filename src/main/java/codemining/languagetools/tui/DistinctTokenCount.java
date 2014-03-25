@@ -14,6 +14,7 @@ import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
 import codemining.languagetools.ITokenizer;
+import codemining.languagetools.TokenizerUtils;
 
 import com.google.common.collect.Multiset.Entry;
 import com.google.common.collect.TreeMultiset;
@@ -38,7 +39,7 @@ public class DistinctTokenCount {
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	public static void main(String[] args) throws InstantiationException,
+	public static void main(final String[] args) throws InstantiationException,
 			IllegalAccessException, ClassNotFoundException {
 
 		if (args.length != 2) {
@@ -52,7 +53,7 @@ public class DistinctTokenCount {
 				DirectoryFileFilter.DIRECTORY)) {
 			try {
 				tokCount.addTokens(fi);
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 			}
 		}
@@ -67,7 +68,7 @@ public class DistinctTokenCount {
 	public DistinctTokenCount(final String tokenizerClass)
 			throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
-		tokenizer = (ITokenizer) Class.forName(tokenizerClass).newInstance();
+		tokenizer = TokenizerUtils.tokenizerForClass(tokenizerClass);
 	}
 
 	public void addTokens(final File file) throws IOException {
