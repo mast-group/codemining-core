@@ -78,9 +78,12 @@ public class JavaCodePrinter {
 
 		int i = 0;
 		int prevPos = 0;
-		buf.append("<html><body style='font-family:monospace; "
-				+ "background-color:rgb(" + documentBackgroundColor.getRed()
-				+ "," + documentBackgroundColor.getGreen() + ","
+		buf.append("<html><head> <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,500,600,700,800,900' rel='stylesheet' type='text/css'></head><body style='font-family:monospace; "
+				+ "font: 14px/1.3 \"Source Code Pro\", \"Fira Mono OT\", monospace;background-color:rgb("
+				+ documentBackgroundColor.getRed()
+				+ ","
+				+ documentBackgroundColor.getGreen()
+				+ ","
 				+ documentBackgroundColor.getBlue() + ")'>");
 		for (final Entry<Integer, FullToken> entry : toks.entrySet()) {
 			if (i == 0 || entry.getKey() == Integer.MAX_VALUE) {
