@@ -3,6 +3,8 @@
  */
 package codemining.languagetools;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -22,15 +24,17 @@ public class NameBinding implements Serializable {
 	/**
 	 * The tokens of source code.
 	 */
-	final List<String> sourceCodeTokens;
+	public final List<String> sourceCodeTokens;
 
 	/**
 	 * The positions in sourceCodeTokens that contain the given name.
 	 */
-	final List<Integer> nameIndexes;
+	public final List<Integer> nameIndexes;
 
 	public NameBinding(final List<Integer> nameIndexes,
 			final List<String> sourceCodeTokens) {
+		checkArgument(nameIndexes.size() > 0);
+		checkArgument(sourceCodeTokens.size() > 0);
 		this.nameIndexes = Collections.unmodifiableList(nameIndexes);
 		this.sourceCodeTokens = Collections.unmodifiableList(sourceCodeTokens);
 	}
@@ -82,5 +86,10 @@ public class NameBinding implements Serializable {
 			renamedCode.set(position, name);
 		}
 		return new NameBinding(nameIndexes, renamedCode);
+	}
+
+	@Override
+	public String toString() {
+		return sourceCodeTokens.get(nameIndexes.get(0)) + nameIndexes;
 	}
 }
