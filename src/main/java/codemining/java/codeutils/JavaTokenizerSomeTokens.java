@@ -3,7 +3,6 @@
  */
 package codemining.java.codeutils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +38,7 @@ public class JavaTokenizerSomeTokens extends JavaTokenizer {
 	private final boolean REMOVE_TYPE_IDENTIFIERS = SettingsLoader
 			.getBooleanSetting("removeTypeIdentifiers", false);
 
-	private void generateValidTokList(final char[] code) throws IOException {
+	private void generateValidTokList(final char[] code) throws Exception {
 		methodIds = IdentifierPerType.getMethodIdentifiers(code);
 		typeIds = IdentifierPerType.getTypeIdentifiers(code);
 		varIds = IdentifierPerType.getVariableIdentifiers(code);
@@ -50,7 +49,7 @@ public class JavaTokenizerSomeTokens extends JavaTokenizer {
 		try {
 			generateValidTokList(code);
 			return super.tokenListFromCode(code);
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 		}
 		return new ArrayList<String>();
@@ -61,7 +60,7 @@ public class JavaTokenizerSomeTokens extends JavaTokenizer {
 		try {
 			generateValidTokList(code);
 			return super.tokenListWithPos(code);
-		} catch (final IOException e) {
+		} catch (final Exception e) {
 			LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 		}
 		return new TreeMap<Integer, String>();

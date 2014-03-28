@@ -6,7 +6,9 @@ import com.google.common.collect.ComparisonChain;
 /**
  * A utility class to represent scopes.
  * 
+ * @deprecated use NameBindings instead
  */
+@Deprecated
 public class Scope implements Comparable<Scope> {
 
 	public enum ScopeType {

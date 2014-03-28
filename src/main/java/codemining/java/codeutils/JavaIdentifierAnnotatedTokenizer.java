@@ -32,7 +32,7 @@ public class JavaIdentifierAnnotatedTokenizer extends JavaTokenizer {
 		final Map<String, RangeSet<Integer>> methods;
 		final Map<String, RangeSet<Integer>> types;
 
-		public IdentifierTypeRetriever(final char[] code) {
+		public IdentifierTypeRetriever(final char[] code) throws Exception {
 			variables = IdentifierPerType.getVariableIdentifiersRanges(code);
 			methods = IdentifierPerType.getMethodIdentifiersRanges(code);
 			types = IdentifierPerType.getTypeIdentifiersRanges(code);
@@ -87,8 +87,12 @@ public class JavaIdentifierAnnotatedTokenizer extends JavaTokenizer {
 
 	@Override
 	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
-		final IdentifierTypeRetriever idRetriever = new IdentifierTypeRetriever(
-				code);
+		IdentifierTypeRetriever idRetriever;
+		try {
+			idRetriever = new IdentifierTypeRetriever(code);
+		} catch (final Exception e) {
+			throw new IllegalArgumentException(e);
+		}
 
 		final PublicScanner scanner = prepareScanner();
 		final SortedMap<Integer, FullToken> tokens = Maps.newTreeMap();
@@ -132,8 +136,12 @@ public class JavaIdentifierAnnotatedTokenizer extends JavaTokenizer {
 
 	@Override
 	public List<FullToken> getTokenListFromCode(final char[] code) {
-		final IdentifierTypeRetriever idRetriever = new IdentifierTypeRetriever(
-				code);
+		IdentifierTypeRetriever idRetriever;
+		try {
+			idRetriever = new IdentifierTypeRetriever(code);
+		} catch (final Exception e) {
+			throw new IllegalArgumentException(e);
+		}
 
 		final List<FullToken> tokens = Lists.newArrayList();
 		tokens.add(new FullToken(SENTENCE_START, SENTENCE_START));

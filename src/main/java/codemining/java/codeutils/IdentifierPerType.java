@@ -49,8 +49,9 @@ public class IdentifierPerType {
 		private final Map<String, RangeSet<Integer>> identifiers = Maps
 				.newTreeMap();
 
-		public MethodIdentifierExtractor(final char[] code) {
-			cu = (new JavaASTExtractor(false)).getASTNode(new String(code));
+		public MethodIdentifierExtractor(final char[] code) throws Exception {
+			cu = (new JavaASTExtractor(false)).getBestEffortAstNode(new String(
+					code));
 			cu.accept(this);
 		}
 
@@ -79,8 +80,9 @@ public class IdentifierPerType {
 		private final Map<String, RangeSet<Integer>> identifiers = Maps
 				.newTreeMap();
 
-		public TypeIdentifierExtractor(final char[] code) {
-			cu = (new JavaASTExtractor(false)).getASTNode(new String(code));
+		public TypeIdentifierExtractor(final char[] code) throws Exception {
+			cu = (new JavaASTExtractor(false)).getBestEffortAstNode(new String(
+					code));
 			cu.accept(this);
 		}
 
@@ -155,8 +157,9 @@ public class IdentifierPerType {
 		private final Map<String, RangeSet<Integer>> identifiers = Maps
 				.newTreeMap();
 
-		public VariableIdentifierExtractor(final char[] code) {
-			cu = (new JavaASTExtractor(false)).getASTNode(new String(code));
+		public VariableIdentifierExtractor(final char[] code) throws Exception {
+			cu = (new JavaASTExtractor(false)).getBestEffortAstNode(new String(
+					code));
 			cu.accept(this);
 		}
 
@@ -230,7 +233,8 @@ public class IdentifierPerType {
 		idRanges.add(nodeRange);
 	}
 
-	public static Set<String> getMethodIdentifiers(final char[] code) {
+	public static Set<String> getMethodIdentifiers(final char[] code)
+			throws Exception {
 		return getMethodIdentifiersRanges(code).keySet();
 	}
 
@@ -240,7 +244,7 @@ public class IdentifierPerType {
 	}
 
 	public static Map<String, RangeSet<Integer>> getMethodIdentifiersRanges(
-			final char[] code) {
+			final char[] code) throws Exception {
 		final MethodIdentifierExtractor ex = new MethodIdentifierExtractor(code);
 		return ex.identifiers;
 	}
@@ -251,7 +255,8 @@ public class IdentifierPerType {
 		return ex.identifiers;
 	}
 
-	public static Set<String> getTypeIdentifiers(final char[] code) {
+	public static Set<String> getTypeIdentifiers(final char[] code)
+			throws Exception {
 		return getTypeIdentifiersRanges(code).keySet();
 	}
 
@@ -261,7 +266,7 @@ public class IdentifierPerType {
 	}
 
 	public static Map<String, RangeSet<Integer>> getTypeIdentifiersRanges(
-			final char[] code) {
+			final char[] code) throws Exception {
 		final TypeIdentifierExtractor ex = new TypeIdentifierExtractor(code);
 		return ex.identifiers;
 	}
@@ -272,7 +277,8 @@ public class IdentifierPerType {
 		return ex.identifiers;
 	}
 
-	public static Set<String> getVariableIdentifiers(final char[] code) {
+	public static Set<String> getVariableIdentifiers(final char[] code)
+			throws Exception {
 		return getVariableIdentifiersRanges(code).keySet();
 	}
 
@@ -282,7 +288,7 @@ public class IdentifierPerType {
 	}
 
 	public static Map<String, RangeSet<Integer>> getVariableIdentifiersRanges(
-			final char[] code) {
+			final char[] code) throws Exception {
 		final VariableIdentifierExtractor ex = new VariableIdentifierExtractor(
 				code);
 		return ex.identifiers;

@@ -29,6 +29,16 @@ import codemining.languagetools.ParseType;
  */
 public class JavaASTExtractor {
 
+	private static final class TopMethodRetriever extends ASTVisitor {
+		public MethodDeclaration topDcl;
+
+		@Override
+		public boolean visit(final MethodDeclaration node) {
+			topDcl = node;
+			return false;
+		}
+	}
+
 	/**
 	 * Remembers if the given Extractor will calculate the bindings.
 	 */
@@ -47,8 +57,7 @@ public class JavaASTExtractor {
 		useJavadocs = false;
 	}
 
-	public JavaASTExtractor(final boolean useBindings,
-			final boolean useJavadocs) {
+	public JavaASTExtractor(final boolean useBindings, final boolean useJavadocs) {
 		this.useBindings = useBindings;
 		this.useJavadocs = useJavadocs;
 	}
@@ -104,62 +113,12 @@ public class JavaASTExtractor {
 	 * Get a compilation unit of the given file content.
 	 * 
 	 * @param fileContent
-	 * @return the compilation unit
-	 * @deprecated You need to use the getASTNode() specifying the type of input
-	 */
-	public final CompilationUnit getAST(final String fileContent) {
-		return (CompilationUnit) getASTNode(fileContent);
-	}
-
-	/**
-	 * Get a compilation unit of the given file content.
-	 * 
-	 * @param fileContent
 	 * @param parseType
 	 * @return the compilation unit
 	 */
-	public final ASTNode getAST(final String fileContent, final ParseType parseType) {
+	public final ASTNode getAST(final String fileContent,
+			final ParseType parseType) {
 		return (ASTNode) getASTNode(fileContent, parseType);
-	}
-
-	/**
-	 * 
-	 * @deprecated Use getASTNode specifying the parse kind.
-	 */
-	public final ASTNode getASTNode(final char[] content) {
-		for (final ParseType parseType : ParseType.values()) {
-			final ASTNode node = getASTNode(content, parseType);
-			if (normalizeCode(node.toString().toCharArray()).equals(
-					normalizeCode(content))) {
-				return node;
-			}
-		}
-		throw new IllegalArgumentException(
-				"Code snippet could not be recognized as any of the known types");
-	}
-
-	/**
-	 * Hacky way to compare snippets.
-	 * 
-	 * @param snippet
-	 * @return
-	 */
-	private String normalizeCode(final char[] snippet) {
-		final List<String> tokens = (new JavaTokenizer())
-				.tokenListFromCode(snippet);
-
-		final StringBuffer bf = new StringBuffer();
-		for (final String token : tokens) {
-			if (token.equals(ITokenizer.SENTENCE_START)
-					|| token.equals(ITokenizer.SENTENCE_END)) {
-				continue;
-			} else {
-				bf.append(token);
-			}
-			bf.append(" ");
-		}
-		return bf.toString();
-
 	}
 
 	/**
@@ -168,7 +127,8 @@ public class JavaASTExtractor {
 	 * @param content
 	 * @return
 	 */
-	public final ASTNode getASTNode(final char[] content, final ParseType parseType) {
+	public final ASTNode getASTNode(final char[] content,
+			final ParseType parseType) {
 		final ASTParser parser = ASTParser.newParser(AST.JLS4);
 		final int astKind;
 		switch (parseType) {
@@ -212,34 +172,6 @@ public class JavaASTExtractor {
 		}
 	}
 
-	private static final class TopMethodRetriever extends ASTVisitor {
-		public MethodDeclaration topDcl;
-
-		@Override
-		public boolean visit(final MethodDeclaration node) {
-			topDcl = node;
-			return false;
-		}
-	}
-
-	private final MethodDeclaration getFirstMethodDeclaration(final ASTNode node) {
-		final TopMethodRetriever visitor = new TopMethodRetriever();
-		node.accept(visitor);
-		return visitor.topDcl;
-	}
-
-	/**
-	 * Get the AST of a string. Path variables cannot be set.
-	 * 
-	 * @param file
-	 * @return an AST node for the given file content
-	 * @throws IOException
-	 * @deprecated Use getASTNode specifying the parse kind.
-	 */
-	public final ASTNode getASTNode(final String fileContent) {
-		return getASTNode(fileContent.toCharArray());
-	}
-
 	/**
 	 * Get the AST of a string. Path variables cannot be set.
 	 * 
@@ -251,6 +183,67 @@ public class JavaASTExtractor {
 	public final ASTNode getASTNode(final String fileContent,
 			final ParseType parseType) {
 		return getASTNode(fileContent.toCharArray(), parseType);
+	}
+
+	/**
+	 * Get the AST by making the best effort to guess the type of the node.
+	 * 
+	 * @throws Exception
+	 */
+	public final ASTNode getBestEffortAstNode(final char[] content)
+			throws Exception {
+		for (final ParseType parseType : ParseType.values()) {
+			final ASTNode node = getASTNode(content, parseType);
+			if (normalizeCode(node.toString().toCharArray()).equals(
+					normalizeCode(content))) {
+				return node;
+			}
+		}
+		throw new Exception(
+				"Code snippet could not be recognized as any of the known types");
+	}
+
+	/**
+	 * Get the AST of a string. Path variables cannot be set.
+	 * 
+	 * @param file
+	 * @return an AST node for the given file content
+	 * @throws Exception
+	 * @throws IOException
+	 */
+	public final ASTNode getBestEffortAstNode(final String fileContent)
+			throws Exception {
+		return getBestEffortAstNode(fileContent.toCharArray());
+	}
+
+	private final MethodDeclaration getFirstMethodDeclaration(final ASTNode node) {
+		final TopMethodRetriever visitor = new TopMethodRetriever();
+		node.accept(visitor);
+		return visitor.topDcl;
+	}
+
+	/**
+	 * Hacky way to compare snippets.
+	 * 
+	 * @param snippet
+	 * @return
+	 */
+	private String normalizeCode(final char[] snippet) {
+		final List<String> tokens = (new JavaTokenizer())
+				.tokenListFromCode(snippet);
+
+		final StringBuffer bf = new StringBuffer();
+		for (final String token : tokens) {
+			if (token.equals(ITokenizer.SENTENCE_START)
+					|| token.equals(ITokenizer.SENTENCE_END)) {
+				continue;
+			} else {
+				bf.append(token);
+			}
+			bf.append(" ");
+		}
+		return bf.toString();
+
 	}
 
 }

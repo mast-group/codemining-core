@@ -38,7 +38,7 @@ public class EclipseASTExtractorTest {
 
 	/**
 	 * Test method for
-	 * {@link codemining.java.codeutils.JavaASTExtractor#getAST(java.lang.String)}
+	 * {@link codemining.java.codeutils.JavaASTExtractor#getBestEffortAst(java.lang.String)}
 	 * .
 	 * 
 	 * @throws IOException

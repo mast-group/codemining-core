@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -33,10 +34,10 @@ public final class MethodRetriever extends ASTVisitor {
 	}
 
 	public static Map<String, MethodDeclaration> getMethodNodes(
-			final String file) throws IOException {
+			final String file) throws Exception {
 		final JavaASTExtractor astExtractor = new JavaASTExtractor(false);
 		final MethodRetriever m = new MethodRetriever();
-		final CompilationUnit cu = astExtractor.getAST(file);
+		final ASTNode cu = astExtractor.getBestEffortAstNode(file);
 		cu.accept(m);
 		return m.methods;
 	}

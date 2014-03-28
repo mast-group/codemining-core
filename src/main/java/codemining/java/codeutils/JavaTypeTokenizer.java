@@ -36,30 +36,39 @@ public class JavaTypeTokenizer implements ITokenizer {
 			.toString(ITerminalSymbols.TokenNameIdentifier);
 
 	@Override
-	public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		final SortedMap<Integer, FullToken> tokens = baseTokenizer
 				.fullTokenListWithPos(code);
 
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
-		final ASTNode cu = ex.getASTNode(code);
-		final JavaApproximateTypeInferencer tInf = new JavaApproximateTypeInferencer(
-				cu);
-		tInf.infer();
-		final Map<Integer, String> types = tInf.getVariableTypesAtPosition();
+		ASTNode cu;
+		try {
+			cu = ex.getBestEffortAstNode(code);
+			final JavaApproximateTypeInferencer tInf = new JavaApproximateTypeInferencer(
+					cu);
+			tInf.infer();
+			final Map<Integer, String> types = tInf
+					.getVariableTypesAtPosition();
 
-		final SortedMap<Integer, FullToken> typeTokenList = Maps.newTreeMap();
-		for (final Entry<Integer, FullToken> token : tokens.entrySet()) {
-			final String type = types.get(token.getKey());
-			if (type != null) {
-				typeTokenList.put(token.getKey(), new FullToken("var%" + type
-						+ "%", token.getValue().tokenType));
-			} else {
-				typeTokenList.put(token.getKey(),
-						new FullToken(token.getValue().token,
-								token.getValue().tokenType));
+			final SortedMap<Integer, FullToken> typeTokenList = Maps
+					.newTreeMap();
+			for (final Entry<Integer, FullToken> token : tokens.entrySet()) {
+				final String type = types.get(token.getKey());
+				if (type != null) {
+					typeTokenList.put(token.getKey(), new FullToken("var%"
+							+ type + "%", token.getValue().tokenType));
+				} else {
+					typeTokenList.put(
+							token.getKey(),
+							new FullToken(token.getValue().token, token
+									.getValue().tokenType));
+				}
 			}
+			return typeTokenList;
+		} catch (final Exception e) {
+			throw new IllegalArgumentException(e);
 		}
-		return typeTokenList;
+
 	}
 
 	/*
@@ -103,24 +112,31 @@ public class JavaTypeTokenizer implements ITokenizer {
 				.fullTokenListWithPos(code);
 
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
-		final ASTNode cu = ex.getASTNode(code);
-		final JavaApproximateTypeInferencer tInf = new JavaApproximateTypeInferencer(
-				cu);
-		tInf.infer();
-		final Map<Integer, String> types = tInf.getVariableTypesAtPosition();
+		ASTNode cu;
+		try {
+			cu = ex.getBestEffortAstNode(code);
+			final JavaApproximateTypeInferencer tInf = new JavaApproximateTypeInferencer(
+					cu);
+			tInf.infer();
+			final Map<Integer, String> types = tInf
+					.getVariableTypesAtPosition();
 
-		final List<FullToken> typeTokenList = Lists.newArrayList();
-		for (final Entry<Integer, FullToken> token : tokens.entrySet()) {
-			final String type = types.get(token.getKey());
-			if (type != null) {
-				typeTokenList.add(new FullToken("var%" + type + "%", token
-						.getValue().tokenType));
-			} else {
-				typeTokenList.add(new FullToken(token.getValue().token, token
-						.getValue().tokenType));
+			final List<FullToken> typeTokenList = Lists.newArrayList();
+			for (final Entry<Integer, FullToken> token : tokens.entrySet()) {
+				final String type = types.get(token.getKey());
+				if (type != null) {
+					typeTokenList.add(new FullToken("var%" + type + "%", token
+							.getValue().tokenType));
+				} else {
+					typeTokenList.add(new FullToken(token.getValue().token,
+							token.getValue().tokenType));
+				}
 			}
+			return typeTokenList;
+		} catch (final Exception e) {
+			throw new IllegalArgumentException(e);
 		}
-		return typeTokenList;
+
 	}
 
 	/*
@@ -129,7 +145,7 @@ public class JavaTypeTokenizer implements ITokenizer {
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
-	public List<String> tokenListFromCode(char[] code) {
+	public List<String> tokenListFromCode(final char[] code) {
 		final List<FullToken> tokens = getTokenListFromCode(code);
 		final List<String> stringTokens = Lists.newArrayList();
 		for (final FullToken token : tokens) {
@@ -144,7 +160,7 @@ public class JavaTypeTokenizer implements ITokenizer {
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override
-	public SortedMap<Integer, String> tokenListWithPos(char[] code) {
+	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		// TODO Auto-generated method stub
 		throw new NotImplementedException();
 	}
