@@ -43,6 +43,10 @@ public abstract class AbstractJavaNameBindingsExtractor implements
 		return positionToIndex;
 	}
 
+	protected JavaASTExtractor createExtractor() {
+		return new JavaASTExtractor(true);
+	}
+
 	/**
 	 * Get the name bindings for the given ASTNode.
 	 * 
@@ -57,13 +61,13 @@ public abstract class AbstractJavaNameBindingsExtractor implements
 
 	@Override
 	public List<NameBinding> getNameBindings(final File f) throws IOException {
-		final JavaASTExtractor ex = new JavaASTExtractor(true);
+		final JavaASTExtractor ex = createExtractor();
 		return getNameBindings(ex.getAST(f), FileUtils.readFileToString(f));
 	}
 
 	@Override
 	public List<NameBinding> getNameBindings(final String code) {
-		final JavaASTExtractor ex = new JavaASTExtractor(true);
+		final JavaASTExtractor ex = createExtractor();
 		try {
 			return getNameBindings(ex.getBestEffortAstNode(code), code);
 		} catch (final Exception e) {

@@ -18,10 +18,7 @@ import com.google.common.collect.Sets;
 
 public class JavaExactVariableBindingsExtractorTest {
 
-	File classContent;
-	File classContent2;
-
-	public void checkAllBindings(final List<NameBinding> bindings) {
+	public static void checkAllBindings(final List<NameBinding> bindings) {
 		final Set<Integer> indexes = Sets.newHashSet();
 		for (final NameBinding binding : bindings) {
 			checkBinding(binding);
@@ -31,7 +28,7 @@ public class JavaExactVariableBindingsExtractorTest {
 		}
 	}
 
-	public void checkBinding(final NameBinding binding) {
+	public static void checkBinding(final NameBinding binding) {
 		final String tokenName = binding.sourceCodeTokens
 				.get(binding.nameIndexes.get(0));
 		for (int i = 1; i < binding.nameIndexes.size(); i++) {
@@ -39,6 +36,10 @@ public class JavaExactVariableBindingsExtractorTest {
 					binding.sourceCodeTokens.get(binding.nameIndexes.get(i)));
 		}
 	}
+
+	File classContent;
+
+	File classContent2;
 
 	@Before
 	public void setUp() throws IOException {
