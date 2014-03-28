@@ -44,7 +44,7 @@ public abstract class AbstractJavaNameBindingsExtractor implements
 	}
 
 	protected JavaASTExtractor createExtractor() {
-		return new JavaASTExtractor(true);
+		return new JavaASTExtractor(false);
 	}
 
 	/**

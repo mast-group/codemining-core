@@ -18,7 +18,6 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
-import codemining.java.codeutils.JavaASTExtractor;
 import codemining.java.codeutils.JavaTokenizer;
 import codemining.languagetools.NameBinding;
 
@@ -173,11 +172,6 @@ public class JavaApproximateVariableBindingExtractor extends
 			}
 			return true;
 		}
-	}
-
-	@Override
-	protected JavaASTExtractor createExtractor() {
-		return new JavaASTExtractor(false);
 	}
 
 	/*

@@ -11,7 +11,6 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-import codemining.java.codeutils.JavaASTExtractor;
 import codemining.java.codeutils.JavaTokenizer;
 import codemining.languagetools.NameBinding;
 
@@ -59,11 +58,6 @@ public class JavaMethodBindingExtractor extends
 					positionToIndex.get(node.getName().getStartPosition()));
 			return super.visit(node);
 		}
-	}
-
-	@Override
-	protected JavaASTExtractor createExtractor() {
-		return new JavaASTExtractor(false);
 	}
 
 	@Override

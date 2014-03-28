@@ -1,6 +1,3 @@
-/**
- * 
- */
 package codemining.java.codeutils.binding;
 
 import static org.junit.Assert.assertEquals;
@@ -16,7 +13,7 @@ import org.junit.Test;
 import codemining.java.codeutils.EclipseASTExtractorTest;
 import codemining.languagetools.NameBinding;
 
-public class JavaMethodBindingExtractorTest {
+public class JavaTypeBindingExtractorTest {
 
 	File classContent;
 
@@ -38,21 +35,21 @@ public class JavaMethodBindingExtractorTest {
 
 	@Test
 	public void testClassLevelBindings() throws IOException {
-		final JavaMethodBindingExtractor jame = new JavaMethodBindingExtractor();
+		final JavaTypeBindingExtractor jame = new JavaTypeBindingExtractor();
 
-		final List<NameBinding> classMethodBindings = jame
+		final List<NameBinding> classTypeindings = jame
 				.getNameBindings(classContent);
 
 		JavaExactVariableBindingsExtractorTest
-				.checkAllBindings(classMethodBindings);
-		assertEquals(classMethodBindings.size(), 8);
+				.checkAllBindings(classTypeindings);
+		assertEquals(classTypeindings.size(), 7);
 
-		final List<NameBinding> classMethodBindings2 = jame
+		final List<NameBinding> classTypeBindings2 = jame
 				.getNameBindings(classContent2);
 		JavaExactVariableBindingsExtractorTest
-				.checkAllBindings(classMethodBindings2);
+				.checkAllBindings(classTypeBindings2);
 
-		assertEquals(classMethodBindings2.size(), 7);
+		assertEquals(classTypeBindings2.size(), 11);
 	}
 
 }
