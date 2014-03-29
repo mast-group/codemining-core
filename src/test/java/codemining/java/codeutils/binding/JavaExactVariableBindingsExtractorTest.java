@@ -12,15 +12,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import codemining.java.codeutils.EclipseASTExtractorTest;
-import codemining.languagetools.NameBinding;
+import codemining.languagetools.TokenNameBinding;
 
 import com.google.common.collect.Sets;
 
 public class JavaExactVariableBindingsExtractorTest {
 
-	public static void checkAllBindings(final List<NameBinding> bindings) {
+	public static void checkAllBindings(final List<TokenNameBinding> bindings) {
 		final Set<Integer> indexes = Sets.newHashSet();
-		for (final NameBinding binding : bindings) {
+		for (final TokenNameBinding binding : bindings) {
 			checkBinding(binding);
 			assertFalse("Indexes appear only once",
 					indexes.removeAll(binding.nameIndexes));
@@ -28,12 +28,11 @@ public class JavaExactVariableBindingsExtractorTest {
 		}
 	}
 
-	public static void checkBinding(final NameBinding binding) {
+	public static void checkBinding(final TokenNameBinding binding) {
 		final String tokenName = binding.sourceCodeTokens
-				.get(binding.nameIndexes.get(0));
-		for (int i = 1; i < binding.nameIndexes.size(); i++) {
-			assertEquals(tokenName,
-					binding.sourceCodeTokens.get(binding.nameIndexes.get(i)));
+				.get(binding.nameIndexes.iterator().next());
+		for (final int idx : binding.nameIndexes) {
+			assertEquals(tokenName, binding.sourceCodeTokens.get(idx));
 		}
 	}
 
@@ -52,12 +51,12 @@ public class JavaExactVariableBindingsExtractorTest {
 	@Test
 	public void testClassBindings() throws IOException {
 		final JavaExactVariableBindingsExtractor jbe = new JavaExactVariableBindingsExtractor();
-		final List<NameBinding> classVariableBindings = jbe
+		final List<TokenNameBinding> classVariableBindings = jbe
 				.getNameBindings(classContent);
 		checkAllBindings(classVariableBindings);
 		assertEquals(classVariableBindings.size(), 5);
 
-		final List<NameBinding> classVariableBindings2 = jbe
+		final List<TokenNameBinding> classVariableBindings2 = jbe
 				.getNameBindings(classContent2);
 
 		assertEquals(classVariableBindings2.size(), 9);

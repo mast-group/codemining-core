@@ -21,7 +21,7 @@ public interface INameBindingsExtractor {
 	 * @return
 	 * @throws IOException
 	 */
-	List<NameBinding> getNameBindings(final File f) throws IOException;
+	List<TokenNameBinding> getNameBindings(final File f) throws IOException;
 
 	/**
 	 * Get the name bindings given the code.
@@ -29,5 +29,5 @@ public interface INameBindingsExtractor {
 	 * @param code
 	 * @return
 	 */
-	List<NameBinding> getNameBindings(final String code);
+	List<TokenNameBinding> getNameBindings(final String code);
 }

@@ -6,7 +6,7 @@ package codemining.java.codeutils.binding;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
+import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -18,11 +18,9 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
-import codemining.java.codeutils.JavaTokenizer;
-import codemining.languagetools.NameBinding;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * An approximate best-effort (worse-precision) variable binding extractor.
@@ -39,9 +37,6 @@ public class JavaApproximateVariableBindingExtractor extends
 	 * 
 	 */
 	private class VariableBindingFinder extends ASTVisitor {
-
-		private final Map<Integer, Integer> positionToIndex;
-
 		private int nextDeclarId = 0;
 
 		/**
@@ -55,11 +50,7 @@ public class JavaApproximateVariableBindingExtractor extends
 		 * Map of variables (represented with their ids) to all token positions
 		 * where the variable is referenced.
 		 */
-		Map<Integer, List<Integer>> variableBinding = Maps.newIdentityHashMap();
-
-		VariableBindingFinder(final Map<Integer, Integer> positionToIndex) {
-			this.positionToIndex = positionToIndex;
-		}
+		Map<Integer, List<ASTNode>> variableBinding = Maps.newIdentityHashMap();
 
 		/**
 		 * Add the binding to the current scope.
@@ -72,21 +63,21 @@ public class JavaApproximateVariableBindingExtractor extends
 			nextDeclarId++;
 			variableNames.get(node).put(name, bindingId);
 			variableNames.get(node.getParent()).put(name, bindingId);
-			variableBinding.put(bindingId, Lists.<Integer> newArrayList());
+			variableBinding.put(bindingId, Lists.<ASTNode> newArrayList());
 		}
 
 		/**
 		 * Add the binding data for the given name at the given scope and
 		 * position.
 		 */
-		private void addBindingData(final String name, final int position,
+		private void addBindingData(final String name, final ASTNode nameNode,
 				final Map<String, Integer> scopeBindings) {
 			// Get varId or abort
 			final Integer variableId = scopeBindings.get(name);
 			if (variableId == null) {
 				return;
 			}
-			variableBinding.get(variableId).add(positionToIndex.get(position));
+			variableBinding.get(variableId).add(nameNode);
 		}
 
 		@Override
@@ -130,8 +121,7 @@ public class JavaApproximateVariableBindingExtractor extends
 		 */
 		@Override
 		public boolean visit(final SimpleName node) {
-			addBindingData(node.getIdentifier(), node.getStartPosition(),
-					variableNames.get(node));
+			addBindingData(node.getIdentifier(), node, variableNames.get(node));
 			return true;
 		}
 
@@ -174,35 +164,19 @@ public class JavaApproximateVariableBindingExtractor extends
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see codemining.java.codeutils.binding.AbstractJavaNameBindingsExtractor#
-	 * getNameBindings(org.eclipse.jdt.core.dom.ASTNode, java.lang.String)
-	 */
 	@Override
-	public List<NameBinding> getNameBindings(final ASTNode node,
-			final String sourceCode) {
-		final JavaTokenizer tokenizer = new JavaTokenizer();
-		final SortedMap<Integer, String> tokenPositions = tokenizer
-				.tokenListWithPos(sourceCode.toCharArray());
-		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
-		final List<String> codeTokens = Lists.newArrayList(tokenPositions
-				.values());
-
-		final VariableBindingFinder bindingFinder = new VariableBindingFinder(
-				positionToIndex);
+	public Set<Set<ASTNode>> getNameBindings(final ASTNode node) {
+		final VariableBindingFinder bindingFinder = new VariableBindingFinder();
 		node.accept(bindingFinder);
 
-		final List<NameBinding> bindings = Lists.newArrayList();
-		for (final Entry<Integer, List<Integer>> variable : bindingFinder.variableBinding
+		final Set<Set<ASTNode>> nameBindings = Sets.newHashSet();
+		for (final Entry<Integer, List<ASTNode>> variableBindings : bindingFinder.variableBinding
 				.entrySet()) {
-			final NameBinding binding = new NameBinding(variable.getValue(),
-					codeTokens);
-			bindings.add(binding);
+			final Set<ASTNode> boundNodes = Sets.newIdentityHashSet();
+			boundNodes.addAll(variableBindings.getValue());
+			nameBindings.add(boundNodes);
 		}
-
-		return bindings;
+		return nameBindings;
 	}
 
 }

@@ -8,7 +8,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
+import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -23,11 +23,11 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import codemining.java.codeutils.JavaASTExtractor;
-import codemining.java.codeutils.JavaTokenizer;
-import codemining.languagetools.NameBinding;
+import codemining.languagetools.TokenNameBinding;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Retrieve the variable bindings, given an ASTNode. This finds exact bindings
@@ -45,37 +45,29 @@ public class JavaExactVariableBindingsExtractor extends
 	 * 
 	 */
 	private class VariableBindingFinder extends ASTVisitor {
-
-		private final Map<Integer, Integer> positionToIndex;
-
 		/**
 		 * Map of variables (represented as bindings) to all token positions
 		 * where the variable is referenced.
 		 */
-		Map<IVariableBinding, List<Integer>> variableScope = Maps
+		Map<IVariableBinding, List<ASTNode>> variableScope = Maps
 				.newIdentityHashMap();
 
-		VariableBindingFinder(final Map<Integer, Integer> positionToIndex) {
-			this.positionToIndex = positionToIndex;
-		}
-
 		private void addBinding(final IVariableBinding binding) {
-			variableScope.put(binding, Lists.<Integer> newArrayList());
+			variableScope.put(binding, Lists.<ASTNode> newArrayList());
 		}
 
 		/**
 		 * @param binding
 		 */
 		private void addBindingData(final IVariableBinding binding,
-				final int position) {
+				final ASTNode nameNode) {
 			if (binding == null) {
 				return; // Sorry, cannot do anything.
 			}
-			final int tokenIdx = checkNotNull(positionToIndex.get(position));
-			final List<Integer> thisVarBindings = checkNotNull(
+			final List<ASTNode> thisVarBindings = checkNotNull(
 					variableScope.get(binding),
 					"Binding was not previously found");
-			thisVarBindings.add(tokenIdx);
+			thisVarBindings.add(nameNode);
 		}
 
 		/**
@@ -103,8 +95,7 @@ public class JavaExactVariableBindingsExtractor extends
 		public boolean visit(final SimpleName node) {
 			final IBinding binding = node.resolveBinding();
 			if (variableScope.containsKey(binding)) {
-				addBindingData((IVariableBinding) binding,
-						node.getStartPosition());
+				addBindingData((IVariableBinding) binding, node);
 			}
 			return true;
 		}
@@ -163,32 +154,22 @@ public class JavaExactVariableBindingsExtractor extends
 	}
 
 	@Override
-	public List<NameBinding> getNameBindings(final ASTNode node,
-			final String sourceCode) {
-		final JavaTokenizer tokenizer = new JavaTokenizer();
-		final SortedMap<Integer, String> tokenPositions = tokenizer
-				.tokenListWithPos(sourceCode.toCharArray());
-		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
-		final List<String> codeTokens = Lists.newArrayList(tokenPositions
-				.values());
-
-		final VariableBindingFinder bindingFinder = new VariableBindingFinder(
-				positionToIndex);
+	public Set<Set<ASTNode>> getNameBindings(final ASTNode node) {
+		final VariableBindingFinder bindingFinder = new VariableBindingFinder();
 		node.accept(bindingFinder);
 
-		final List<NameBinding> bindings = Lists.newArrayList();
-		for (final Entry<IVariableBinding, List<Integer>> variable : bindingFinder.variableScope
+		final Set<Set<ASTNode>> nameBindings = Sets.newHashSet();
+		for (final Entry<IVariableBinding, List<ASTNode>> variableBindings : bindingFinder.variableScope
 				.entrySet()) {
-			final NameBinding binding = new NameBinding(variable.getValue(),
-					codeTokens);
-			bindings.add(binding);
+			final Set<ASTNode> boundNodes = Sets.newIdentityHashSet();
+			boundNodes.addAll(variableBindings.getValue());
+			nameBindings.add(boundNodes);
 		}
-
-		return bindings;
+		return nameBindings;
 	}
 
 	@Override
-	public List<NameBinding> getNameBindings(final String code) {
+	public List<TokenNameBinding> getNameBindings(final String code) {
 		throw new UnsupportedOperationException(
 				"Partial snippets cannot be resolved due to the "
 						+ "lack of support from Eclipse JDT. Consider using the approximate binding extractor.");

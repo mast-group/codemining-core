@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import codemining.java.codeutils.EclipseASTExtractorTest;
-import codemining.languagetools.NameBinding;
+import codemining.languagetools.TokenNameBinding;
 
 public class JavaMethodBindingExtractorTest {
 
@@ -40,14 +40,14 @@ public class JavaMethodBindingExtractorTest {
 	public void testClassLevelBindings() throws IOException {
 		final JavaMethodBindingExtractor jame = new JavaMethodBindingExtractor();
 
-		final List<NameBinding> classMethodBindings = jame
+		final List<TokenNameBinding> classMethodBindings = jame
 				.getNameBindings(classContent);
 
 		JavaExactVariableBindingsExtractorTest
 				.checkAllBindings(classMethodBindings);
 		assertEquals(classMethodBindings.size(), 8);
 
-		final List<NameBinding> classMethodBindings2 = jame
+		final List<TokenNameBinding> classMethodBindings2 = jame
 				.getNameBindings(classContent2);
 		JavaExactVariableBindingsExtractorTest
 				.checkAllBindings(classMethodBindings2);

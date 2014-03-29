@@ -8,6 +8,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -18,7 +19,7 @@ import com.google.common.collect.Lists;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public class NameBinding implements Serializable {
+public class TokenNameBinding implements Serializable {
 	private static final long serialVersionUID = 2020613810485746430L;
 
 	/**
@@ -29,13 +30,13 @@ public class NameBinding implements Serializable {
 	/**
 	 * The positions in sourceCodeTokens that contain the given name.
 	 */
-	public final List<Integer> nameIndexes;
+	public final Set<Integer> nameIndexes;
 
-	public NameBinding(final List<Integer> nameIndexes,
+	public TokenNameBinding(final Set<Integer> nameIndexes,
 			final List<String> sourceCodeTokens) {
 		checkArgument(nameIndexes.size() > 0);
 		checkArgument(sourceCodeTokens.size() > 0);
-		this.nameIndexes = Collections.unmodifiableList(nameIndexes);
+		this.nameIndexes = Collections.unmodifiableSet(nameIndexes);
 		this.sourceCodeTokens = Collections.unmodifiableList(sourceCodeTokens);
 	}
 
@@ -50,7 +51,7 @@ public class NameBinding implements Serializable {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final NameBinding other = (NameBinding) obj;
+		final TokenNameBinding other = (TokenNameBinding) obj;
 		if (nameIndexes == null) {
 			if (other.nameIndexes != null) {
 				return false;
@@ -80,16 +81,17 @@ public class NameBinding implements Serializable {
 	 * @param name
 	 * @return
 	 */
-	public NameBinding renameTo(final String name) {
+	public TokenNameBinding renameTo(final String name) {
 		final List<String> renamedCode = Lists.newArrayList(sourceCodeTokens);
 		for (final int position : nameIndexes) {
 			renamedCode.set(position, name);
 		}
-		return new NameBinding(nameIndexes, renamedCode);
+		return new TokenNameBinding(nameIndexes, renamedCode);
 	}
 
 	@Override
 	public String toString() {
-		return sourceCodeTokens.get(nameIndexes.get(0)) + nameIndexes;
+		return sourceCodeTokens.get(nameIndexes.iterator().next())
+				+ nameIndexes;
 	}
 }

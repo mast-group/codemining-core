@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import codemining.java.codeutils.EclipseASTExtractorTest;
-import codemining.languagetools.NameBinding;
+import codemining.languagetools.TokenNameBinding;
 
 public class JavaApproximateVariableBindingExtractorTest {
 
@@ -47,18 +47,18 @@ public class JavaApproximateVariableBindingExtractorTest {
 		final JavaApproximateVariableBindingExtractor jabe = new JavaApproximateVariableBindingExtractor();
 		final JavaExactVariableBindingsExtractor jbe = new JavaExactVariableBindingsExtractor();
 
-		final List<NameBinding> classVariableBindings = jabe
+		final List<TokenNameBinding> classVariableBindings = jabe
 				.getNameBindings(classContent);
-		final List<NameBinding> classVariableBindingsExact = jbe
+		final List<TokenNameBinding> classVariableBindingsExact = jbe
 				.getNameBindings(classContent);
 
 		JavaExactVariableBindingsExtractorTest
 				.checkAllBindings(classVariableBindings);
 		assertEquals(classVariableBindings.size(), 5);
 
-		final List<NameBinding> classVariableBindings2 = jabe
+		final List<TokenNameBinding> classVariableBindings2 = jabe
 				.getNameBindings(classContent2);
-		final List<NameBinding> classVariableBindings2Exact = jbe
+		final List<TokenNameBinding> classVariableBindings2Exact = jbe
 				.getNameBindings(classContent2);
 
 		assertEquals(classVariableBindings2.size(), 9);
@@ -70,7 +70,7 @@ public class JavaApproximateVariableBindingExtractorTest {
 	@Test
 	public void testMethodBinding() {
 		final JavaApproximateVariableBindingExtractor jabe = new JavaApproximateVariableBindingExtractor();
-		final List<NameBinding> methodVariableBindings = jabe
+		final List<TokenNameBinding> methodVariableBindings = jabe
 				.getNameBindings(methodContent);
 		JavaExactVariableBindingsExtractorTest
 				.checkAllBindings(methodVariableBindings);

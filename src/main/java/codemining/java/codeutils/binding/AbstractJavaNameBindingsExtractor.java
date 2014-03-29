@@ -6,16 +6,20 @@ package codemining.java.codeutils.binding;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import codemining.java.codeutils.JavaASTExtractor;
+import codemining.java.codeutils.JavaTokenizer;
 import codemining.languagetools.INameBindingsExtractor;
-import codemining.languagetools.NameBinding;
+import codemining.languagetools.TokenNameBinding;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * A name bindings extractor interface for Java.
@@ -25,6 +29,39 @@ import com.google.common.collect.Maps;
  */
 public abstract class AbstractJavaNameBindingsExtractor implements
 		INameBindingsExtractor {
+
+	/**
+	 * Get the token bindings given the ASTNode bindings and the source code
+	 * positions.
+	 * 
+	 * @param sourceCode
+	 * @param nodeBindings
+	 * @return
+	 */
+	public static List<TokenNameBinding> getTokenBindings(
+			final String sourceCode, final Set<Set<ASTNode>> nodeBindings) {
+		final JavaTokenizer tokenizer = new JavaTokenizer();
+		final SortedMap<Integer, String> tokenPositions = tokenizer
+				.tokenListWithPos(sourceCode.toCharArray());
+		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
+		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
+
+		final List<TokenNameBinding> bindings = Lists.newArrayList();
+
+		for (final Set<ASTNode> boundName : nodeBindings) {
+			final List<Integer> boundPositions = Lists.newArrayList();
+			for (final ASTNode name : boundName) {
+				// Convert position to token index and add
+				final int tokenIdx = positionToIndex.get(name
+						.getStartPosition());
+				boundPositions.add(tokenIdx);
+			}
+			bindings.add(new TokenNameBinding(Sets.newTreeSet(boundPositions),
+					tokens));
+		}
+
+		return bindings;
+	}
 
 	/**
 	 * Return the token index for the given position.
@@ -48,7 +85,17 @@ public abstract class AbstractJavaNameBindingsExtractor implements
 	}
 
 	/**
-	 * Get the name bindings for the given ASTNode.
+	 * Return a set of sets of SimpleName ASTNode objects that are bound
+	 * together
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public abstract Set<Set<ASTNode>> getNameBindings(final ASTNode node);
+
+	/**
+	 * Get the name bindings for the given ASTNode. This assumes that the
+	 * ASTNode has been produced by the sourceCode, code with no variation.
 	 * 
 	 * @param node
 	 *            the ASTNode where bindings will be computed.
@@ -56,17 +103,21 @@ public abstract class AbstractJavaNameBindingsExtractor implements
 	 *            the sourceCode from which the ASTNode has been extracted.
 	 * @return
 	 */
-	public abstract List<NameBinding> getNameBindings(final ASTNode node,
-			final String sourceCode);
+	public final List<TokenNameBinding> getNameBindings(final ASTNode node,
+			final String sourceCode) {
+		final Set<Set<ASTNode>> nodeBindings = getNameBindings(node);
+		return getTokenBindings(sourceCode, nodeBindings);
+	}
 
 	@Override
-	public List<NameBinding> getNameBindings(final File f) throws IOException {
+	public List<TokenNameBinding> getNameBindings(final File f)
+			throws IOException {
 		final JavaASTExtractor ex = createExtractor();
 		return getNameBindings(ex.getAST(f), FileUtils.readFileToString(f));
 	}
 
 	@Override
-	public List<NameBinding> getNameBindings(final String code) {
+	public List<TokenNameBinding> getNameBindings(final String code) {
 		final JavaASTExtractor ex = createExtractor();
 		try {
 			return getNameBindings(ex.getBestEffortAstNode(code), code);
