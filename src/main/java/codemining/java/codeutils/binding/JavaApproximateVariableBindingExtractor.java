@@ -178,5 +178,4 @@ public class JavaApproximateVariableBindingExtractor extends
 		}
 		return nameBindings;
 	}
-
 }

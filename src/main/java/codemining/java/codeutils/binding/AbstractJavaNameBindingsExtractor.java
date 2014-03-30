@@ -14,11 +14,14 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 import codemining.java.codeutils.JavaASTExtractor;
 import codemining.java.codeutils.JavaTokenizer;
-import codemining.languagetools.INameBindingsExtractor;
+import codemining.languagetools.AbstractNameBindingsExtractor;
+import codemining.languagetools.ResolvedSourceCode;
 import codemining.languagetools.TokenNameBinding;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
@@ -27,8 +30,35 @@ import com.google.common.collect.Sets;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public abstract class AbstractJavaNameBindingsExtractor implements
-		INameBindingsExtractor {
+public abstract class AbstractJavaNameBindingsExtractor extends
+		AbstractNameBindingsExtractor {
+
+	public static ResolvedSourceCode getResolvedSourceCode(
+			final String sourceCode, final Set<Set<ASTNode>> nodeBindings) {
+		final JavaTokenizer tokenizer = new JavaTokenizer();
+		final SortedMap<Integer, String> tokenPositions = tokenizer
+				.tokenListWithPos(sourceCode.toCharArray());
+		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
+		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
+
+		final Multimap<String, TokenNameBinding> bindings = ArrayListMultimap
+				.create();
+
+		for (final Set<ASTNode> boundName : nodeBindings) {
+			final List<Integer> boundPositions = Lists.newArrayList();
+			for (final ASTNode name : boundName) {
+				// Convert position to token index and add
+				final int tokenIdx = positionToIndex.get(name
+						.getStartPosition());
+				boundPositions.add(tokenIdx);
+			}
+			bindings.put(tokens.get(boundPositions.get(0)),
+					new TokenNameBinding(Sets.newTreeSet(boundPositions),
+							tokens));
+		}
+
+		return new ResolvedSourceCode(tokens, bindings);
+	}
 
 	/**
 	 * Get the token bindings given the ASTNode bindings and the source code
@@ -121,6 +151,25 @@ public abstract class AbstractJavaNameBindingsExtractor implements
 		final JavaASTExtractor ex = createExtractor();
 		try {
 			return getNameBindings(ex.getBestEffortAstNode(code), code);
+		} catch (final Exception e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	@Override
+	public ResolvedSourceCode getResolvedSourceCode(final File f)
+			throws IOException {
+		final JavaASTExtractor ex = createExtractor();
+		return getResolvedSourceCode(FileUtils.readFileToString(f),
+				getNameBindings(ex.getAST(f)));
+	}
+
+	@Override
+	public ResolvedSourceCode getResolvedSourceCode(final String code) {
+		final JavaASTExtractor ex = createExtractor();
+		try {
+			return getResolvedSourceCode(code,
+					getNameBindings(ex.getBestEffortAstNode(code)));
 		} catch (final Exception e) {
 			throw new IllegalArgumentException(e);
 		}

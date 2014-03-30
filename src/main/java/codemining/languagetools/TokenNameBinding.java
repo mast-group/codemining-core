@@ -69,6 +69,10 @@ public class TokenNameBinding implements Serializable {
 		return true;
 	}
 
+	public String getName() {
+		return sourceCodeTokens.get(nameIndexes.iterator().next());
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(sourceCodeTokens, nameIndexes);
@@ -91,7 +95,6 @@ public class TokenNameBinding implements Serializable {
 
 	@Override
 	public String toString() {
-		return sourceCodeTokens.get(nameIndexes.iterator().next())
-				+ nameIndexes;
+		return getName() + nameIndexes;
 	}
 }
