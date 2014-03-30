@@ -50,7 +50,7 @@ public class JavaApproximateVariableBindingExtractor extends
 		 * Map of variables (represented with their ids) to all token positions
 		 * where the variable is referenced.
 		 */
-		Map<Integer, List<ASTNode>> variableBinding = Maps.newIdentityHashMap();
+		Map<Integer, List<ASTNode>> variableBinding = Maps.newTreeMap();
 
 		/**
 		 * Add the binding to the current scope.

@@ -42,7 +42,7 @@ public class JavaApproximateTypeInferencer {
 		 * Map of variables (represented with their ids) to all token positions
 		 * where the variable is referenced.
 		 */
-		Map<Integer, List<ASTNode>> variableBinding = Maps.newIdentityHashMap();
+		Map<Integer, List<ASTNode>> variableBinding = Maps.newTreeMap();
 		/**
 		 * Contains the types of the variables at each scope.
 		 */
