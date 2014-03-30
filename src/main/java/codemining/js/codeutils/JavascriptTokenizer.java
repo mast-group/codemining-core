@@ -3,8 +3,13 @@
  */
 package codemining.js.codeutils;
 
-import codemining.languagetools.ITokenizer;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -12,12 +17,10 @@ import org.eclipse.wst.jsdt.core.compiler.ITerminalSymbols;
 import org.eclipse.wst.jsdt.core.compiler.InvalidInputException;
 import org.eclipse.wst.jsdt.internal.core.util.PublicScanner;
 
+import codemining.languagetools.ITokenizer;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
-import java.util.List;
-import java.util.SortedMap;
-import java.util.logging.Logger;
 
 /**
  * A JavaScript code tokenizer.
@@ -32,12 +35,6 @@ public class JavascriptTokenizer implements ITokenizer {
 	 */
 	private static final long serialVersionUID = -4017631753468670347L;
 
-	/**
-	 * 
-	 */
-	public JavascriptTokenizer() {
-	}
-
 	private static final Logger LOGGER = Logger
 			.getLogger(JavascriptTokenizer.class.getName());
 
@@ -50,8 +47,14 @@ public class JavascriptTokenizer implements ITokenizer {
 	public static final String IDENTIFIER_ID = Integer
 			.toString(ITerminalSymbols.TokenNameIdentifier);
 
+	/**
+	 * 
+	 */
+	public JavascriptTokenizer() {
+	}
+
 	@Override
-	public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		// TODO Duplicate Code
 		final PublicScanner scanner = new PublicScanner();
 		final SortedMap<Integer, FullToken> tokens = Maps.newTreeMap();
@@ -70,7 +73,7 @@ public class JavascriptTokenizer implements ITokenizer {
 					final int position = scanner.getCurrentTokenStartPosition();
 					tokens.put(position,
 							new FullToken(nxtToken, Integer.toString(token)));
-				} catch (InvalidInputException e) {
+				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());
@@ -104,7 +107,7 @@ public class JavascriptTokenizer implements ITokenizer {
 	}
 
 	@Override
-	public List<FullToken> getTokenListFromCode(char[] code) {
+	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final List<FullToken> tokens = Lists.newArrayList();
 		tokens.add(new FullToken(SENTENCE_START, SENTENCE_START));
 		final PublicScanner scanner = new PublicScanner();
@@ -120,14 +123,21 @@ public class JavascriptTokenizer implements ITokenizer {
 
 				tokens.add(new FullToken(stripTokenIfNeeded(nxtToken), Integer
 						.toString(token)));
-			} catch (InvalidInputException e) {
+			} catch (final InvalidInputException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
-			} catch (StringIndexOutOfBoundsException e) {
+			} catch (final StringIndexOutOfBoundsException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 			}
 		} while (!scanner.atEnd());
 		tokens.add(new FullToken(SENTENCE_END, SENTENCE_END));
 		return tokens;
+	}
+
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/**
@@ -161,14 +171,21 @@ public class JavascriptTokenizer implements ITokenizer {
 						scanner.getCurrentTokenString());
 
 				tokens.add(stripTokenIfNeeded(nxtToken));
-			} catch (InvalidInputException e) {
+			} catch (final InvalidInputException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
-			} catch (StringIndexOutOfBoundsException e) {
+			} catch (final StringIndexOutOfBoundsException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 			}
 		} while (!scanner.atEnd());
 		tokens.add(SENTENCE_END);
 		return tokens;
+	}
+
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/*
@@ -194,7 +211,7 @@ public class JavascriptTokenizer implements ITokenizer {
 							scanner.getCurrentTokenString());
 					final int position = scanner.getCurrentTokenStartPosition();
 					tokens.put(position, stripTokenIfNeeded(nxtToken));
-				} catch (InvalidInputException e) {
+				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());

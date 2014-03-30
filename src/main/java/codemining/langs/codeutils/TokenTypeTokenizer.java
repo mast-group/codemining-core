@@ -25,12 +25,13 @@ public class TokenTypeTokenizer extends AbstractJygmentsTokenizer {
 	 * @param fileSuffix
 	 * @throws ResolutionException
 	 */
-	public TokenTypeTokenizer(String fileSuffix) throws ResolutionException {
+	public TokenTypeTokenizer(final String fileSuffix)
+			throws ResolutionException {
 		super(fileSuffix);
 	}
 
 	@Override
-	public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		final Iterable<Token> tokens = lexer.getTokens(new String(code));
 		final SortedMap<Integer, FullToken> tokensWithPos = Maps.newTreeMap();
 		tokensWithPos.put(-1, new FullToken(SENTENCE_START, SENTENCE_START));
@@ -57,7 +58,7 @@ public class TokenTypeTokenizer extends AbstractJygmentsTokenizer {
 	}
 
 	@Override
-	public List<FullToken> getTokenListFromCode(char[] code) {
+	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final Iterable<Token> tokens = lexer.getTokens(new String(code));
 		final List<FullToken> toks = Lists.newArrayList();
 		toks.add(new FullToken(SENTENCE_START, SENTENCE_START));

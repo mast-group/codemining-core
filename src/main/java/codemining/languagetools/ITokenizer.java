@@ -1,5 +1,7 @@
 package codemining.languagetools;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.SortedMap;
@@ -106,6 +108,15 @@ public interface ITokenizer extends Serializable {
 	List<FullToken> getTokenListFromCode(final char[] code);
 
 	/**
+	 * Get the list of tokens from the code.
+	 * 
+	 * @param code
+	 * @return
+	 */
+	List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException;
+
+	/**
 	 * Tokenize some code.
 	 * 
 	 * @param code
@@ -113,6 +124,14 @@ public interface ITokenizer extends Serializable {
 	 * @return a list of tokens
 	 */
 	List<String> tokenListFromCode(final char[] code);
+
+	/**
+	 * Tokenize code given a file.
+	 * 
+	 * @param codeFile
+	 * @return
+	 */
+	List<String> tokenListFromCode(final File codeFile) throws IOException;
 
 	/**
 	 * Return a list of tokens along with their positions.

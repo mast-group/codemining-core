@@ -5,11 +5,14 @@ package codemining.java.codeutils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -186,6 +189,14 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 		return tokens;
 	}
 
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		// TODO Get ast through the file
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
 	/**
 	 * Convert the numeric id of a node to its textual representation.
 	 * 
@@ -213,6 +224,14 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 			tokens.add(token.getValue().token);
 		}
 		return tokens;
+	}
+
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		// TODO Get the ast directly from the file.
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/*

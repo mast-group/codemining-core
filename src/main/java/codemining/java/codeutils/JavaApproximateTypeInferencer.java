@@ -3,22 +3,23 @@
  */
 package codemining.java.codeutils;
 
-import java.io.File;
-import java.io.IOException;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.SuperFieldAccess;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -27,109 +28,182 @@ import com.google.common.collect.Maps;
  */
 public class JavaApproximateTypeInferencer {
 
-	private class TypeInferencer extends ASTVisitor {
+	private static class TypeInferencer extends ASTVisitor {
+		private int nextDeclarId = 0;
+
+		/**
+		 * Map the names that are defined in each ast node, with their
+		 * respective ids.
+		 */
+		private final Map<ASTNode, Map<String, Integer>> variableNames = Maps
+				.newIdentityHashMap();
+
+		/**
+		 * Map of variables (represented with their ids) to all token positions
+		 * where the variable is referenced.
+		 */
+		Map<Integer, List<ASTNode>> variableBinding = Maps.newIdentityHashMap();
+		/**
+		 * Contains the types of the variables at each scope.
+		 */
+		Map<Integer, String> variableTypes = Maps.newTreeMap();
+
+		/**
+		 * Add the binding to the current scope.
+		 * 
+		 * @param scopeBindings
+		 * @param name
+		 */
+		private void addBinding(final ASTNode node, final String name,
+				final String type) {
+			final int bindingId = nextDeclarId;
+			nextDeclarId++;
+			variableNames.get(node).put(name, bindingId);
+			variableNames.get(node.getParent()).put(name, bindingId);
+			variableBinding.put(bindingId, Lists.<ASTNode> newArrayList());
+			variableTypes.put(bindingId, type);
+		}
+
+		/**
+		 * Add the binding data for the given name at the given scope and
+		 * position.
+		 */
+		private void addBindingData(final String name, final ASTNode nameNode,
+				final Map<String, Integer> scopeBindings) {
+			// Get varId or abort
+			final Integer variableId = scopeBindings.get(name);
+			if (variableId == null || !variableBinding.containsKey(variableId)) {
+				return;
+			}
+			variableBinding.get(variableId).add(nameNode);
+		}
 
 		@Override
-		public boolean visit(FieldDeclaration node) {
-			final String type = node.getType().toString();
-			for (Object fragment : node.fragments()) {
+		public void preVisit(final ASTNode node) {
+			final ASTNode parent = node.getParent();
+			if (parent != null && variableNames.containsKey(parent)) {
+				// inherit all variables in parent scope
+				final Map<String, Integer> bindingsCopy = Maps.newTreeMap();
+				for (final Entry<String, Integer> binding : variableNames.get(
+						parent).entrySet()) {
+					bindingsCopy.put(binding.getKey(), binding.getValue());
+				}
+
+				variableNames.put(node, bindingsCopy);
+			} else {
+				// Start from scratch
+				variableNames.put(node, Maps.<String, Integer> newTreeMap());
+			}
+			super.preVisit(node);
+		}
+
+		/**
+		 * Looks for field declarations (i.e. class member variables).
+		 */
+		@Override
+		public boolean visit(final FieldDeclaration node) {
+			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
-				fieldTypeMap.put(frag.getName().getIdentifier(), type);
-				variables.put(frag.getName().getStartPosition(), type);
+				addBinding(node, frag.getName().getIdentifier(), node.getType()
+						.toString());
 			}
-			return super.visit(node);
+			return true;
 		}
 
+		/**
+		 * Visits {@link SimpleName} AST nodes. Resolves the binding of the
+		 * simple name and looks for it in the {@link #variableScope} map. If
+		 * the binding is found, this is a reference to a variable.
+		 * 
+		 * @param node
+		 *            the node to visit
+		 */
 		@Override
-		public boolean visit(MethodDeclaration node) {
-			methods.put(node.getName().getStartPosition(), node.getName()
-					.getIdentifier());
-			return super.visit(node);
+		public boolean visit(final SimpleName node) {
+			addBindingData(node.getIdentifier(), node, variableNames.get(node));
+			return true;
 		}
 
+		/**
+		 * Looks for Method Parameters.
+		 */
 		@Override
-		public boolean visit(MethodInvocation node) {
-			methods.put(node.getName().getStartPosition(), node.getName()
-					.getIdentifier());
-			return super.visit(node);
+		public boolean visit(final SingleVariableDeclaration node) {
+			addBinding(node, node.getName().getIdentifier(), node.getType()
+					.toString());
+			return true;
 		}
 
+		/**
+		 * Looks for variables declared in for loops.
+		 */
 		@Override
-		public boolean visit(SimpleName node) {
-			// TODO Sloppy: are all simple names variables?? (NO)
-			final String type = variableTypeMap.get(node.getIdentifier());
-			if (type != null) {
-				variables.put(node.getStartPosition(), type);
-			}
-
-			return super.visit(node);
-		}
-
-		@Override
-		public boolean visit(SingleVariableDeclaration node) {
-			final String type = node.getType().toString();
-			variableTypeMap.put(node.getName().getIdentifier(), type);
-			variables.put(node.getName().getStartPosition(), type);
-			return false;
-		}
-
-		@Override
-		public boolean visit(SuperFieldAccess node) {
-			// We don't know anything about this either...
-			return false;
-		}
-
-		@Override
-		public boolean visit(VariableDeclarationStatement node) {
-			final String type = node.getType().toString();
-			for (Object fragment : node.fragments()) {
+		public boolean visit(final VariableDeclarationExpression node) {
+			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
-				variableTypeMap.put(frag.getName().getIdentifier(), type);
-				variables.put(frag.getName().getStartPosition(), type);
+				addBinding(node, frag.getName().getIdentifier(), node.getType()
+						.toString());
 			}
-			return super.visit(node);
+			return true;
+		}
+
+		/**
+		 * Looks for local variable declarations. For every declaration of a
+		 * variable, the parent {@link Block} denoting the variable's scope is
+		 * stored in {@link #variableScope} map.
+		 * 
+		 * @param node
+		 *            the node to visit
+		 */
+		@Override
+		public boolean visit(final VariableDeclarationStatement node) {
+			for (final Object fragment : node.fragments()) {
+				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
+				addBinding(node, frag.getName().getIdentifier(), node.getType()
+						.toString());
+			}
+			return true;
 		}
 	}
 
-	public static void main(String[] args) throws IOException {
+	private final ASTNode rootNode;
 
-		final JavaASTExtractor ex = new JavaASTExtractor(false);
-		final CompilationUnit cu = ex.getAST(new File(args[0]));
-		final JavaApproximateTypeInferencer typeInf = new JavaApproximateTypeInferencer(
-				cu);
-		typeInf.infer();
-		System.out.println(typeInf.variableTypeMap);
-		System.out.println(typeInf.fieldTypeMap);
-		System.out.println(typeInf.variables);
-		System.out.println(typeInf.methods);
-	}
-
-	final ASTNode rootNode;
-
-	final Map<String, String> variableTypeMap = Maps.newHashMap();
-	final Map<String, String> fieldTypeMap = Maps.newHashMap();
-
-	// A map of the positions where methods are.
-	final Map<Integer, String> methods = Maps.newTreeMap();
-
-	final Map<Integer, String> variables = Maps.newTreeMap();
+	private final TypeInferencer inferencer = new TypeInferencer();
 
 	public JavaApproximateTypeInferencer(final ASTNode node) {
 		rootNode = node;
 	}
 
 	public Map<String, String> getVariableTypes() {
-		final Map<String, String> vars = Maps.newHashMap(variableTypeMap);
-		vars.putAll(variableTypeMap);
-		return vars;
+		final Map<String, String> variableNameTypes = Maps.newTreeMap();
+		for (final Entry<Integer, List<ASTNode>> variableBinding : inferencer.variableBinding
+				.entrySet()) {
+			final String varType = checkNotNull(inferencer.variableTypes
+					.get(variableBinding.getKey()));
+			for (final ASTNode node : variableBinding.getValue()) {
+				variableNameTypes.put(node.toString(), varType);
+			}
+		}
+		return variableNameTypes;
 	}
 
 	public Map<Integer, String> getVariableTypesAtPosition() {
-		return variables;
+		final Map<Integer, String> variableTypes = Maps.newTreeMap();
+
+		for (final Entry<Integer, List<ASTNode>> variableBinding : inferencer.variableBinding
+				.entrySet()) {
+			final String varType = checkNotNull(inferencer.variableTypes
+					.get(variableBinding.getKey()));
+			for (final ASTNode node : variableBinding.getValue()) {
+				variableTypes.put(node.getStartPosition(), varType);
+			}
+		}
+
+		return variableTypes;
 	}
 
 	public void infer() {
-		rootNode.accept(new TypeInferencer());
+		rootNode.accept(inferencer);
 	}
 
 }

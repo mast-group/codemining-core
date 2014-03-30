@@ -3,9 +3,12 @@
  */
 package codemining.langs.codeutils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 
@@ -51,6 +54,13 @@ public abstract class AbstractJygmentsTokenizer implements ITokenizer {
 		return codeFilter;
 	}
 
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
 	public abstract String getTokenString(final Token tok);
 
 	/**
@@ -74,7 +84,7 @@ public abstract class AbstractJygmentsTokenizer implements ITokenizer {
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
-	public List<String> tokenListFromCode(char[] code) {
+	public List<String> tokenListFromCode(final char[] code) {
 		final Iterable<Token> tokens = lexer.getTokens(new String(code));
 		final List<String> toks = Lists.newArrayList();
 		toks.add(SENTENCE_START);
@@ -88,13 +98,20 @@ public abstract class AbstractJygmentsTokenizer implements ITokenizer {
 		return toks;
 	}
 
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override
-	public SortedMap<Integer, String> tokenListWithPos(char[] code) {
+	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final Iterable<Token> tokens = lexer.getTokens(new String(code));
 		final SortedMap<Integer, String> tokensWithPos = Maps.newTreeMap();
 		tokensWithPos.put(-1, SENTENCE_START);

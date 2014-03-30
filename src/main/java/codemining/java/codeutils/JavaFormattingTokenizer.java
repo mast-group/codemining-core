@@ -1,9 +1,12 @@
 package codemining.java.codeutils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 
 import codemining.languagetools.ITokenizer;
@@ -68,6 +71,13 @@ public class JavaFormattingTokenizer implements ITokenizer {
 	}
 
 	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
+	@Override
 	public List<String> tokenListFromCode(final char[] code) {
 		// TODO Duplicate
 		final List<String> list = Lists.newArrayList();
@@ -82,6 +92,13 @@ public class JavaFormattingTokenizer implements ITokenizer {
 		}
 		list.add(original.get(original.size() - 1));
 		return list;
+	}
+
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	@Override

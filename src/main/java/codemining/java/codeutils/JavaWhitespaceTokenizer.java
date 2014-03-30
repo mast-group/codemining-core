@@ -5,6 +5,8 @@ package codemining.java.codeutils;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,6 +15,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -197,6 +200,13 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			return tokens;
 		}
 
+		@Override
+		public List<FullToken> getTokenListFromCode(final File codeFile)
+				throws IOException {
+			return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+					.toCharArray());
+		}
+
 		public List<AnnotatedToken> getTokensWithWidthData(final char[] code) {
 			final List<AnnotatedToken> tokens = Lists.newArrayList();
 			tokens.add(new AnnotatedToken(SENTENCE_START, SENTENCE_START, 0, 0));
@@ -267,6 +277,13 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			} while (!scanner.atEnd());
 			tokens.add(SENTENCE_END);
 			return tokens;
+		}
+
+		@Override
+		public List<String> tokenListFromCode(final File codeFile)
+				throws IOException {
+			return tokenListFromCode(FileUtils.readFileToString(codeFile)
+					.toCharArray());
 		}
 
 		/*
@@ -522,6 +539,13 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		return tok.getTokenListFromCode(code);
 	}
 
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
 	public List<AnnotatedToken> getTokensWithWidthData(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.getTokensWithWidthData(code);
@@ -531,6 +555,13 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 	public List<String> tokenListFromCode(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.tokenListFromCode(code);
+	}
+
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	@Override

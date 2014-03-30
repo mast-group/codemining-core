@@ -45,6 +45,9 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 				.create();
 
 		for (final Set<ASTNode> boundName : nodeBindings) {
+			if (boundName.isEmpty()) {
+				continue;
+			}
 			final List<Integer> boundPositions = Lists.newArrayList();
 			for (final ASTNode name : boundName) {
 				// Convert position to token index and add

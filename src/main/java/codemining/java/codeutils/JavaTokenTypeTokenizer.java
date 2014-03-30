@@ -3,12 +3,13 @@
  */
 package codemining.java.codeutils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -42,14 +43,6 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 	public static final String COMMENT_LINE = "COMMENT_LINE";
 	public static final String COMMENT_BLOCK = "COMMENT_BLOCK";
 
-	public JavaTokenTypeTokenizer() {
-		this.tokenizeComments = false;
-	}
-
-	public JavaTokenTypeTokenizer(final boolean tokenizeComments) {
-		this.tokenizeComments = tokenizeComments;
-	}
-
 	/**
 	 * @param token
 	 * @return
@@ -63,8 +56,25 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 				|| token == ITerminalSymbols.TokenNameDoubleLiteral;
 	}
 
+	public JavaTokenTypeTokenizer() {
+		this.tokenizeComments = false;
+	}
+
+	public JavaTokenTypeTokenizer(final boolean tokenizeComments) {
+		this.tokenizeComments = tokenizeComments;
+	}
+
+	/**
+	 * @return
+	 */
+	private PublicScanner createScanner() {
+		final PublicScanner scanner = new PublicScanner();
+		scanner.tokenizeComments = tokenizeComments;
+		return scanner;
+	}
+
 	@Override
-	public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		final SortedMap<Integer, FullToken> tokens = Maps.newTreeMap();
 		tokens.put(-1, new FullToken(SENTENCE_START, SENTENCE_START));
 		tokens.put(Integer.MAX_VALUE, new FullToken(SENTENCE_END, SENTENCE_END));
@@ -95,22 +105,13 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 										""));
 					}
 
-				} catch (InvalidInputException e) {
+				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());
 
 		}
 		return tokens;
-	}
-
-	/**
-	 * @return
-	 */
-	private PublicScanner createScanner() {
-		final PublicScanner scanner = new PublicScanner();
-		scanner.tokenizeComments = tokenizeComments;
-		return scanner;
 	}
 
 	@Override
@@ -155,12 +156,19 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 							""));
 				}
 
-			} catch (InvalidInputException e) {
+			} catch (final InvalidInputException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 			}
 		} while (!scanner.atEnd());
 		tokens.add(new FullToken(SENTENCE_END, SENTENCE_END));
 		return tokens;
+	}
+
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/*
@@ -193,12 +201,19 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 					tokens.add(scanner.getCurrentTokenString());
 				}
 
-			} catch (InvalidInputException e) {
+			} catch (final InvalidInputException e) {
 				LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 			}
 		} while (!scanner.atEnd());
 		tokens.add(SENTENCE_END);
 		return tokens;
+	}
+
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/*
@@ -235,7 +250,7 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 						tokens.put(position, scanner.getCurrentTokenString());
 					}
 
-				} catch (InvalidInputException e) {
+				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());

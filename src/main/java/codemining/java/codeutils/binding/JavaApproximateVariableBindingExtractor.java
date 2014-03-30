@@ -36,7 +36,7 @@ public class JavaApproximateVariableBindingExtractor extends
 	 * them.
 	 * 
 	 */
-	private class VariableBindingFinder extends ASTVisitor {
+	private static class VariableBindingFinder extends ASTVisitor {
 		private int nextDeclarId = 0;
 
 		/**
@@ -74,7 +74,7 @@ public class JavaApproximateVariableBindingExtractor extends
 				final Map<String, Integer> scopeBindings) {
 			// Get varId or abort
 			final Integer variableId = scopeBindings.get(name);
-			if (variableId == null) {
+			if (variableId == null || !variableBinding.containsKey(variableId)) {
 				return;
 			}
 			variableBinding.get(variableId).add(nameNode);

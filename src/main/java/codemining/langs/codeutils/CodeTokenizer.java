@@ -3,8 +3,12 @@
  */
 package codemining.langs.codeutils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
+
+import org.apache.commons.io.FileUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,12 +30,12 @@ public class CodeTokenizer extends AbstractJygmentsTokenizer {
 	 * @param fileSuffix
 	 * @throws ResolutionException
 	 */
-	public CodeTokenizer(String fileSuffix) throws ResolutionException {
+	public CodeTokenizer(final String fileSuffix) throws ResolutionException {
 		super(fileSuffix);
 	}
 
 	@Override
-	public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		final Iterable<Token> tokens = lexer.getTokens(new String(code));
 		final SortedMap<Integer, FullToken> tokensWithPos = Maps.newTreeMap();
 		tokensWithPos.put(-1, new FullToken(SENTENCE_START, SENTENCE_START));
@@ -53,12 +57,12 @@ public class CodeTokenizer extends AbstractJygmentsTokenizer {
 	}
 
 	@Override
-	public FullToken getTokenFromString(String token) {
+	public FullToken getTokenFromString(final String token) {
 		return getTokenListFromCode(token.toCharArray()).get(1);
 	}
 
 	@Override
-	public List<FullToken> getTokenListFromCode(char[] code) {
+	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final Iterable<Token> tokens = lexer.getTokens(new String(code));
 		final List<FullToken> toks = Lists.newArrayList();
 		toks.add(new FullToken(SENTENCE_START, SENTENCE_START));
@@ -70,6 +74,13 @@ public class CodeTokenizer extends AbstractJygmentsTokenizer {
 		}
 		toks.add(new FullToken(SENTENCE_END, SENTENCE_END));
 		return toks;
+	}
+
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/*

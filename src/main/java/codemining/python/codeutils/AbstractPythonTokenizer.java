@@ -1,8 +1,11 @@
 package codemining.python.codeutils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.python.pydev.parser.grammarcommon.ITokenManager;
@@ -24,8 +27,6 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 
 	private static final long serialVersionUID = 5009530263783901964L;
 
-	public abstract ITokenManager getPythonTokenizer(final FastCharStream stream);
-
 	/**
 	 * A filter for the files being tokenized.
 	 */
@@ -37,7 +38,7 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 	}
 
 	@Override
-	public SortedMap<Integer, FullToken> fullTokenListWithPos(char[] code) {
+	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		final FastCharStream stream = new FastCharStream(code);
 		final ITokenManager mng = getPythonTokenizer(stream);
 		final SortedMap<Integer, FullToken> tokens = Maps.newTreeMap();
@@ -68,8 +69,10 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 		return "94"; // TODO from not hard coded?
 	}
 
+	public abstract ITokenManager getPythonTokenizer(final FastCharStream stream);
+
 	@Override
-	public FullToken getTokenFromString(String token) {
+	public FullToken getTokenFromString(final String token) {
 		final FastCharStream stream = new FastCharStream(token.toCharArray());
 		final ITokenManager mng = getPythonTokenizer(stream);
 		final Token pyToken = mng.getNextToken();
@@ -94,18 +97,25 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 		return tokens;
 	}
 
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
 	/**
 	 * @param nextToken
 	 * @return
 	 */
-	public boolean shouldAdd(Token nextToken) {
+	public boolean shouldAdd(final Token nextToken) {
 		// disallow whitespace, indent and docstrings
 		return nextToken.kind != 6 && nextToken.kind != 14
 				&& nextToken.kind != 13 && nextToken.kind != 115;
 	}
 
 	@Override
-	public List<String> tokenListFromCode(char[] code) {
+	public List<String> tokenListFromCode(final char[] code) {
 		final FastCharStream stream = new FastCharStream(code);
 		final ITokenManager mng = getPythonTokenizer(stream);
 		final List<String> tokens = Lists.newArrayList();
@@ -122,7 +132,14 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 	}
 
 	@Override
-	public SortedMap<Integer, String> tokenListWithPos(char[] code) {
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
+	@Override
+	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final FastCharStream stream = new FastCharStream(code);
 		final ITokenManager mng = getPythonTokenizer(stream);
 		final SortedMap<Integer, String> tokens = Maps.newTreeMap();

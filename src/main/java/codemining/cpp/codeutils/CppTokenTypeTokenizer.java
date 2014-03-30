@@ -3,9 +3,12 @@
  */
 package codemining.cpp.codeutils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.NotImplementedException;
@@ -23,7 +26,7 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis
  * 
  */
-public class CppTypeTokenizer implements ITokenizer {
+public class CppTokenTypeTokenizer implements ITokenizer {
 
 	private static final long serialVersionUID = 8831418782380291930L;
 
@@ -125,6 +128,13 @@ public class CppTypeTokenizer implements ITokenizer {
 		return tokens;
 	}
 
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
 	/**
 	 * @param token
 	 * @param nxtToken
@@ -171,6 +181,13 @@ public class CppTypeTokenizer implements ITokenizer {
 
 		tokens.add(SENTENCE_END);
 		return tokens;
+	}
+
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/*

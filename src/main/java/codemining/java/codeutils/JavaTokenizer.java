@@ -1,9 +1,12 @@
 package codemining.java.codeutils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -127,6 +130,13 @@ public class JavaTokenizer implements ITokenizer {
 		return tokens;
 	}
 
+	@Override
+	public List<FullToken> getTokenListFromCode(final File codeFile)
+			throws IOException {
+		return getTokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
+	}
+
 	/**
 	 * Create the scanner.
 	 * 
@@ -177,6 +187,13 @@ public class JavaTokenizer implements ITokenizer {
 		} while (!scanner.atEnd());
 		tokens.add(SENTENCE_END);
 		return tokens;
+	}
+
+	@Override
+	public List<String> tokenListFromCode(final File codeFile)
+			throws IOException {
+		return tokenListFromCode(FileUtils.readFileToString(codeFile)
+				.toCharArray());
 	}
 
 	/*
