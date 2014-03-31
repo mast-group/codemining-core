@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
@@ -120,6 +121,13 @@ public class JavaApproximateTypeInferencer {
 		 */
 		@Override
 		public boolean visit(final SimpleName node) {
+			if (node.getParent().getNodeType() == ASTNode.METHOD_INVOCATION) {
+				final MethodInvocation invocation = (MethodInvocation) node
+						.getParent();
+				if (invocation.getName() == node) {
+					return true;
+				}
+			}
 			addBindingData(node.getIdentifier(), node, variableNames.get(node));
 			return true;
 		}
