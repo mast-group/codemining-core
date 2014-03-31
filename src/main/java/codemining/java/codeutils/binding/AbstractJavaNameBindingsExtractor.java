@@ -21,7 +21,6 @@ import codemining.languagetools.TokenNameBinding;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
@@ -41,7 +40,7 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
 		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
 
-		final Multimap<String, TokenNameBinding> bindings = ArrayListMultimap
+		final ArrayListMultimap<String, TokenNameBinding> bindings = ArrayListMultimap
 				.create();
 
 		for (final Set<ASTNode> boundName : nodeBindings) {

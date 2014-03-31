@@ -8,7 +8,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ArrayListMultimap;
 
 /**
  * A full piece of source code that has the variable bindings resolved. The
@@ -21,7 +21,7 @@ import com.google.common.collect.Multimap;
 public class ResolvedSourceCode {
 	public final List<String> codeTokens;
 
-	private final Multimap<String, TokenNameBinding> variableBindings;
+	private final ArrayListMultimap<String, TokenNameBinding> variableBindings;
 
 	/**
 	 * Assumes that the variable bindings use the same (as in ==) token list.
@@ -30,7 +30,7 @@ public class ResolvedSourceCode {
 	 * @param variableBindings
 	 */
 	public ResolvedSourceCode(final List<String> codeTokens,
-			final Multimap<String, TokenNameBinding> variableBindings) {
+			final ArrayListMultimap<String, TokenNameBinding> variableBindings) {
 		this.codeTokens = codeTokens;
 		this.variableBindings = variableBindings;
 	}
