@@ -43,13 +43,13 @@ public class JavaMethodBindingExtractorTest {
 		final List<TokenNameBinding> classMethodBindings = jame
 				.getNameBindings(classContent);
 
-		JavaExactVariableBindingsExtractorTest
+		BindingTester
 				.checkAllBindings(classMethodBindings);
 		assertEquals(classMethodBindings.size(), 8);
 
 		final List<TokenNameBinding> classMethodBindings2 = jame
 				.getNameBindings(classContent2);
-		JavaExactVariableBindingsExtractorTest
+		BindingTester
 				.checkAllBindings(classMethodBindings2);
 
 		assertEquals(classMethodBindings2.size(), 7);

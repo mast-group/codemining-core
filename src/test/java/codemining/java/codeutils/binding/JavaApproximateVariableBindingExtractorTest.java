@@ -52,7 +52,7 @@ public class JavaApproximateVariableBindingExtractorTest {
 		final List<TokenNameBinding> classVariableBindingsExact = jbe
 				.getNameBindings(classContent);
 
-		JavaExactVariableBindingsExtractorTest
+		BindingTester
 				.checkAllBindings(classVariableBindings);
 		assertEquals(classVariableBindings.size(), 5);
 
@@ -72,7 +72,7 @@ public class JavaApproximateVariableBindingExtractorTest {
 		final JavaApproximateVariableBindingExtractor jabe = new JavaApproximateVariableBindingExtractor();
 		final List<TokenNameBinding> methodVariableBindings = jabe
 				.getNameBindings(methodContent);
-		JavaExactVariableBindingsExtractorTest
+		BindingTester
 				.checkAllBindings(methodVariableBindings);
 		assertEquals(methodVariableBindings.size(), 3);
 
