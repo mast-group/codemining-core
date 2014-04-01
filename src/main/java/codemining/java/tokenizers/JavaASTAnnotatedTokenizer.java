@@ -1,7 +1,7 @@
 /**
  * 
  */
-package codemining.java.codeutils;
+package codemining.java.tokenizers;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -18,6 +18,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 
+import codemining.java.codeutils.JavaASTExtractor;
 import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ParseType;
 import codemining.util.SettingsLoader;

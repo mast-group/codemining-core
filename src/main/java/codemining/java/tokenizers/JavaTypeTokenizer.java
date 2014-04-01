@@ -1,7 +1,7 @@
 /**
  * 
  */
-package codemining.java.codeutils;
+package codemining.java.tokenizers;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +16,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import codemining.java.codeutils.JavaASTExtractor;
+import codemining.java.codeutils.JavaApproximateTypeInferencer;
 import codemining.languagetools.ITokenizer;
 
 import com.google.common.collect.Lists;

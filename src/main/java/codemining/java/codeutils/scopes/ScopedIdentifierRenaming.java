@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import codemining.java.codeutils.JavaASTExtractor;
-import codemining.java.codeutils.JavaTokenizer;
+import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;

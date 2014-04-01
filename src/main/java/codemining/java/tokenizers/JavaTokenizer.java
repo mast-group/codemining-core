@@ -1,4 +1,4 @@
-package codemining.java.codeutils;
+package codemining.java.tokenizers;
 
 import java.io.File;
 import java.io.IOException;

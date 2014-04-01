@@ -1,7 +1,7 @@
 /**
  * 
  */
-package codemining.java.codeutils;
+package codemining.java.tokenizers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 
+import codemining.java.codeutils.IdentifierPerType;
 import codemining.util.SettingsLoader;
 
 /**

@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.junit.Test;
 
+import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 
 public class TokenizeJavaCodeTest {

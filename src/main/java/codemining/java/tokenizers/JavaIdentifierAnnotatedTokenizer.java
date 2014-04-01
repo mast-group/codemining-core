@@ -1,7 +1,7 @@
 /**
  * 
  */
-package codemining.java.codeutils;
+package codemining.java.tokenizers;
 
 import java.util.List;
 import java.util.Map;
@@ -12,6 +12,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.util.PublicScanner;
+
+import codemining.java.codeutils.IdentifierPerType;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

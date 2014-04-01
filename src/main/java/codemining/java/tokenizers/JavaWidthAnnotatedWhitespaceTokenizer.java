@@ -1,7 +1,7 @@
 /**
  * 
  */
-package codemining.java.codeutils;
+package codemining.java.tokenizers;
 
 import java.util.List;
 import java.util.Map.Entry;

@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import codemining.java.codeutils.JavaASTExtractor;
-import codemining.java.codeutils.JavaTokenizer;
+import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.AbstractNameBindingsExtractor;
 import codemining.languagetools.ResolvedSourceCode;
 import codemining.languagetools.TokenNameBinding;

@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.junit.Before;
 import org.junit.Test;
 
+import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ParseType;
 
 /**

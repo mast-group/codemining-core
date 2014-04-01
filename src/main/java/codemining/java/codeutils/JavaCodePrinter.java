@@ -9,6 +9,7 @@ import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 
+import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ColoredToken;
 import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ITokenizer.FullToken;

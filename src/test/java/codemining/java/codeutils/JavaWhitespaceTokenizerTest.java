@@ -12,6 +12,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import codemining.java.tokenizers.JavaWhitespaceTokenizer;
+
 import com.google.common.collect.Lists;
 
 /**
