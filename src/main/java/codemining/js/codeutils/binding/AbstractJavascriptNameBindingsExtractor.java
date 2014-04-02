@@ -24,7 +24,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
- * A name bindings extractor interface for Java.
+ * A name bindings extractor interface for Javascript.
  * 
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
