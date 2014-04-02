@@ -32,11 +32,11 @@ public class JavascriptASTExtractorTest {
 	public void setUp() throws IOException {
 		classContent = FileUtils.readFileToString(new File(
 				JavascriptASTExtractorTest.class.getClassLoader()
-						.getResource("SampleJavascript.txt").getFile()));
+						.getResource("SampleJavascript2.txt").getFile()));
 
 		methodContent = FileUtils.readFileToString(new File(
 				JavascriptASTExtractorTest.class.getClassLoader()
-						.getResource("SampleMethod.txt").getFile()));
+						.getResource("SampleJavascript.txt").getFile()));
 	}
 
 	/**
