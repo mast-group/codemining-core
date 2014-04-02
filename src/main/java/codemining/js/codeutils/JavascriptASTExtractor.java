@@ -18,7 +18,6 @@ import org.eclipse.wst.jsdt.core.dom.ASTVisitor;
 import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 
-import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ParseType;
 
@@ -236,7 +235,7 @@ public class JavascriptASTExtractor {
 	 * @return
 	 */
 	private String normalizeCode(final char[] snippet) {
-		final List<String> tokens = (new JavaTokenizer())
+		final List<String> tokens = (new JavascriptTokenizer())
 				.tokenListFromCode(snippet);
 
 		final StringBuffer bf = new StringBuffer();
