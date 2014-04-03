@@ -1,15 +1,12 @@
 /**
  * 
  */
-package codemining.java.codeutils.scopes;
+package codemining.languagetools;
 
 import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-
-import codemining.languagetools.ParseType;
-import codemining.languagetools.Scope;
 
 import com.google.common.collect.Multimap;
 

@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import codemining.java.codeutils.JavaASTExtractor;
+import codemining.languagetools.IScopeExtractor;
 import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 import codemining.languagetools.Scope.ScopeType;

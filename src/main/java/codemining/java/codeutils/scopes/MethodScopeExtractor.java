@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import codemining.java.codeutils.JavaASTExtractor;
+import codemining.languagetools.IScopeExtractor;
 import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 import codemining.languagetools.Scope.ScopeType;
