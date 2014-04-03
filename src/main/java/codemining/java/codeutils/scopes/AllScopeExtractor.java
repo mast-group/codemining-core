@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 
+import codemining.languagetools.IScopeExtractor;
 import codemining.languagetools.ParseType;
 import codemining.languagetools.Scope;
 

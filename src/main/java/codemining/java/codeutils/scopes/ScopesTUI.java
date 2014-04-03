@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import codemining.java.codeutils.scopes.AllScopeExtractor.AllScopeSnippetExtractor;
+import codemining.languagetools.IScopeExtractor;
 
 public class ScopesTUI {
 
