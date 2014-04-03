@@ -20,6 +20,84 @@ import org.eclipse.wst.jsdt.core.compiler.ITerminalSymbols;
 import org.eclipse.wst.jsdt.core.compiler.InvalidInputException;
 import org.eclipse.wst.jsdt.core.dom.ASTNode;
 import org.eclipse.wst.jsdt.core.dom.ASTVisitor;
+import org.eclipse.wst.jsdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.wst.jsdt.core.dom.ArrayAccess;
+import org.eclipse.wst.jsdt.core.dom.ArrayCreation;
+import org.eclipse.wst.jsdt.core.dom.ArrayInitializer;
+import org.eclipse.wst.jsdt.core.dom.ArrayType;
+import org.eclipse.wst.jsdt.core.dom.Assignment;
+import org.eclipse.wst.jsdt.core.dom.Block;
+import org.eclipse.wst.jsdt.core.dom.BlockComment;
+import org.eclipse.wst.jsdt.core.dom.BooleanLiteral;
+import org.eclipse.wst.jsdt.core.dom.BreakStatement;
+import org.eclipse.wst.jsdt.core.dom.CatchClause;
+import org.eclipse.wst.jsdt.core.dom.CharacterLiteral;
+import org.eclipse.wst.jsdt.core.dom.ClassInstanceCreation;
+import org.eclipse.wst.jsdt.core.dom.ConditionalExpression;
+import org.eclipse.wst.jsdt.core.dom.ConstructorInvocation;
+import org.eclipse.wst.jsdt.core.dom.ContinueStatement;
+import org.eclipse.wst.jsdt.core.dom.DoStatement;
+import org.eclipse.wst.jsdt.core.dom.EmptyStatement;
+import org.eclipse.wst.jsdt.core.dom.EnhancedForStatement;
+import org.eclipse.wst.jsdt.core.dom.ExpressionStatement;
+import org.eclipse.wst.jsdt.core.dom.FieldAccess;
+import org.eclipse.wst.jsdt.core.dom.FieldDeclaration;
+import org.eclipse.wst.jsdt.core.dom.ForInStatement;
+import org.eclipse.wst.jsdt.core.dom.ForStatement;
+import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
+import org.eclipse.wst.jsdt.core.dom.FunctionExpression;
+import org.eclipse.wst.jsdt.core.dom.FunctionInvocation;
+import org.eclipse.wst.jsdt.core.dom.FunctionRef;
+import org.eclipse.wst.jsdt.core.dom.FunctionRefParameter;
+import org.eclipse.wst.jsdt.core.dom.IfStatement;
+import org.eclipse.wst.jsdt.core.dom.ImportDeclaration;
+import org.eclipse.wst.jsdt.core.dom.InferredType;
+import org.eclipse.wst.jsdt.core.dom.InfixExpression;
+import org.eclipse.wst.jsdt.core.dom.Initializer;
+import org.eclipse.wst.jsdt.core.dom.InstanceofExpression;
+import org.eclipse.wst.jsdt.core.dom.JSdoc;
+import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
+import org.eclipse.wst.jsdt.core.dom.LabeledStatement;
+import org.eclipse.wst.jsdt.core.dom.LineComment;
+import org.eclipse.wst.jsdt.core.dom.ListExpression;
+import org.eclipse.wst.jsdt.core.dom.MemberRef;
+import org.eclipse.wst.jsdt.core.dom.Modifier;
+import org.eclipse.wst.jsdt.core.dom.NullLiteral;
+import org.eclipse.wst.jsdt.core.dom.NumberLiteral;
+import org.eclipse.wst.jsdt.core.dom.ObjectLiteral;
+import org.eclipse.wst.jsdt.core.dom.ObjectLiteralField;
+import org.eclipse.wst.jsdt.core.dom.PackageDeclaration;
+import org.eclipse.wst.jsdt.core.dom.ParenthesizedExpression;
+import org.eclipse.wst.jsdt.core.dom.PostfixExpression;
+import org.eclipse.wst.jsdt.core.dom.PrefixExpression;
+import org.eclipse.wst.jsdt.core.dom.PrimitiveType;
+import org.eclipse.wst.jsdt.core.dom.QualifiedName;
+import org.eclipse.wst.jsdt.core.dom.QualifiedType;
+import org.eclipse.wst.jsdt.core.dom.RegularExpressionLiteral;
+import org.eclipse.wst.jsdt.core.dom.ReturnStatement;
+import org.eclipse.wst.jsdt.core.dom.SimpleName;
+import org.eclipse.wst.jsdt.core.dom.SimpleType;
+import org.eclipse.wst.jsdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.wst.jsdt.core.dom.StringLiteral;
+import org.eclipse.wst.jsdt.core.dom.SuperConstructorInvocation;
+import org.eclipse.wst.jsdt.core.dom.SuperFieldAccess;
+import org.eclipse.wst.jsdt.core.dom.SuperMethodInvocation;
+import org.eclipse.wst.jsdt.core.dom.SwitchCase;
+import org.eclipse.wst.jsdt.core.dom.SwitchStatement;
+import org.eclipse.wst.jsdt.core.dom.TagElement;
+import org.eclipse.wst.jsdt.core.dom.TextElement;
+import org.eclipse.wst.jsdt.core.dom.ThisExpression;
+import org.eclipse.wst.jsdt.core.dom.ThrowStatement;
+import org.eclipse.wst.jsdt.core.dom.TryStatement;
+import org.eclipse.wst.jsdt.core.dom.TypeDeclaration;
+import org.eclipse.wst.jsdt.core.dom.TypeDeclarationStatement;
+import org.eclipse.wst.jsdt.core.dom.TypeLiteral;
+import org.eclipse.wst.jsdt.core.dom.UndefinedLiteral;
+import org.eclipse.wst.jsdt.core.dom.VariableDeclarationExpression;
+import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.wst.jsdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.wst.jsdt.core.dom.WhileStatement;
+import org.eclipse.wst.jsdt.core.dom.WithStatement;
 
 /**
  * For a given range, finds the covered node and the covering node. Ported to
@@ -43,7 +121,7 @@ public final class NodeFinder {
 			this.fEnd = offset + length;
 		}
 
-		public boolean preVisit2(final ASTNode node) {
+		public boolean visitNode(final ASTNode node) {
 			final int nodeStart = node.getStartPosition();
 			final int nodeEnd = nodeStart + node.getLength();
 			if (nodeEnd < this.fStart || this.fEnd < nodeStart) {
@@ -87,6 +165,404 @@ public final class NodeFinder {
 		public ASTNode getCoveringNode() {
 			return this.fCoveringNode;
 		}
+
+		/*
+		 * Call visitNode on each type-specific visitor. This is ugly but
+		 * unavoidable as the Javascript ASTVisitor doesn't implement boolean
+		 * preVisit2(ASTNode node) and visiting every ASTNode with preVisit() is
+		 * far too slow.
+		 */
+
+		@Override
+		public boolean visit(final AnonymousClassDeclaration node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ArrayAccess node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ArrayCreation node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ArrayInitializer node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ArrayType node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final Assignment node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final Block node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final BlockComment node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final BooleanLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final BreakStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final CatchClause node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final CharacterLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final RegularExpressionLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ClassInstanceCreation node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final JavaScriptUnit node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ConditionalExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ConstructorInvocation node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ContinueStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final DoStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final EmptyStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final EnhancedForStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ExpressionStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final FieldAccess node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final FieldDeclaration node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ForStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ForInStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final IfStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ImportDeclaration node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final InferredType node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final InfixExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final InstanceofExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final Initializer node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final JSdoc node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final LabeledStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final LineComment node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ListExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final MemberRef node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final FunctionRef node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final FunctionRefParameter node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final FunctionDeclaration node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final FunctionInvocation node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final Modifier node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final NullLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final UndefinedLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final NumberLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final PackageDeclaration node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ParenthesizedExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final PostfixExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final PrefixExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final PrimitiveType node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final QualifiedName node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final QualifiedType node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ReturnStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SimpleName node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SimpleType node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SingleVariableDeclaration node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final StringLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SuperConstructorInvocation node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SuperFieldAccess node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SuperMethodInvocation node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SwitchCase node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final SwitchStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final TagElement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final TextElement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ThisExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ThrowStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final TryStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final TypeDeclaration node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final TypeDeclarationStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final TypeLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final VariableDeclarationExpression node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final VariableDeclarationStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final VariableDeclarationFragment node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final WhileStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final WithStatement node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ObjectLiteral node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final ObjectLiteralField node) {
+			return visitNode(node);
+		}
+
+		@Override
+		public boolean visit(final FunctionExpression node) {
+			return visitNode(node);
+		}
+
 	}
 
 	/**
