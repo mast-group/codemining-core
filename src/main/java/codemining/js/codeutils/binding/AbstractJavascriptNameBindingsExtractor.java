@@ -152,7 +152,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 	public List<TokenNameBinding> getNameBindings(final String code) {
 		final JavascriptASTExtractor ex = createExtractor();
 		try {
-			return getNameBindings(ex.getBestEffortAstNode(code), code);
+			return getNameBindings(ex.getCompilationUnitAstNode(code), code);
 		} catch (final Exception e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -171,7 +171,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 		final JavascriptASTExtractor ex = createExtractor();
 		try {
 			return getResolvedSourceCode(code,
-					getNameBindings(ex.getBestEffortAstNode(code)));
+					getNameBindings(ex.getCompilationUnitAstNode(code)));
 		} catch (final Exception e) {
 			throw new IllegalArgumentException(e);
 		}

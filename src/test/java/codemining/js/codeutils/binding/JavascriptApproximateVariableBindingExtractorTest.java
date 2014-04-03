@@ -16,8 +16,6 @@ import codemining.java.codeutils.binding.BindingTester;
 import codemining.js.codeutils.JavascriptASTExtractorTest;
 import codemining.languagetools.TokenNameBinding;
 
-// FIXME SampleJavascript fails yet again because the ASTVisitor prints
-// === as +, can we fix this ourselves somehow?
 public class JavascriptApproximateVariableBindingExtractorTest {
 
 	private static <T> void allAreContained(final Collection<T> collection,

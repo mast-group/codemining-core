@@ -6,7 +6,6 @@ package codemining.js.codeutils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
@@ -18,7 +17,6 @@ import org.eclipse.wst.jsdt.core.dom.ASTVisitor;
 import org.eclipse.wst.jsdt.core.dom.FunctionDeclaration;
 import org.eclipse.wst.jsdt.core.dom.JavaScriptUnit;
 
-import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ParseType;
 
 /**
@@ -191,21 +189,13 @@ public class JavascriptASTExtractor {
 	}
 
 	/**
-	 * Get the AST by making the best effort to guess the type of the node.
+	 * Get the AST and assume the type of the node is a compilation unit.
 	 * 
 	 * @throws Exception
 	 */
-	public final ASTNode getBestEffortAstNode(final char[] content)
+	public final ASTNode getCompilationUnitAstNode(final char[] content)
 			throws Exception {
-		for (final ParseType parseType : ParseType.values()) {
-			final ASTNode node = getASTNode(content, parseType);
-			if (normalizeCode(node.toString().toCharArray()).equals(
-					normalizeCode(content))) {
-				return node;
-			}
-		}
-		throw new Exception(
-				"Code snippet could not be recognized as any of the known types");
+		return getASTNode(content, ParseType.COMPILATION_UNIT);
 	}
 
 	/**
@@ -216,9 +206,9 @@ public class JavascriptASTExtractor {
 	 * @throws Exception
 	 * @throws IOException
 	 */
-	public final ASTNode getBestEffortAstNode(final String fileContent)
+	public final ASTNode getCompilationUnitAstNode(final String fileContent)
 			throws Exception {
-		return getBestEffortAstNode(fileContent.toCharArray());
+		return getCompilationUnitAstNode(fileContent.toCharArray());
 	}
 
 	private final FunctionDeclaration getFirstFunctionDeclaration(
@@ -226,30 +216,6 @@ public class JavascriptASTExtractor {
 		final TopFunctionRetriever visitor = new TopFunctionRetriever();
 		node.accept(visitor);
 		return visitor.topDcl;
-	}
-
-	/**
-	 * Hacky way to compare snippets.
-	 * 
-	 * @param snippet
-	 * @return
-	 */
-	private String normalizeCode(final char[] snippet) {
-		final List<String> tokens = (new JavascriptTokenizer())
-				.tokenListFromCode(snippet);
-
-		final StringBuffer bf = new StringBuffer();
-		for (final String token : tokens) {
-			if (token.equals(ITokenizer.SENTENCE_START)
-					|| token.equals(ITokenizer.SENTENCE_END)) {
-				continue;
-			} else {
-				bf.append(token);
-			}
-			bf.append(" ");
-		}
-		return bf.toString();
-
 	}
 
 }
