@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ColoredToken;
@@ -39,10 +40,10 @@ public class JavaCodePrinter {
 			"ignoreTokenBackground", true);
 
 	public static final String CSS_STYLE = "<style>\n.line {font-family:monospace; "
-			+ "font: 14px/1.3 \"Source Code Pro\", \"Fira Mono OT\", monospace;white-space:pre;line-height:0px;display:inline;}\n"
+			+ "font: 14px/1.3 \"Source Code Pro\", \"Fira Mono OT\", monospace;white-space:pre;}\n"
 			+ ".line:hover {font-family:monospace; "
-			+ "font: 14px/1.3 \"Source Code Pro\", \"Fira Mono OT\", monospace;white-space:pre;line-height:0px;display:inline; background-color:rgb(240,240,240);}\n"
-			+ ".code { display: block;white-space: pre;}\n" + "</style>";
+			+ "font: 14px/1.3 \"Source Code Pro\", \"Fira Mono OT\", monospace;white-space:pre; background-color:rgb(240,240,240);}\n"
+			+ "</style>";
 
 	public JavaCodePrinter() {
 		jTokenizer = new JavaTokenizer();
@@ -61,7 +62,8 @@ public class JavaCodePrinter {
 	}
 
 	private void addSlack(final String substring, final StringBuffer buf) {
-		for (final char c : substring.toCharArray()) {
+		for (final char c : StringEscapeUtils.escapeHtml(substring)
+				.toCharArray()) {
 			if (c == '\n') {
 				appendLineDiv(buf, true);
 			} else {
@@ -74,9 +76,9 @@ public class JavaCodePrinter {
 	private void appendLineDiv(final StringBuffer buf,
 			final boolean closePrevious) {
 		if (closePrevious) {
-			buf.append("</span>\n");
+			buf.append("<br/></div>\n");
 		}
-		buf.append("<span class='line' id='C" + lineNumber + "'>");
+		buf.append("<div class='line' id='C" + lineNumber + "'>");
 		lineNumber++;
 	}
 
@@ -103,7 +105,7 @@ public class JavaCodePrinter {
 		buf.append("</head>\n<body style='background-color:rgb("
 				+ documentBackgroundColor.getRed() + ","
 				+ documentBackgroundColor.getGreen() + ","
-				+ documentBackgroundColor.getBlue() + ")'><span class='code'>");
+				+ documentBackgroundColor.getBlue() + ")'>");
 		appendLineDiv(buf, false);
 		for (final Entry<Integer, FullToken> entry : toks.entrySet()) {
 			if (i == 0 || entry.getKey() == Integer.MAX_VALUE) {
@@ -118,12 +120,13 @@ public class JavaCodePrinter {
 					+ tok.bgColor.getBlue() + "," + (ignoreTokBG ? "0" : "1")
 					+ "); color:rgb(" + tok.fontColor.getRed() + ","
 					+ tok.fontColor.getGreen() + "," + tok.fontColor.getBlue()
-					+ "); " + tok.extraStyle + "'>" + entry.getValue().token
+					+ "); " + tok.extraStyle + "'>"
+					+ StringEscapeUtils.escapeHtml(entry.getValue().token)
 					+ "</span>");
 			i++;
 			prevPos = entry.getKey() + entry.getValue().token.length();
 		}
-		buf.append("</span></body></html>");
+		buf.append("</div></body></html>");
 		return buf;
 
 	}
