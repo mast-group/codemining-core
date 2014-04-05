@@ -1,4 +1,4 @@
-package codemining.java.codeutils;
+package codemining.languagetools;
 
 import java.awt.Color;
 import java.io.File;
@@ -10,24 +10,21 @@ import java.util.SortedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
-import codemining.java.tokenizers.JavaTokenizer;
-import codemining.languagetools.ColoredToken;
-import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ITokenizer.FullToken;
 import codemining.util.SettingsLoader;
 
 /**
- * Output java code to HTML with optional coloring. Not thread-safe.
+ * Output Java code to HTML with optional coloring. Not thread-safe.
  * 
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public class JavaCodePrinter {
+public class CodePrinter {
 
 	/**
 	 * The tokenizer used to tokenize code.
 	 */
-	final ITokenizer jTokenizer;
+	final ITokenizer tokenizer;
 
 	/**
 	 * The background Color of the output HTML document.
@@ -45,19 +42,9 @@ public class JavaCodePrinter {
 			+ "font: 14px/1.3 \"Source Code Pro\", \"Fira Mono OT\", monospace;white-space:pre; background-color:rgb(240,240,240);}\n"
 			+ "</style>";
 
-	public JavaCodePrinter() {
-		jTokenizer = new JavaTokenizer();
-		documentBackgroundColor = Color.WHITE;
-	}
-
-	public JavaCodePrinter(final Color documentBackgroundColor) {
-		jTokenizer = new JavaTokenizer();
-		this.documentBackgroundColor = documentBackgroundColor;
-	}
-
-	public JavaCodePrinter(final ITokenizer tokenizer,
+	public CodePrinter(final ITokenizer tokenizer,
 			final Color documentBackgroundColor) {
-		this.jTokenizer = tokenizer;
+		this.tokenizer = tokenizer;
 		this.documentBackgroundColor = documentBackgroundColor;
 	}
 
@@ -95,7 +82,7 @@ public class JavaCodePrinter {
 
 		final StringBuffer buf = new StringBuffer();
 
-		final SortedMap<Integer, FullToken> toks = jTokenizer
+		final SortedMap<Integer, FullToken> toks = tokenizer
 				.fullTokenListWithPos(code.toCharArray());
 
 		int i = 0;
