@@ -74,7 +74,7 @@ public class CodePrinter {
 	 * coloredTokens. There should be one-to-one correspondence with the actual
 	 * tokens.
 	 */
-	public StringBuffer writeHTMLwithColors(
+	public StringBuffer getHTMLwithColors(
 			final List<ColoredToken> coloredTokens, final File codeFile)
 			throws IOException, InstantiationException, IllegalAccessException {
 		final String code = FileUtils.readFileToString(codeFile);
