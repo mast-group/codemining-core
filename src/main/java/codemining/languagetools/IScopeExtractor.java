@@ -11,7 +11,9 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import com.google.common.collect.Multimap;
 
 /**
- * A interface for extracting scoped related information.
+ * A interface for extracting scoped related information. Scope extractors
+ * return a multimap that for each scope contains all the identifiers that are
+ * declared there.
  * 
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
