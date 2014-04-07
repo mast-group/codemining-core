@@ -100,14 +100,15 @@ public class JavascriptASTExtractor {
 			srcFilePath = "";
 		}
 
-		// Don't need this for JavaScript
-		// final String[] sourcePathEntries = new String[] { srcFilePath };
-		// final String[] classPathEntries = new String[0];
-		// parser.setEnvironment(classPathEntries, sourcePathEntries, null,
-		// false);
+		// FIXME Need file's project loaded into Eclipse to get bindings
+		// cf. https://bugs.eclipse.org/bugs/show_bug.cgi?id=206391
+		// final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+		// final IProject project = root.getProject(projectName);
+		// parser.setProject(JavaScriptCore.create(project));
 
 		final JavaScriptUnit compilationUnit = (JavaScriptUnit) parser
 				.createAST(null);
+
 		return compilationUnit;
 	}
 
