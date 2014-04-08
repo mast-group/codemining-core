@@ -91,16 +91,8 @@ public class JavascriptASTExtractor {
 
 		parser.setUnitName(file.getAbsolutePath());
 
-		// Heuristic to retrieve source file path
-		final String srcFilePath;
-		if (file.getAbsolutePath().contains("/src")) {
-			srcFilePath = file.getAbsolutePath().substring(0,
-					file.getAbsolutePath().indexOf("src", 0) + 3);
-		} else {
-			srcFilePath = "";
-		}
-
 		// FIXME Need file's project loaded into Eclipse to get bindings
+		// which is only possible automatically if this were an Eclipse plugin
 		// cf. https://bugs.eclipse.org/bugs/show_bug.cgi?id=206391
 		// final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		// final IProject project = root.getProject(projectName);
