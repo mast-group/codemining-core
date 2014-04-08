@@ -145,7 +145,18 @@ public class TokenizerUtils {
 			InvocationTargetException, NoSuchMethodException,
 			SecurityException, ClassNotFoundException {
 		return (ITokenizer) Class.forName(tokenizerClass)
-				.getDeclaredConstructor(String.class).newInstance(tokenizerArguments);
+				.getDeclaredConstructor(String.class)
+				.newInstance(tokenizerArguments);
+	}
+
+	public static ITokenizer tokenizerForClass(final String tokenizerClass,
+			final Boolean tokenizerArguments) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException, NoSuchMethodException,
+			SecurityException, ClassNotFoundException {
+		return (ITokenizer) Class.forName(tokenizerClass)
+				.getDeclaredConstructor(Boolean.TYPE)
+				.newInstance(tokenizerArguments);
 	}
 
 	/**

@@ -5,6 +5,7 @@ package codemining.js.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.logging.Logger;
@@ -31,6 +32,11 @@ import com.google.common.collect.Maps;
 public class JavascriptTokenizer implements ITokenizer {
 
 	/**
+	 * Remembers if the Tokenizer will tokenize comments.
+	 */
+	private final boolean tokenizeComments;
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -4017631753468670347L;
@@ -46,17 +52,80 @@ public class JavascriptTokenizer implements ITokenizer {
 
 	public static final String IDENTIFIER_ID = Integer
 			.toString(ITerminalSymbols.TokenNameIdentifier);
+	public static final String REGEX_ID = Integer
+			.toString(ITerminalSymbols.TokenNameRegExLiteral);
+	public static final String[] STRING_LITERAL_IDs = new String[] {
+			Integer.toString(ITerminalSymbols.TokenNameStringLiteral),
+			Integer.toString(ITerminalSymbols.TokenNameCharacterLiteral) };
+	public static final String[] NUMBER_LITERAL_IDs = new String[] {
+			Integer.toString(ITerminalSymbols.TokenNameDoubleLiteral),
+			Integer.toString(ITerminalSymbols.TokenNameFloatingPointLiteral),
+			Integer.toString(ITerminalSymbols.TokenNameIntegerLiteral),
+			Integer.toString(ITerminalSymbols.TokenNameLongLiteral) };
+	public static final String[] COMMENT_IDs = new String[] {
+			Integer.toString(ITerminalSymbols.TokenNameCOMMENT_BLOCK),
+			Integer.toString(ITerminalSymbols.TokenNameCOMMENT_JAVADOC),
+			Integer.toString(ITerminalSymbols.TokenNameCOMMENT_LINE) };
+	public static final String[] OPERATOR_IDs = new String[] {
+			Integer.toString(ITerminalSymbols.TokenNameAND),
+			Integer.toString(ITerminalSymbols.TokenNameAND_AND),
+			Integer.toString(ITerminalSymbols.TokenNameAND_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameCOLON),
+			Integer.toString(ITerminalSymbols.TokenNameDIVIDE),
+			Integer.toString(ITerminalSymbols.TokenNameDIVIDE_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameEQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameEQUAL_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameEQUAL_EQUAL_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameGREATER),
+			Integer.toString(ITerminalSymbols.TokenNameGREATER_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameLEFT_SHIFT),
+			Integer.toString(ITerminalSymbols.TokenNameLEFT_SHIFT_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameLESS),
+			Integer.toString(ITerminalSymbols.TokenNameLESS_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameMINUS),
+			Integer.toString(ITerminalSymbols.TokenNameMINUS_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameMINUS_MINUS),
+			Integer.toString(ITerminalSymbols.TokenNameMULTIPLY),
+			Integer.toString(ITerminalSymbols.TokenNameMULTIPLY_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameNOT),
+			Integer.toString(ITerminalSymbols.TokenNameNOT_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameNOT_EQUAL_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameOR),
+			Integer.toString(ITerminalSymbols.TokenNameOR_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameOR_OR),
+			Integer.toString(ITerminalSymbols.TokenNamePLUS),
+			Integer.toString(ITerminalSymbols.TokenNamePLUS_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNamePLUS_PLUS),
+			Integer.toString(ITerminalSymbols.TokenNameQUESTION),
+			Integer.toString(ITerminalSymbols.TokenNameREMAINDER),
+			Integer.toString(ITerminalSymbols.TokenNameREMAINDER_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameRIGHT_SHIFT),
+			Integer.toString(ITerminalSymbols.TokenNameRIGHT_SHIFT_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameUNSIGNED_RIGHT_SHIFT),
+			Integer.toString(ITerminalSymbols.TokenNameUNSIGNED_RIGHT_SHIFT_EQUAL),
+			Integer.toString(ITerminalSymbols.TokenNameXOR),
+			Integer.toString(ITerminalSymbols.TokenNameXOR_EQUAL) };
 
 	/**
 	 * 
 	 */
 	public JavascriptTokenizer() {
+		tokenizeComments = false;
+	}
+
+	/**
+	 * @param tokenizeComments
+	 *            if comments should be tokenized
+	 */
+	public JavascriptTokenizer(final boolean tokenizeComments) {
+		this.tokenizeComments = tokenizeComments;
 	}
 
 	@Override
 	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		// TODO Duplicate Code
 		final PublicScanner scanner = new PublicScanner();
+		scanner.tokenizeComments = tokenizeComments;
 		final SortedMap<Integer, FullToken> tokens = Maps.newTreeMap();
 		tokens.put(-1, new FullToken(SENTENCE_START, SENTENCE_START));
 		tokens.put(Integer.MAX_VALUE, new FullToken(SENTENCE_END, SENTENCE_END));
@@ -92,6 +161,26 @@ public class JavascriptTokenizer implements ITokenizer {
 		return IDENTIFIER_ID;
 	}
 
+	public String getRegexType() {
+		return REGEX_ID;
+	}
+
+	public List<String> getStringCharLiteralTypes() {
+		return Arrays.asList(STRING_LITERAL_IDs);
+	}
+
+	public List<String> getNumberLiteralTypes() {
+		return Arrays.asList(NUMBER_LITERAL_IDs);
+	}
+
+	public List<String> getCommentTypes() {
+		return Arrays.asList(COMMENT_IDs);
+	}
+
+	public List<String> getOperatorTypes() {
+		return Arrays.asList(OPERATOR_IDs);
+	}
+
 	@Override
 	public FullToken getTokenFromString(final String token) {
 		if (token.equals(ITokenizer.SENTENCE_START)) {
@@ -111,6 +200,7 @@ public class JavascriptTokenizer implements ITokenizer {
 		final List<FullToken> tokens = Lists.newArrayList();
 		tokens.add(new FullToken(SENTENCE_START, SENTENCE_START));
 		final PublicScanner scanner = new PublicScanner();
+		scanner.tokenizeComments = tokenizeComments;
 		scanner.setSource(code);
 		do {
 			try {
@@ -158,6 +248,7 @@ public class JavascriptTokenizer implements ITokenizer {
 	@Override
 	public List<String> tokenListFromCode(final char[] code) {
 		final PublicScanner scanner = new PublicScanner();
+		scanner.tokenizeComments = tokenizeComments;
 		final List<String> tokens = Lists.newArrayList();
 		tokens.add(SENTENCE_START);
 		scanner.setSource(code);
@@ -196,6 +287,7 @@ public class JavascriptTokenizer implements ITokenizer {
 	@Override
 	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final PublicScanner scanner = new PublicScanner();
+		scanner.tokenizeComments = tokenizeComments;
 		final SortedMap<Integer, String> tokens = Maps.newTreeMap();
 		tokens.put(-1, SENTENCE_START);
 		tokens.put(Integer.MAX_VALUE, SENTENCE_END);
