@@ -78,7 +78,6 @@ public class JavaTokenizer implements ITokenizer {
 			Integer.toString(ITerminalSymbols.TokenNameEQUAL_EQUAL),
 			Integer.toString(ITerminalSymbols.TokenNameGREATER),
 			Integer.toString(ITerminalSymbols.TokenNameGREATER_EQUAL),
-			Integer.toString(ITerminalSymbols.TokenNameLBRACE),
 			Integer.toString(ITerminalSymbols.TokenNameLBRACKET),
 			Integer.toString(ITerminalSymbols.TokenNameLEFT_SHIFT),
 			Integer.toString(ITerminalSymbols.TokenNameLEFT_SHIFT_EQUAL),
@@ -99,7 +98,6 @@ public class JavaTokenizer implements ITokenizer {
 			Integer.toString(ITerminalSymbols.TokenNamePLUS_EQUAL),
 			Integer.toString(ITerminalSymbols.TokenNamePLUS_PLUS),
 			Integer.toString(ITerminalSymbols.TokenNameQUESTION),
-			Integer.toString(ITerminalSymbols.TokenNameRBRACE),
 			Integer.toString(ITerminalSymbols.TokenNameRBRACKET),
 			Integer.toString(ITerminalSymbols.TokenNameREMAINDER),
 			Integer.toString(ITerminalSymbols.TokenNameREMAINDER_EQUAL),
@@ -112,6 +110,11 @@ public class JavaTokenizer implements ITokenizer {
 			Integer.toString(ITerminalSymbols.TokenNameUNSIGNED_RIGHT_SHIFT_EQUAL),
 			Integer.toString(ITerminalSymbols.TokenNameXOR),
 			Integer.toString(ITerminalSymbols.TokenNameXOR_EQUAL) };
+	public static final String[] BRACE_IDs = new String[] {
+			Integer.toString(ITerminalSymbols.TokenNameLBRACE),
+			Integer.toString(ITerminalSymbols.TokenNameRBRACE), };
+	public static final String AT_ID = Integer
+			.toString(ITerminalSymbols.TokenNameAT);
 
 	public JavaTokenizer() {
 		tokenizeComments = false;
@@ -178,6 +181,14 @@ public class JavaTokenizer implements ITokenizer {
 
 	public List<String> getOperatorTypes() {
 		return Arrays.asList(OPERATOR_IDs);
+	}
+
+	public List<String> getBraceTypes() {
+		return Arrays.asList(BRACE_IDs);
+	}
+
+	public String getAtType() {
+		return AT_ID;
 	}
 
 	@Override
@@ -330,4 +341,5 @@ public class JavaTokenizer implements ITokenizer {
 	protected String transformToken(final int tokenType, final String token) {
 		return token;
 	}
+
 }
