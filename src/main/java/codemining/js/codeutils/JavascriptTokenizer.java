@@ -124,8 +124,7 @@ public class JavascriptTokenizer implements ITokenizer {
 	@Override
 	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		// TODO Duplicate Code
-		final PublicScanner scanner = new PublicScanner();
-		scanner.tokenizeComments = tokenizeComments;
+		final PublicScanner scanner = prepareScanner();
 		final SortedMap<Integer, FullToken> tokens = Maps.newTreeMap();
 		tokens.put(-1, new FullToken(SENTENCE_START, SENTENCE_START));
 		tokens.put(Integer.MAX_VALUE, new FullToken(SENTENCE_END, SENTENCE_END));
@@ -199,8 +198,7 @@ public class JavascriptTokenizer implements ITokenizer {
 	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final List<FullToken> tokens = Lists.newArrayList();
 		tokens.add(new FullToken(SENTENCE_START, SENTENCE_START));
-		final PublicScanner scanner = new PublicScanner();
-		scanner.tokenizeComments = tokenizeComments;
+		final PublicScanner scanner = prepareScanner();
 		scanner.setSource(code);
 		do {
 			try {
@@ -231,6 +229,17 @@ public class JavascriptTokenizer implements ITokenizer {
 	}
 
 	/**
+	 * Create the scanner.
+	 * 
+	 * @return
+	 */
+	protected PublicScanner prepareScanner() {
+		final PublicScanner scanner = new PublicScanner();
+		scanner.tokenizeComments = tokenizeComments;
+		return scanner;
+	}
+
+	/**
 	 * @param token
 	 * @return
 	 */
@@ -247,8 +256,7 @@ public class JavascriptTokenizer implements ITokenizer {
 	 */
 	@Override
 	public List<String> tokenListFromCode(final char[] code) {
-		final PublicScanner scanner = new PublicScanner();
-		scanner.tokenizeComments = tokenizeComments;
+		final PublicScanner scanner = prepareScanner();
 		final List<String> tokens = Lists.newArrayList();
 		tokens.add(SENTENCE_START);
 		scanner.setSource(code);
@@ -286,8 +294,7 @@ public class JavascriptTokenizer implements ITokenizer {
 	 */
 	@Override
 	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
-		final PublicScanner scanner = new PublicScanner();
-		scanner.tokenizeComments = tokenizeComments;
+		final PublicScanner scanner = prepareScanner();
 		final SortedMap<Integer, String> tokens = Maps.newTreeMap();
 		tokens.put(-1, SENTENCE_START);
 		tokens.put(Integer.MAX_VALUE, SENTENCE_END);
