@@ -113,8 +113,6 @@ public class JavaTokenizer implements ITokenizer {
 	public static final String[] BRACE_IDs = new String[] {
 			Integer.toString(ITerminalSymbols.TokenNameLBRACE),
 			Integer.toString(ITerminalSymbols.TokenNameRBRACE), };
-	public static final String AT_ID = Integer
-			.toString(ITerminalSymbols.TokenNameAT);
 
 	public JavaTokenizer() {
 		tokenizeComments = false;
@@ -185,10 +183,6 @@ public class JavaTokenizer implements ITokenizer {
 
 	public List<String> getBraceTypes() {
 		return Arrays.asList(BRACE_IDs);
-	}
-
-	public String getAtType() {
-		return AT_ID;
 	}
 
 	@Override

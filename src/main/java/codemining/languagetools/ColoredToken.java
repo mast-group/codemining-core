@@ -7,10 +7,10 @@ import java.awt.Color;
  * 
  */
 public final class ColoredToken {
-	public final Color fontColor;
+	public Color fontColor;
 	public final Color bgColor;
 	public final String token;
-	public final String extraStyle;
+	public String extraStyle;
 
 	/**
 	 * Construct with default bgColor white.
@@ -32,4 +32,13 @@ public final class ColoredToken {
 		this.bgColor = bgColor;
 		this.extraStyle = extraStyle;
 	}
+
+	public void setColor(final Color fontColor) {
+		this.fontColor = fontColor;
+	}
+
+	public void setStyle(final String extraStyle) {
+		this.extraStyle = extraStyle;
+	}
+
 }
