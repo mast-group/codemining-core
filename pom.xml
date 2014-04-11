@@ -62,14 +62,9 @@
 	<version>3.9.1.v20130905-0837</version>
    </dependency>
    <dependency>
-	<groupId>org.eclipse.birt.runtime</groupId>
-	<artifactId>org.eclipse.equinox.common</artifactId>
-	<version>3.6.200.v20130402-1505</version>
-   </dependency>
-     <dependency>
-	<groupId>org.eclipse.birt.runtime</groupId>
-	<artifactId>org.eclipse.core.resources</artifactId>
-	<version>3.8.101.v20130717-0806</version>
+    <groupId>org.eclipse.birt.runtime</groupId>
+    <artifactId>org.eclipse.core.contenttype</artifactId>
+    <version>3.4.200.v20130326-1255</version>
    </dependency>
    <dependency>
     <groupId>org.eclipse.birt.runtime</groupId>
@@ -77,24 +72,34 @@
     <version>3.5.300.v20130429-1813</version>
    </dependency>
    <dependency>
+	<groupId>org.eclipse.birt.runtime</groupId>
+	<artifactId>org.eclipse.core.resources</artifactId>
+	<version>3.8.101.v20130717-0806</version>
+   </dependency>
+   <dependency>
     <groupId>org.eclipse.birt.runtime</groupId>
     <artifactId>org.eclipse.core.runtime</artifactId>
     <version>3.9.0.v20130326-1255</version>
    </dependency>
    <dependency>
-    <groupId>org.eclipse.birt.runtime</groupId>
-    <artifactId>org.eclipse.osgi</artifactId>
-    <version>3.9.1.v20130814-1242</version>
-   </dependency>
-   <dependency>
-    <groupId>org.eclipse.birt.runtime</groupId>
-    <artifactId>org.eclipse.core.contenttype</artifactId>
-    <version>3.4.200.v20130326-1255</version>
+	<groupId>org.eclipse.birt.runtime</groupId>
+	<artifactId>org.eclipse.equinox.common</artifactId>
+	<version>3.6.200.v20130402-1505</version>
    </dependency>
    <dependency>
     <groupId>org.eclipse.birt.runtime</groupId>
     <artifactId>org.eclipse.equinox.preferences</artifactId>
     <version>3.5.100.v20130422-1538</version>
+   </dependency>
+   <dependency>
+    <groupId>org.eclipse.birt.runtime</groupId>
+    <artifactId>org.eclipse.equinox.registry</artifactId>
+    <version>3.5.301.v20130717-1549</version>
+   </dependency>
+   <dependency>
+    <groupId>org.eclipse.birt.runtime</groupId>
+    <artifactId>org.eclipse.osgi</artifactId>
+    <version>3.9.1.v20130814-1242</version>
    </dependency>
    <dependency>
     <groupId>org.eclipe.cdt.core</groupId>
