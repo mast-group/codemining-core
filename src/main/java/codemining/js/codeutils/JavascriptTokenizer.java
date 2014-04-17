@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
+import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.eclipse.wst.jsdt.core.compiler.ITerminalSymbols;
@@ -47,8 +49,9 @@ public class JavascriptTokenizer implements ITokenizer {
 	/**
 	 * A filter for the files being tokenized.
 	 */
-	private final RegexFileFilter javaCodeFilter = new RegexFileFilter(
-			".*\\.js$");
+	private final AbstractFileFilter javaCodeFilter = new AndFileFilter(
+			new RegexFileFilter(".*\\.js$"), new NotFileFilter(
+					new RegexFileFilter(".*\\.min\\.js$")));
 
 	public static final String IDENTIFIER_ID = Integer
 			.toString(ITerminalSymbols.TokenNameIdentifier);
