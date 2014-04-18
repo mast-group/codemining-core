@@ -20,13 +20,13 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis
  * 
  */
-public final class MethodRetriever extends ASTVisitor {
+public final class FunctionRetriever extends ASTVisitor {
 
 	public static Map<String, FunctionDeclaration> getMethodNodes(
 			final File file) throws IOException {
 		final JavascriptASTExtractor astExtractor = new JavascriptASTExtractor(
 				false);
-		final MethodRetriever m = new MethodRetriever();
+		final FunctionRetriever m = new FunctionRetriever();
 		final JavaScriptUnit cu = astExtractor.getAST(file);
 		cu.accept(m);
 		return m.functions;
@@ -36,7 +36,7 @@ public final class MethodRetriever extends ASTVisitor {
 			final String file) throws Exception {
 		final JavascriptASTExtractor astExtractor = new JavascriptASTExtractor(
 				false);
-		final MethodRetriever m = new MethodRetriever();
+		final FunctionRetriever m = new FunctionRetriever();
 		final ASTNode cu = astExtractor.getCompilationUnitAstNode(file);
 		cu.accept(m);
 		return m.functions;
@@ -45,7 +45,7 @@ public final class MethodRetriever extends ASTVisitor {
 	private final Map<String, FunctionDeclaration> functions = Maps
 			.newTreeMap();
 
-	private MethodRetriever() {
+	private FunctionRetriever() {
 
 	}
 
