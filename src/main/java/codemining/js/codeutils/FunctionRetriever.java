@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
  */
 public final class FunctionRetriever extends ASTVisitor {
 
-	public static Map<String, FunctionDeclaration> getMethodNodes(
+	public static Map<String, FunctionDeclaration> getFunctionNodes(
 			final File file) throws IOException {
 		final JavascriptASTExtractor astExtractor = new JavascriptASTExtractor(
 				false);
@@ -32,7 +32,7 @@ public final class FunctionRetriever extends ASTVisitor {
 		return m.functions;
 	}
 
-	public static Map<String, FunctionDeclaration> getMethodNodes(
+	public static Map<String, FunctionDeclaration> getFunctionNodes(
 			final String file) throws Exception {
 		final JavascriptASTExtractor astExtractor = new JavascriptASTExtractor(
 				false);
