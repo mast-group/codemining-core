@@ -22,7 +22,7 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis
  * 
  */
-public class MethodRetriever extends ASTVisitor {
+public final class MethodRetriever extends ASTVisitor {
 
 	public static Map<String, MethodDeclaration> getMethodNodes(final File file)
 			throws IOException {
@@ -42,9 +42,9 @@ public class MethodRetriever extends ASTVisitor {
 		return m.methods;
 	}
 
-	protected final Map<String, MethodDeclaration> methods = Maps.newTreeMap();
+	private final Map<String, MethodDeclaration> methods = Maps.newTreeMap();
 
-	protected MethodRetriever() {
+	private MethodRetriever() {
 
 	}
 

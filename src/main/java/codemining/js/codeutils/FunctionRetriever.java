@@ -20,7 +20,7 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis
  * 
  */
-public class FunctionRetriever extends ASTVisitor {
+public final class FunctionRetriever extends ASTVisitor {
 
 	public static Map<String, FunctionDeclaration> getFunctionNodes(
 			final File file) throws IOException {
@@ -42,10 +42,10 @@ public class FunctionRetriever extends ASTVisitor {
 		return m.functions;
 	}
 
-	protected final Map<String, FunctionDeclaration> functions = Maps
+	private final Map<String, FunctionDeclaration> functions = Maps
 			.newTreeMap();
 
-	protected FunctionRetriever() {
+	private FunctionRetriever() {
 
 	}
 
