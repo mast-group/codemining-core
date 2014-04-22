@@ -5,7 +5,6 @@ package codemining.js.codeutils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.logging.Logger;
@@ -161,26 +160,6 @@ public class JavascriptTokenizer implements ITokenizer {
 	@Override
 	public String getIdentifierType() {
 		return IDENTIFIER_ID;
-	}
-
-	public String getRegexType() {
-		return REGEX_ID;
-	}
-
-	public List<String> getStringCharLiteralTypes() {
-		return Arrays.asList(STRING_LITERAL_IDs);
-	}
-
-	public List<String> getNumberLiteralTypes() {
-		return Arrays.asList(NUMBER_LITERAL_IDs);
-	}
-
-	public List<String> getCommentTypes() {
-		return Arrays.asList(COMMENT_IDs);
-	}
-
-	public List<String> getOperatorTypes() {
-		return Arrays.asList(OPERATOR_IDs);
 	}
 
 	@Override

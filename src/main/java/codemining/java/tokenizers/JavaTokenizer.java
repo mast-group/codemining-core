@@ -2,7 +2,6 @@ package codemining.java.tokenizers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.logging.Logger;
@@ -170,34 +169,6 @@ public class JavaTokenizer implements ITokenizer {
 	@Override
 	public String getIdentifierType() {
 		return IDENTIFIER_ID;
-	}
-
-	public List<String> getKeywordTypeTypes() {
-		return Arrays.asList(KEYWORD_TYPE_IDs);
-	}
-
-	public List<String> getStringCharLiteralTypes() {
-		return Arrays.asList(STRING_LITERAL_IDs);
-	}
-
-	public List<String> getNumberLiteralTypes() {
-		return Arrays.asList(NUMBER_LITERAL_IDs);
-	}
-
-	public List<String> getCommentTypes() {
-		return Arrays.asList(COMMENT_IDs);
-	}
-
-	public List<String> getOperatorTypes() {
-		return Arrays.asList(OPERATOR_IDs);
-	}
-
-	public List<String> getBraceTypes() {
-		return Arrays.asList(BRACE_IDs);
-	}
-
-	public List<String> getSyntaxTypes() {
-		return Arrays.asList(SYNTAX_IDs);
 	}
 
 	@Override
