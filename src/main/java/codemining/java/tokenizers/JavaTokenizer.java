@@ -113,6 +113,17 @@ public class JavaTokenizer implements ITokenizer {
 	public static final String[] BRACE_IDs = new String[] {
 			Integer.toString(ITerminalSymbols.TokenNameLBRACE),
 			Integer.toString(ITerminalSymbols.TokenNameRBRACE), };
+	public static final String[] SYNTAX_IDs = {
+			Integer.toString(ITerminalSymbols.TokenNameCOMMA),
+			Integer.toString(ITerminalSymbols.TokenNameDOT),
+			Integer.toString(ITerminalSymbols.TokenNameELLIPSIS),
+			Integer.toString(ITerminalSymbols.TokenNameSEMICOLON),
+			Integer.toString(ITerminalSymbols.TokenNameLBRACE),
+			Integer.toString(ITerminalSymbols.TokenNameRBRACE),
+			Integer.toString(ITerminalSymbols.TokenNameLPAREN),
+			Integer.toString(ITerminalSymbols.TokenNameRPAREN),
+			Integer.toString(ITerminalSymbols.TokenNameLBRACKET),
+			Integer.toString(ITerminalSymbols.TokenNameRBRACKET) };
 
 	public JavaTokenizer() {
 		tokenizeComments = false;
@@ -183,6 +194,10 @@ public class JavaTokenizer implements ITokenizer {
 
 	public List<String> getBraceTypes() {
 		return Arrays.asList(BRACE_IDs);
+	}
+
+	public List<String> getSyntaxTypes() {
+		return Arrays.asList(SYNTAX_IDs);
 	}
 
 	@Override
