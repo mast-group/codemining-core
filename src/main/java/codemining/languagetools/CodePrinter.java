@@ -10,8 +10,11 @@ import java.util.SortedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 
+import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer.FullToken;
 import codemining.util.SettingsLoader;
+
+import com.google.common.collect.Maps;
 
 /**
  * Output Java code to HTML with optional coloring. Not thread-safe.
@@ -82,8 +85,15 @@ public class CodePrinter {
 
 		final StringBuffer buf = new StringBuffer();
 
-		final SortedMap<Integer, FullToken> toks = tokenizer
+		final SortedMap<Integer, FullToken> fullToks = tokenizer
 				.fullTokenListWithPos(code.toCharArray());
+
+		// Filter Java syntax tokens
+		SortedMap<Integer, FullToken> toks = null;
+		if (tokenizer instanceof JavaTokenizer)
+			toks = Maps.filterValues(fullToks, JavaTokenizer.javaSyntaxFilter);
+		else
+			toks = fullToks;
 
 		int i = 0;
 		int prevPos = 0;
