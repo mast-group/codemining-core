@@ -17,7 +17,6 @@ import org.eclipse.jdt.internal.core.util.PublicScanner;
 
 import codemining.languagetools.ITokenizer;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -125,16 +124,6 @@ public class JavaTokenizer implements ITokenizer {
 			Integer.toString(ITerminalSymbols.TokenNameRPAREN),
 			Integer.toString(ITerminalSymbols.TokenNameLBRACKET),
 			Integer.toString(ITerminalSymbols.TokenNameRBRACKET) };
-
-	public static Predicate<FullToken> javaSyntaxFilter = new Predicate<FullToken>() {
-		@Override
-		public boolean apply(final FullToken fullToken) {
-			if (Arrays.asList(JavaTokenizer.SYNTAX_IDs).contains(
-					fullToken.tokenType))
-				return false;
-			return true;
-		}
-	};
 
 	public JavaTokenizer() {
 		tokenizeComments = false;
