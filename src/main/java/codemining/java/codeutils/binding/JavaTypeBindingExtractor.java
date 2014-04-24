@@ -17,6 +17,9 @@ import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
+import codemining.java.tokenizers.JavaTokenizer;
+import codemining.languagetools.ITokenizer;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -96,6 +99,14 @@ public class JavaTypeBindingExtractor extends AbstractJavaNameBindingsExtractor 
 			return super.visit(node);
 		}
 
+	}
+
+	public JavaTypeBindingExtractor() {
+		super(new JavaTokenizer());
+	}
+
+	public JavaTypeBindingExtractor(final ITokenizer tokenizer) {
+		super(tokenizer);
 	}
 
 	@Override

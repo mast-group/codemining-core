@@ -10,6 +10,9 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import codemining.java.tokenizers.JavaTokenizer;
+import codemining.languagetools.ITokenizer;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -46,6 +49,14 @@ public class JavaMethodBindingExtractor extends
 			methodNamePostions.put(name, node.getName());
 			return super.visit(node);
 		}
+	}
+
+	public JavaMethodBindingExtractor() {
+		super(new JavaTokenizer());
+	}
+
+	public JavaMethodBindingExtractor(final ITokenizer tokenizer) {
+		super(tokenizer);
 	}
 
 	@Override

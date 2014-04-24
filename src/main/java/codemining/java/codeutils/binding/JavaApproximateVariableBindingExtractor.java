@@ -18,6 +18,9 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
+import codemining.java.tokenizers.JavaTokenizer;
+import codemining.languagetools.ITokenizer;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -162,6 +165,14 @@ public class JavaApproximateVariableBindingExtractor extends
 			}
 			return true;
 		}
+	}
+
+	public JavaApproximateVariableBindingExtractor() {
+		super(new JavaTokenizer());
+	}
+
+	public JavaApproximateVariableBindingExtractor(final ITokenizer tokenizer) {
+		super(tokenizer);
 	}
 
 	@Override

@@ -13,8 +13,8 @@ import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import codemining.java.codeutils.JavaASTExtractor;
-import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.AbstractNameBindingsExtractor;
+import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ResolvedSourceCode;
 import codemining.languagetools.TokenNameBinding;
 
@@ -32,69 +32,6 @@ import com.google.common.collect.Sets;
 public abstract class AbstractJavaNameBindingsExtractor extends
 		AbstractNameBindingsExtractor {
 
-	public static ResolvedSourceCode getResolvedSourceCode(
-			final String sourceCode, final Set<Set<ASTNode>> nodeBindings) {
-		final JavaTokenizer tokenizer = new JavaTokenizer();
-		final SortedMap<Integer, String> tokenPositions = tokenizer
-				.tokenListWithPos(sourceCode.toCharArray());
-		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
-		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
-
-		final ArrayListMultimap<String, TokenNameBinding> bindings = ArrayListMultimap
-				.create();
-
-		for (final Set<ASTNode> boundName : nodeBindings) {
-			if (boundName.isEmpty()) {
-				continue;
-			}
-			final List<Integer> boundPositions = Lists.newArrayList();
-			for (final ASTNode name : boundName) {
-				// Convert position to token index and add
-				final int tokenIdx = positionToIndex.get(name
-						.getStartPosition());
-				boundPositions.add(tokenIdx);
-			}
-			bindings.put(tokens.get(boundPositions.get(0)),
-					new TokenNameBinding(Sets.newTreeSet(boundPositions),
-							tokens));
-		}
-
-		return new ResolvedSourceCode(tokens, bindings);
-	}
-
-	/**
-	 * Get the token bindings given the ASTNode bindings and the source code
-	 * positions.
-	 * 
-	 * @param sourceCode
-	 * @param nodeBindings
-	 * @return
-	 */
-	public static List<TokenNameBinding> getTokenBindings(
-			final String sourceCode, final Set<Set<ASTNode>> nodeBindings) {
-		final JavaTokenizer tokenizer = new JavaTokenizer();
-		final SortedMap<Integer, String> tokenPositions = tokenizer
-				.tokenListWithPos(sourceCode.toCharArray());
-		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
-		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
-
-		final List<TokenNameBinding> bindings = Lists.newArrayList();
-
-		for (final Set<ASTNode> boundName : nodeBindings) {
-			final List<Integer> boundPositions = Lists.newArrayList();
-			for (final ASTNode name : boundName) {
-				// Convert position to token index and add
-				final int tokenIdx = positionToIndex.get(name
-						.getStartPosition());
-				boundPositions.add(tokenIdx);
-			}
-			bindings.add(new TokenNameBinding(Sets.newTreeSet(boundPositions),
-					tokens));
-		}
-
-		return bindings;
-	}
-
 	/**
 	 * Return the token index for the given position.
 	 * 
@@ -110,6 +47,12 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 			i++;
 		}
 		return positionToIndex;
+	}
+
+	final ITokenizer tokenizer;
+
+	public AbstractJavaNameBindingsExtractor(final ITokenizer tokenizer) {
+		this.tokenizer = tokenizer;
 	}
 
 	protected JavaASTExtractor createExtractor() {
@@ -175,6 +118,67 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 		} catch (final Exception e) {
 			throw new IllegalArgumentException(e);
 		}
+	}
+
+	public ResolvedSourceCode getResolvedSourceCode(final String sourceCode,
+			final Set<Set<ASTNode>> nodeBindings) {
+		final SortedMap<Integer, String> tokenPositions = tokenizer
+				.tokenListWithPos(sourceCode.toCharArray());
+		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
+		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
+
+		final ArrayListMultimap<String, TokenNameBinding> bindings = ArrayListMultimap
+				.create();
+
+		for (final Set<ASTNode> boundName : nodeBindings) {
+			if (boundName.isEmpty()) {
+				continue;
+			}
+			final List<Integer> boundPositions = Lists.newArrayList();
+			for (final ASTNode name : boundName) {
+				// Convert position to token index and add
+				final int tokenIdx = positionToIndex.get(name
+						.getStartPosition());
+				boundPositions.add(tokenIdx);
+			}
+			bindings.put(tokens.get(boundPositions.get(0)),
+					new TokenNameBinding(Sets.newTreeSet(boundPositions),
+							tokens));
+		}
+
+		return new ResolvedSourceCode(tokens, bindings);
+	}
+
+	/**
+	 * Get the token bindings given the ASTNode bindings and the source code
+	 * positions.
+	 * 
+	 * @param sourceCode
+	 * @param nodeBindings
+	 * @return
+	 */
+	public List<TokenNameBinding> getTokenBindings(final String sourceCode,
+			final Set<Set<ASTNode>> nodeBindings) {
+		final SortedMap<Integer, String> tokenPositions = tokenizer
+				.tokenListWithPos(sourceCode.toCharArray());
+		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
+		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
+
+		final List<TokenNameBinding> bindings = Lists.newArrayList();
+
+		for (final Set<ASTNode> boundName : nodeBindings) {
+			final List<Integer> boundPositions = Lists.newArrayList();
+			for (final ASTNode name : boundName) {
+				// Convert position to token index and add
+				final int tokenIdx = positionToIndex.get(name
+						.getStartPosition());
+				boundPositions.add(tokenIdx);
+			}
+			bindings.add(new TokenNameBinding(Sets.newTreeSet(boundPositions),
+					tokens));
+		}
+
+		return bindings;
 	}
 
 }

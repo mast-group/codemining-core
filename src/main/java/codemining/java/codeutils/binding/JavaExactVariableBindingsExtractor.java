@@ -23,6 +23,8 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import codemining.java.codeutils.JavaASTExtractor;
+import codemining.java.tokenizers.JavaTokenizer;
+import codemining.languagetools.ITokenizer;
 import codemining.languagetools.TokenNameBinding;
 
 import com.google.common.collect.Lists;
@@ -146,6 +148,14 @@ public class JavaExactVariableBindingsExtractor extends
 			}
 			return true;
 		}
+	}
+
+	public JavaExactVariableBindingsExtractor() {
+		super(new JavaTokenizer());
+	}
+
+	public JavaExactVariableBindingsExtractor(final ITokenizer tokenizer) {
+		super(tokenizer);
 	}
 
 	@Override
