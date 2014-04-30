@@ -42,7 +42,8 @@ public class TokenizerTUI {
 			tok = TokenizerUtils.tokenizerForClass(tokenizerClass);
 		} else {
 			final String tokenizerArguments = args[2];
-			tok = TokenizerUtils.tokenizerForClass(tokenizerClass, tokenizerArguments);
+			tok = TokenizerUtils.tokenizerForClass(tokenizerClass,
+					tokenizerArguments);
 		}
 
 		final File baseFile = new File(args[0]);
@@ -57,8 +58,7 @@ public class TokenizerTUI {
 		for (final File fi : allFiles) {
 
 			final StringBuffer buf = new StringBuffer();
-			final char[] code = FileUtils.readFileToString(fi).toCharArray();
-			for (final FullToken token : tok.getTokenListFromCode(code)) {
+			for (final FullToken token : tok.getTokenListFromCode(fi)) {
 				buf.append(token);
 				buf.append(System.getProperty("line.separator"));
 			}

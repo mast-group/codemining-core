@@ -32,8 +32,8 @@ public class CDTTokenizer implements ITokenizer {
 	/**
 	 * A filter for the files being tokenized.
 	 */
-	private static final RegexFileFilter cppCodeFilter = new RegexFileFilter(
-			".*\\.(cc|cpp|h)$");
+	public static final RegexFileFilter C_CODE_TOKENIZER = new RegexFileFilter(
+			".*\\.(c|cc|cpp|h)$");
 
 	/*
 	 * (non-Javadoc)
@@ -67,7 +67,7 @@ public class CDTTokenizer implements ITokenizer {
 	 */
 	@Override
 	public AbstractFileFilter getFileFilter() {
-		return cppCodeFilter;
+		return C_CODE_TOKENIZER;
 	}
 
 	/*

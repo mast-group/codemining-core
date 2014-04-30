@@ -35,7 +35,7 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 	public static final String TYPE_COMMENT = "%COMMENT%";
 	public static final String TYPE_PREPROCESSOR = "%PREPROCESSOR%";
 
-	private static final RegexFileFilter cppCodeFilter = new RegexFileFilter(
+	public static final RegexFileFilter CPP_CODE_FILTER = new RegexFileFilter(
 			".*\\.(cc|cpp|h)$");
 
 	/*
@@ -70,7 +70,7 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 	 */
 	@Override
 	public AbstractFileFilter getFileFilter() {
-		return cppCodeFilter;
+		return CPP_CODE_FILTER;
 	}
 
 	/*
