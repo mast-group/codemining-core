@@ -79,8 +79,7 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 					annotatedTokens.put(
 							token.getKey(),
 							new FullToken(token.getValue().token + "->{in :"
-									+ nodeIdToString(nodeType) + ",parent:"
-									+ nodeIdToString(parentType) + "}", token
+									+ nodeIdToString(nodeType) + "}", token
 									.getValue().tokenType));
 				}
 			}
