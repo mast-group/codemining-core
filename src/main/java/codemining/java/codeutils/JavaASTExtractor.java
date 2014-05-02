@@ -5,9 +5,11 @@ package codemining.java.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.core.JavaCore;
@@ -65,13 +67,32 @@ public class JavaASTExtractor {
 
 	/**
 	 * Get the AST of a file. It is assumed that a CompilationUnit will be
-	 * returned. An heuristic is used to set the path variables.
+	 * returned. A heuristic is used to set the file's path variable.
 	 * 
 	 * @param file
 	 * @return the compilation unit of the file
 	 * @throws IOException
 	 */
 	public final CompilationUnit getAST(final File file) throws IOException {
+		return getAST(file, new HashSet<String>());
+	}
+
+	/**
+	 * Get the AST of a file, including additional source paths to resolve
+	 * cross-file bindings. It is assumed that a CompilationUnit will be
+	 * returned. A heuristic is used to set the file's path variable.
+	 * <p>
+	 * Note: this may only yield a big improvement if the above heuristic fails
+	 * and srcPaths contains the correct source path.
+	 * 
+	 * @param file
+	 * @param srcPaths
+	 *            for binding resolution
+	 * @return the compilation unit of the file
+	 * @throws IOException
+	 */
+	public final CompilationUnit getAST(final File file,
+			final Set<String> srcPaths) throws IOException {
 		final String sourceFile = FileUtils.readFileToString(file);
 		final ASTParser parser = ASTParser.newParser(AST.JLS4);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -101,7 +122,11 @@ public class JavaASTExtractor {
 			srcFilePath = "";
 		}
 
-		final String[] sourcePathEntries = new String[] { srcFilePath };
+		// Add file to source paths if not already present
+		srcPaths.add(srcFilePath);
+
+		final String[] sourcePathEntries = srcPaths.toArray(new String[srcPaths
+				.size()]);
 		final String[] classPathEntries = new String[0];
 		parser.setEnvironment(classPathEntries, sourcePathEntries, null, false);
 
