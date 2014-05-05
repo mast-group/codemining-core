@@ -41,7 +41,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 	 * A struct of an annotated token.
 	 * 
 	 */
-	public static class AnnotatedToken {
+	public static class WhitespaceAnnotatedToken {
 
 		public final String token;
 
@@ -57,7 +57,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		 */
 		public final int width;
 
-		public AnnotatedToken(final String value, final String tokenType,
+		public WhitespaceAnnotatedToken(final String value, final String tokenType,
 				final int column, final int width) {
 			token = value;
 			this.tokenType = tokenType;
@@ -207,9 +207,9 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 					.toCharArray());
 		}
 
-		public List<AnnotatedToken> getTokensWithWidthData(final char[] code) {
-			final List<AnnotatedToken> tokens = Lists.newArrayList();
-			tokens.add(new AnnotatedToken(SENTENCE_START, SENTENCE_START, 0, 0));
+		public List<WhitespaceAnnotatedToken> getTokensWithWidthData(final char[] code) {
+			final List<WhitespaceAnnotatedToken> tokens = Lists.newArrayList();
+			tokens.add(new WhitespaceAnnotatedToken(SENTENCE_START, SENTENCE_START, 0, 0));
 			final PublicScanner scanner = prepareScanner(code);
 			do {
 				try {
@@ -223,7 +223,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 						final int currentLine = scanner
 								.getLineNumber(currentPosition);
 						final int lineStart = scanner.getLineStart(currentLine);
-						tokens.add(new AnnotatedToken(cToken, "",
+						tokens.add(new WhitespaceAnnotatedToken(cToken, "",
 								currentPosition - lineStart, scanner
 										.getCurrentTokenString().length()));
 					}
@@ -231,7 +231,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());
-			tokens.add(new AnnotatedToken(SENTENCE_END, SENTENCE_END, 0, 0));
+			tokens.add(new WhitespaceAnnotatedToken(SENTENCE_END, SENTENCE_END, 0, 0));
 			return tokens;
 		}
 
@@ -322,12 +322,12 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			return tokens;
 		}
 
-		public SortedMap<Integer, AnnotatedToken> tokenListWithPosAndWidth(
+		public SortedMap<Integer, WhitespaceAnnotatedToken> tokenListWithPosAndWidth(
 				final char[] code) {
-			final SortedMap<Integer, AnnotatedToken> tokens = Maps.newTreeMap();
-			tokens.put(-1, new AnnotatedToken(SENTENCE_START, SENTENCE_START,
+			final SortedMap<Integer, WhitespaceAnnotatedToken> tokens = Maps.newTreeMap();
+			tokens.put(-1, new WhitespaceAnnotatedToken(SENTENCE_START, SENTENCE_START,
 					0, 0));
-			tokens.put(Integer.MAX_VALUE, new AnnotatedToken(SENTENCE_END,
+			tokens.put(Integer.MAX_VALUE, new WhitespaceAnnotatedToken(SENTENCE_END,
 					SENTENCE_END, 0, 0));
 			final PublicScanner scanner = prepareScanner(code);
 
@@ -349,7 +349,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 						final List<String> cTokens = getConvertedToken(scanner,
 								token);
 						for (final String cToken : cTokens) {
-							tokens.put(position + i, new AnnotatedToken(cToken,
+							tokens.put(position + i, new WhitespaceAnnotatedToken(cToken,
 									"", currentPosition - lineStart, scanner
 											.getCurrentTokenString().length()));
 							i++;
@@ -546,7 +546,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 				.toCharArray());
 	}
 
-	public List<AnnotatedToken> getTokensWithWidthData(final char[] code) {
+	public List<WhitespaceAnnotatedToken> getTokensWithWidthData(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.getTokensWithWidthData(code);
 	}

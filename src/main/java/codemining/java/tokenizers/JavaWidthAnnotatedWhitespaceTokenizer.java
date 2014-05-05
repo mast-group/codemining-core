@@ -35,7 +35,7 @@ public class JavaWidthAnnotatedWhitespaceTokenizer extends
 	 * @param token
 	 * @return
 	 */
-	protected String annotatedTokenToString(final AnnotatedToken token) {
+	protected String annotatedTokenToString(final WhitespaceAnnotatedToken token) {
 		final int columnQ = token.column / SIZE_QUANTIAZATION;
 		final int widthQ = token.width / SIZE_QUANTIAZATION;
 		final String annotatedToken = token.token + "_" + columnQ + "_"
@@ -46,11 +46,11 @@ public class JavaWidthAnnotatedWhitespaceTokenizer extends
 	@Override
 	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
-		final SortedMap<Integer, AnnotatedToken> annotatedTokens = tok
+		final SortedMap<Integer, WhitespaceAnnotatedToken> annotatedTokens = tok
 				.tokenListWithPosAndWidth(code);
 		final SortedMap<Integer, FullToken> tokens = Maps.newTreeMap();
 
-		for (final Entry<Integer, AnnotatedToken> entry : annotatedTokens
+		for (final Entry<Integer, WhitespaceAnnotatedToken> entry : annotatedTokens
 				.entrySet()) {
 			tokens.put(entry.getKey(), new FullToken(
 					annotatedTokenToString(entry.getValue()),
@@ -67,10 +67,10 @@ public class JavaWidthAnnotatedWhitespaceTokenizer extends
 	@Override
 	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
-		final List<AnnotatedToken> annotatedTokens = tok
+		final List<WhitespaceAnnotatedToken> annotatedTokens = tok
 				.getTokensWithWidthData(code);
 		final List<FullToken> tokens = Lists.newArrayList();
-		for (final AnnotatedToken token : annotatedTokens) {
+		for (final WhitespaceAnnotatedToken token : annotatedTokens) {
 			if (token.token.startsWith("WS_")) {
 				tokens.add(new FullToken(token.token, token.tokenType));
 			} else {
@@ -84,10 +84,10 @@ public class JavaWidthAnnotatedWhitespaceTokenizer extends
 	@Override
 	public List<String> tokenListFromCode(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
-		final List<AnnotatedToken> annotatedTokens = tok
+		final List<WhitespaceAnnotatedToken> annotatedTokens = tok
 				.getTokensWithWidthData(code);
 		final List<String> tokens = Lists.newArrayList();
-		for (final AnnotatedToken token : annotatedTokens) {
+		for (final WhitespaceAnnotatedToken token : annotatedTokens) {
 			if (token.token.startsWith("WS_")) {
 				tokens.add(token.token);
 			} else {
@@ -100,11 +100,11 @@ public class JavaWidthAnnotatedWhitespaceTokenizer extends
 	@Override
 	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
-		final SortedMap<Integer, AnnotatedToken> annotatedTokens = tok
+		final SortedMap<Integer, WhitespaceAnnotatedToken> annotatedTokens = tok
 				.tokenListWithPosAndWidth(code);
 		final SortedMap<Integer, String> tokens = Maps.newTreeMap();
 
-		for (final Entry<Integer, AnnotatedToken> entry : annotatedTokens
+		for (final Entry<Integer, WhitespaceAnnotatedToken> entry : annotatedTokens
 				.entrySet()) {
 			tokens.put(entry.getKey(), annotatedTokenToString(entry.getValue()));
 		}

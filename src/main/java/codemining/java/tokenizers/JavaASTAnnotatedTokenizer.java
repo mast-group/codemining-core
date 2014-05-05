@@ -19,10 +19,12 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 
 import codemining.java.codeutils.JavaASTExtractor;
+import codemining.languagetools.IAstAnnotatedTokenizer;
 import codemining.languagetools.ITokenizer;
 import codemining.languagetools.ParseType;
 import codemining.util.SettingsLoader;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -33,23 +35,30 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public class JavaASTAnnotatedTokenizer implements ITokenizer {
-
+public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 	/**
 	 * Visit all AST nodes and annotate tokens.
 	 * 
 	 */
 	private class TokenDecorator extends ASTVisitor {
 		final SortedMap<Integer, FullToken> baseTokens;
-		final SortedMap<Integer, FullToken> annotatedTokens;
+		final SortedMap<Integer, AstAnnotatedToken> annotatedTokens;
 
 		public TokenDecorator(final SortedMap<Integer, FullToken> baseTokens) {
 			this.baseTokens = baseTokens;
 			annotatedTokens = Maps.newTreeMap();
 		}
 
-		SortedMap<Integer, FullToken> getAnnotatedTokens(final ASTNode node) {
-			annotatedTokens.putAll(baseTokens);
+		SortedMap<Integer, AstAnnotatedToken> getAnnotatedTokens(
+				final ASTNode node) {
+			annotatedTokens.putAll(Maps.transformValues(baseTokens,
+					new Function<FullToken, AstAnnotatedToken>() {
+						@Override
+						public AstAnnotatedToken apply(final FullToken input) {
+							return new AstAnnotatedToken(input, null, null);
+						}
+					}));
+
 			node.accept(this);
 			checkArgument(baseTokens.size() == annotatedTokens.size());
 			return annotatedTokens;
@@ -73,14 +82,17 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 						&& baseTokenizer instanceof JavaWhitespaceTokenizer) {
 					annotatedTokens.put(
 							token.getKey(),
-							new FullToken(token.getValue().token, token
-									.getValue().tokenType));
+							new AstAnnotatedToken(new FullToken(token
+									.getValue().token,
+									token.getValue().tokenType), null, null));
 				} else {
 					annotatedTokens.put(
 							token.getKey(),
-							new FullToken(token.getValue().token + "->{in :"
-									+ nodeIdToString(nodeType) + "}", token
-									.getValue().tokenType));
+							new AstAnnotatedToken(new FullToken(token
+									.getValue().token,
+									token.getValue().tokenType),
+									nodeIdToString(nodeType),
+									nodeIdToString(parentType)));
 				}
 			}
 			super.preVisit(node);
@@ -123,23 +135,61 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 	 */
 	@Override
 	public SortedMap<Integer, FullToken> fullTokenListWithPos(final char[] code) {
-		return getAnnotatedTokens(code);
+		final SortedMap<Integer, AstAnnotatedToken> annotatedTokens = getAnnotatedTokens(code);
+		return Maps.transformValues(annotatedTokens,
+				AstAnnotatedToken.TOKEN_FLATTEN_FUNCTION);
 	}
 
-	/**
-	 * Return the tokens annotated.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param code
-	 * @return
+	 * @see codemining.java.tokenizers.IAstAnnotatedTokenizer#
+	 * getAnnotatedTokenListFromCode(char[])
 	 */
-	private SortedMap<Integer, FullToken> getAnnotatedTokens(final char[] code) {
+	@Override
+	public List<AstAnnotatedToken> getAnnotatedTokenListFromCode(
+			final char[] code) {
+		final List<AstAnnotatedToken> tokens = Lists.newArrayList();
+		for (final Entry<Integer, AstAnnotatedToken> token : getAnnotatedTokens(
+				code).entrySet()) {
+			tokens.add(token.getValue());
+		}
+		return tokens;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see codemining.java.tokenizers.IAstAnnotatedTokenizer#
+	 * getAnnotatedTokenListFromCode(java.io.File)
+	 */
+	@Override
+	public List<AstAnnotatedToken> getAnnotatedTokenListFromCode(
+			final File codeFile) throws IOException {
+		// TODO Get ast through the file
+		return getAnnotatedTokenListFromCode(FileUtils.readFileToString(
+				codeFile).toCharArray());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * codemining.java.tokenizers.IAstAnnotatedTokenizer#getAnnotatedTokens(
+	 * char[])
+	 */
+	@Override
+	public SortedMap<Integer, AstAnnotatedToken> getAnnotatedTokens(
+			final char[] code) {
 		final JavaASTExtractor ex = new JavaASTExtractor(false);
 		final ASTNode cu = ex.getASTNode(code, ParseType.COMPILATION_UNIT);
 
 		final SortedMap<Integer, FullToken> baseTokens = baseTokenizer
 				.fullTokenListWithPos(code);
 		final TokenDecorator dec = new TokenDecorator(baseTokens);
-		return dec.getAnnotatedTokens(cu);
+		final SortedMap<Integer, AstAnnotatedToken> annotatedTokens = dec
+				.getAnnotatedTokens(cu);
+		return annotatedTokens;
 	}
 
 	/*
@@ -182,7 +232,7 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 	@Override
 	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final List<FullToken> tokens = Lists.newArrayList();
-		for (final Entry<Integer, FullToken> token : getAnnotatedTokens(code)
+		for (final Entry<Integer, FullToken> token : fullTokenListWithPos(code)
 				.entrySet()) {
 			tokens.add(token.getValue());
 		}
@@ -219,7 +269,7 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 	@Override
 	public List<String> tokenListFromCode(final char[] code) {
 		final List<String> tokens = Lists.newArrayList();
-		for (final Entry<Integer, FullToken> token : getAnnotatedTokens(code)
+		for (final Entry<Integer, FullToken> token : fullTokenListWithPos(code)
 				.entrySet()) {
 			tokens.add(token.getValue().token);
 		}
@@ -242,7 +292,7 @@ public class JavaASTAnnotatedTokenizer implements ITokenizer {
 	@Override
 	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final SortedMap<Integer, String> tokens = Maps.newTreeMap();
-		for (final Entry<Integer, FullToken> token : getAnnotatedTokens(code)
+		for (final Entry<Integer, FullToken> token : fullTokenListWithPos(code)
 				.entrySet()) {
 			tokens.put(token.getKey(), token.getValue().token);
 		}
