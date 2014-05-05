@@ -158,4 +158,11 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 		return tokens;
 	}
 
+	@Override
+	public SortedMap<Integer, FullToken> tokenListWithPos(final File file)
+			throws IOException {
+		return fullTokenListWithPos(FileUtils.readFileToString(file)
+				.toCharArray());
+	}
+
 }

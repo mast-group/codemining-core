@@ -37,7 +37,6 @@ import com.google.common.collect.Maps;
  * 
  */
 public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
-
 	private static class TokenDecorator extends ASTVisitor {
 		final SortedMap<Integer, FullToken> baseTokens;
 		final SortedMap<Integer, FullToken> annotatedTokens;
@@ -362,6 +361,13 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 			tokens.put(token.getKey(), token.getValue().token);
 		}
 		return tokens;
+	}
+
+	@Override
+	public SortedMap<Integer, FullToken> tokenListWithPos(final File file)
+			throws IOException {
+		return fullTokenListWithPos(FileUtils.readFileToString(file)
+				.toCharArray());
 	}
 
 }

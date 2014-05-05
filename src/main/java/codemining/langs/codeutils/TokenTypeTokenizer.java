@@ -3,8 +3,12 @@
  */
 package codemining.langs.codeutils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
+
+import org.apache.commons.io.FileUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -81,6 +85,13 @@ public class TokenTypeTokenizer extends AbstractJygmentsTokenizer {
 	@Override
 	public String getTokenString(final Token tok) {
 		return tok.getType().getName();
+	}
+
+	@Override
+	public SortedMap<Integer, FullToken> tokenListWithPos(final File file)
+			throws IOException {
+		return fullTokenListWithPos(FileUtils.readFileToString(file)
+				.toCharArray());
 	}
 
 }

@@ -38,35 +38,6 @@ import com.google.common.collect.Maps;
 public class JavaWhitespaceTokenizer implements ITokenizer {
 
 	/**
-	 * A struct of an annotated token.
-	 * 
-	 */
-	public static class WhitespaceAnnotatedToken {
-
-		public final String token;
-
-		public final String tokenType;
-
-		/**
-		 * The column where this token starts.
-		 */
-		public final int column;
-
-		/**
-		 * The number of characters that this token has.
-		 */
-		public final int width;
-
-		public WhitespaceAnnotatedToken(final String value, final String tokenType,
-				final int column, final int width) {
-			token = value;
-			this.tokenType = tokenType;
-			this.width = width;
-			this.column = column;
-		}
-	}
-
-	/**
 	 * The non-thread-safe implementation.
 	 * 
 	 */
@@ -207,9 +178,11 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 					.toCharArray());
 		}
 
-		public List<WhitespaceAnnotatedToken> getTokensWithWidthData(final char[] code) {
+		public List<WhitespaceAnnotatedToken> getTokensWithWidthData(
+				final char[] code) {
 			final List<WhitespaceAnnotatedToken> tokens = Lists.newArrayList();
-			tokens.add(new WhitespaceAnnotatedToken(SENTENCE_START, SENTENCE_START, 0, 0));
+			tokens.add(new WhitespaceAnnotatedToken(SENTENCE_START,
+					SENTENCE_START, 0, 0));
 			final PublicScanner scanner = prepareScanner(code);
 			do {
 				try {
@@ -231,7 +204,8 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 				}
 			} while (!scanner.atEnd());
-			tokens.add(new WhitespaceAnnotatedToken(SENTENCE_END, SENTENCE_END, 0, 0));
+			tokens.add(new WhitespaceAnnotatedToken(SENTENCE_END, SENTENCE_END,
+					0, 0));
 			return tokens;
 		}
 
@@ -322,13 +296,21 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			return tokens;
 		}
 
+		@Override
+		public SortedMap<Integer, FullToken> tokenListWithPos(final File file)
+				throws IOException {
+			return fullTokenListWithPos(FileUtils.readFileToString(file)
+					.toCharArray());
+		}
+
 		public SortedMap<Integer, WhitespaceAnnotatedToken> tokenListWithPosAndWidth(
 				final char[] code) {
-			final SortedMap<Integer, WhitespaceAnnotatedToken> tokens = Maps.newTreeMap();
-			tokens.put(-1, new WhitespaceAnnotatedToken(SENTENCE_START, SENTENCE_START,
-					0, 0));
-			tokens.put(Integer.MAX_VALUE, new WhitespaceAnnotatedToken(SENTENCE_END,
-					SENTENCE_END, 0, 0));
+			final SortedMap<Integer, WhitespaceAnnotatedToken> tokens = Maps
+					.newTreeMap();
+			tokens.put(-1, new WhitespaceAnnotatedToken(SENTENCE_START,
+					SENTENCE_START, 0, 0));
+			tokens.put(Integer.MAX_VALUE, new WhitespaceAnnotatedToken(
+					SENTENCE_END, SENTENCE_END, 0, 0));
 			final PublicScanner scanner = prepareScanner(code);
 
 			while (!scanner.atEnd()) {
@@ -349,9 +331,11 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 						final List<String> cTokens = getConvertedToken(scanner,
 								token);
 						for (final String cToken : cTokens) {
-							tokens.put(position + i, new WhitespaceAnnotatedToken(cToken,
-									"", currentPosition - lineStart, scanner
-											.getCurrentTokenString().length()));
+							tokens.put(position + i,
+									new WhitespaceAnnotatedToken(cToken, "",
+											currentPosition - lineStart,
+											scanner.getCurrentTokenString()
+													.length()));
 							i++;
 						}
 					} catch (final InvalidInputException e) {
@@ -403,6 +387,35 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			}
 
 			return symbols;
+		}
+	}
+
+	/**
+	 * A struct of an annotated token.
+	 * 
+	 */
+	public static class WhitespaceAnnotatedToken {
+
+		public final String token;
+
+		public final String tokenType;
+
+		/**
+		 * The column where this token starts.
+		 */
+		public final int column;
+
+		/**
+		 * The number of characters that this token has.
+		 */
+		public final int width;
+
+		public WhitespaceAnnotatedToken(final String value,
+				final String tokenType, final int column, final int width) {
+			token = value;
+			this.tokenType = tokenType;
+			this.width = width;
+			this.column = column;
 		}
 	}
 
@@ -546,7 +559,8 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 				.toCharArray());
 	}
 
-	public List<WhitespaceAnnotatedToken> getTokensWithWidthData(final char[] code) {
+	public List<WhitespaceAnnotatedToken> getTokensWithWidthData(
+			final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.getTokensWithWidthData(code);
 	}
@@ -568,5 +582,12 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.tokenListWithPos(code);
+	}
+
+	@Override
+	public SortedMap<Integer, FullToken> tokenListWithPos(final File file)
+			throws IOException {
+		return fullTokenListWithPos(FileUtils.readFileToString(file)
+				.toCharArray());
 	}
 }

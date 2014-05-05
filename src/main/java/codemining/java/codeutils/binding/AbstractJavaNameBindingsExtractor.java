@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import codemining.java.codeutils.JavaASTExtractor;
 import codemining.languagetools.AbstractNameBindingsExtractor;
 import codemining.languagetools.ITokenizer;
+import codemining.languagetools.ITokenizer.FullToken;
 import codemining.languagetools.ResolvedSourceCode;
 import codemining.languagetools.TokenNameBinding;
 
@@ -68,6 +69,15 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 	 */
 	public abstract Set<Set<ASTNode>> getNameBindings(final ASTNode node);
 
+	public final List<TokenNameBinding> getNameBindings(final ASTNode node,
+			final File file) throws IOException {
+		final Set<Set<ASTNode>> nodeBindings = getNameBindings(node);
+		final SortedMap<Integer, String> tokenPositions = Maps.transformValues(
+				tokenizer.tokenListWithPos(file),
+				FullToken.TOKEN_NAME_CONVERTER);
+		return getTokenBindings(tokenPositions, nodeBindings);
+	}
+
 	/**
 	 * Get the name bindings for the given ASTNode. This assumes that the
 	 * ASTNode has been produced by the sourceCode, code with no variation.
@@ -81,14 +91,16 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 	public final List<TokenNameBinding> getNameBindings(final ASTNode node,
 			final String sourceCode) {
 		final Set<Set<ASTNode>> nodeBindings = getNameBindings(node);
-		return getTokenBindings(sourceCode, nodeBindings);
+		final SortedMap<Integer, String> tokenPositions = tokenizer
+				.tokenListWithPos(sourceCode.toCharArray());
+		return getTokenBindings(tokenPositions, nodeBindings);
 	}
 
 	@Override
 	public List<TokenNameBinding> getNameBindings(final File f)
 			throws IOException {
 		final JavaASTExtractor ex = createExtractor();
-		return getNameBindings(ex.getAST(f), FileUtils.readFileToString(f));
+		return getNameBindings(ex.getAST(f), f);
 	}
 
 	@Override
@@ -157,10 +169,9 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 	 * @param nodeBindings
 	 * @return
 	 */
-	public List<TokenNameBinding> getTokenBindings(final String sourceCode,
+	public List<TokenNameBinding> getTokenBindings(
+			final SortedMap<Integer, String> tokenPositions,
 			final Set<Set<ASTNode>> nodeBindings) {
-		final SortedMap<Integer, String> tokenPositions = tokenizer
-				.tokenListWithPos(sourceCode.toCharArray());
 		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
 		final List<String> tokens = Lists.newArrayList(tokenPositions.values());
 

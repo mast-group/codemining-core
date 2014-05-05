@@ -94,4 +94,11 @@ public class CodeTokenizer extends AbstractJygmentsTokenizer {
 		return tok.getValue().trim();
 	}
 
+	@Override
+	public SortedMap<Integer, FullToken> tokenListWithPos(final File file)
+			throws IOException {
+		return fullTokenListWithPos(FileUtils.readFileToString(file)
+				.toCharArray());
+	}
+
 }

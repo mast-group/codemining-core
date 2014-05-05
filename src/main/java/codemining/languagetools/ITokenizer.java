@@ -8,6 +8,7 @@ import java.util.SortedMap;
 
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 
+import com.google.common.base.Function;
 import com.google.common.base.Objects;
 
 /**
@@ -21,6 +22,13 @@ public interface ITokenizer extends Serializable {
 	public static class FullToken implements Serializable {
 
 		private static final long serialVersionUID = -49456240173307314L;
+
+		public static final Function<FullToken, String> TOKEN_NAME_CONVERTER = new Function<FullToken, String>() {
+			@Override
+			public String apply(final FullToken input) {
+				return input.token;
+			}
+		};
 
 		public final String token;
 
@@ -140,5 +148,15 @@ public interface ITokenizer extends Serializable {
 	 * @return
 	 */
 	SortedMap<Integer, String> tokenListWithPos(final char[] code);
+
+	/**
+	 * Return a list of tokens along with their positions.
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	SortedMap<Integer, FullToken> tokenListWithPos(File file)
+			throws IOException;
 
 }

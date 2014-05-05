@@ -301,6 +301,13 @@ public class JavascriptTokenizer implements ITokenizer {
 		return tokens;
 	}
 
+	@Override
+	public SortedMap<Integer, FullToken> tokenListWithPos(final File file)
+			throws IOException {
+		return fullTokenListWithPos(FileUtils.readFileToString(file)
+				.toCharArray());
+	}
+
 	/**
 	 * Function used to transform the tokens. Useful when overriding some tokens
 	 * in subclasses.
