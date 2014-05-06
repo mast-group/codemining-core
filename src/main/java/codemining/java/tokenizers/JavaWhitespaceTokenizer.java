@@ -442,7 +442,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 				.compile("WS_INDENTs([0-9]+)t([0-9]+)n([0-9]+)");
 
 		public static final Pattern DEDENT_PATTERN = Pattern
-				.compile("WS_DEDENTs(\\d+)t(\\d+)n(\\d+)");
+				.compile("WS_DEDENTs(-?\\d+)t(-?\\d+)n(\\d+)");
 
 		public static final Pattern SPACE_PATTERN = Pattern
 				.compile("WS_s(\\d+)t(\\d+)");
