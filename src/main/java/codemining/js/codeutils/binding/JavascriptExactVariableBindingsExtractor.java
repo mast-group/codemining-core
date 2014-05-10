@@ -10,17 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.wst.jsdt.core.dom.ASTNode;
-import org.eclipse.wst.jsdt.core.dom.ASTVisitor;
-import org.eclipse.wst.jsdt.core.dom.Block;
-import org.eclipse.wst.jsdt.core.dom.FieldDeclaration;
-import org.eclipse.wst.jsdt.core.dom.IBinding;
-import org.eclipse.wst.jsdt.core.dom.IVariableBinding;
-import org.eclipse.wst.jsdt.core.dom.SimpleName;
-import org.eclipse.wst.jsdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.wst.jsdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.wst.jsdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.wst.jsdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.wst.jsdt.core.dom.*;
 
 import codemining.js.codeutils.JavascriptASTExtractor;
 import codemining.languagetools.TokenNameBinding;
@@ -44,7 +34,7 @@ public class JavascriptExactVariableBindingsExtractor extends
 	 * them.
 	 * 
 	 */
-	private class VariableBindingFinder extends ASTVisitor {
+	private static class VariableBindingFinder extends ASTVisitor {
 		/**
 		 * Map of variables (represented as bindings) to all token positions
 		 * where the variable is referenced.

@@ -56,7 +56,7 @@ public class VariableScopeExtractor {
 		}
 
 		@Override
-		public boolean equals(Object obj) {
+		public boolean equals(final Object obj) {
 			if (obj == this) {
 				return true;
 			}
@@ -102,9 +102,9 @@ public class VariableScopeExtractor {
 		}
 
 		@Override
-		public boolean visit(FieldDeclaration node) {
-			ASTNode parent = node.getParent();
-			for (Object fragment : node.fragments()) {
+		public boolean visit(final FieldDeclaration node) {
+			final ASTNode parent = node.getParent();
+			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
 				variableScopes.put(parent, new Variable(frag.getName()
 						.getIdentifier(), node.getType().toString(),
@@ -114,7 +114,7 @@ public class VariableScopeExtractor {
 		}
 
 		@Override
-		public boolean visit(SingleVariableDeclaration node) {
+		public boolean visit(final SingleVariableDeclaration node) {
 			final ASTNode parent = node.getParent();
 			if (parent.getNodeType() == ASTNode.METHOD_DECLARATION) {
 				variableScopes.put(parent, new Variable(node.getName()
@@ -129,7 +129,7 @@ public class VariableScopeExtractor {
 		}
 
 		@Override
-		public boolean visit(VariableDeclarationExpression node) {
+		public boolean visit(final VariableDeclarationExpression node) {
 			final ASTNode parent = node.getParent();
 			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
@@ -141,7 +141,7 @@ public class VariableScopeExtractor {
 		}
 
 		@Override
-		public boolean visit(VariableDeclarationStatement node) {
+		public boolean visit(final VariableDeclarationStatement node) {
 			final ASTNode parent = node.getParent();
 			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
@@ -184,13 +184,13 @@ public class VariableScopeExtractor {
 	public static final class VariableScopeSnippetExtractor implements
 			IScopeExtractor {
 		@Override
-		public final Multimap<Scope, String> getFromFile(final File f)
+		public Multimap<Scope, String> getFromFile(final File f)
 				throws IOException {
 			return getScopeSnippets(f);
 		}
 
 		@Override
-		public Multimap<Scope, String> getFromNode(ASTNode node) {
+		public Multimap<Scope, String> getFromNode(final ASTNode node) {
 			return getScopeSnippets(node);
 		}
 

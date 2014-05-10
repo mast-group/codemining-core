@@ -10,17 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.*;
 
 import codemining.java.codeutils.JavaASTExtractor;
 import codemining.java.tokenizers.JavaTokenizer;
@@ -46,7 +36,7 @@ public class JavaExactVariableBindingsExtractor extends
 	 * them.
 	 * 
 	 */
-	private class VariableBindingFinder extends ASTVisitor {
+	private static class VariableBindingFinder extends ASTVisitor {
 		/**
 		 * Map of variables (represented as bindings) to all token positions
 		 * where the variable is referenced.
