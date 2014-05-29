@@ -31,11 +31,11 @@ public class JavaWhitespaceTokenizerTest {
 	@Before
 	public void setUp() throws Exception {
 		code = FileUtils.readFileToString(new File(
-				EclipseASTExtractorTest.class.getClassLoader()
+				JavaAstExtractorTest.class.getClassLoader()
 						.getResource("SampleClass2.txt").getFile()));
 
 		correctTokens = Lists.newArrayList(FileUtils.readFileToString(
-				new File(EclipseASTExtractorTest.class.getClassLoader()
+				new File(JavaAstExtractorTest.class.getClassLoader()
 						.getResource("SampleClass2WhitespaceTokens.txt")
 						.getFile())).split("\n"));
 	}

@@ -21,7 +21,7 @@ import codemining.languagetools.ParseType;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public class EclipseASTExtractorTest {
+public class JavaAstExtractorTest {
 
 	String classContent;
 	String methodContent;
@@ -29,11 +29,11 @@ public class EclipseASTExtractorTest {
 	@Before
 	public void setUp() throws IOException {
 		classContent = FileUtils.readFileToString(new File(
-				EclipseASTExtractorTest.class.getClassLoader()
+				JavaAstExtractorTest.class.getClassLoader()
 						.getResource("SampleClass.txt").getFile()));
 
 		methodContent = FileUtils.readFileToString(new File(
-				EclipseASTExtractorTest.class.getClassLoader()
+				JavaAstExtractorTest.class.getClassLoader()
 						.getResource("SampleMethod.txt").getFile()));
 	}
 

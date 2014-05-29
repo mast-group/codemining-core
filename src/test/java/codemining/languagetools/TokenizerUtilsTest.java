@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import codemining.java.codeutils.EclipseASTExtractorTest;
+import codemining.java.codeutils.JavaAstExtractorTest;
 
 /**
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
@@ -25,7 +25,7 @@ public class TokenizerUtilsTest {
 	@Before
 	public void setUp() throws IOException {
 		classContent = FileUtils.readFileToString(new File(
-				EclipseASTExtractorTest.class.getClassLoader()
+				JavaAstExtractorTest.class.getClassLoader()
 						.getResource("SampleClass.txt").getFile()));
 	}
 

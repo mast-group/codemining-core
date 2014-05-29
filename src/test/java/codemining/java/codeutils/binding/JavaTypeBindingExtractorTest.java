@@ -10,7 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import codemining.java.codeutils.EclipseASTExtractorTest;
+import codemining.java.codeutils.JavaAstExtractorTest;
 import codemining.languagetools.TokenNameBinding;
 
 public class JavaTypeBindingExtractorTest {
@@ -23,13 +23,13 @@ public class JavaTypeBindingExtractorTest {
 
 	@Before
 	public void setUp() throws IOException {
-		classContent = new File(EclipseASTExtractorTest.class.getClassLoader()
+		classContent = new File(JavaAstExtractorTest.class.getClassLoader()
 				.getResource("SampleClass.txt").getFile());
-		classContent2 = new File(EclipseASTExtractorTest.class.getClassLoader()
+		classContent2 = new File(JavaAstExtractorTest.class.getClassLoader()
 				.getResource("SampleClass2.txt").getFile());
 
 		methodContent = FileUtils.readFileToString(new File(
-				EclipseASTExtractorTest.class.getClassLoader()
+				JavaAstExtractorTest.class.getClassLoader()
 						.getResource("SampleMethod.txt").getFile()));
 	}
 
