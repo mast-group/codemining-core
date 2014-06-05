@@ -36,6 +36,7 @@ import com.google.common.collect.Maps;
  * 
  */
 public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
+
 	/**
 	 * Visit all AST nodes and annotate tokens.
 	 * 
@@ -55,7 +56,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 					new Function<FullToken, AstAnnotatedToken>() {
 						@Override
 						public AstAnnotatedToken apply(final FullToken input) {
-							return new AstAnnotatedToken(input, null, null);
+							return new AstAnnotatedToken(input, NONE, NONE);
 						}
 					}));
 
@@ -98,6 +99,8 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 			super.preVisit(node);
 		}
 	}
+
+	public static final String NONE = "NONE";
 
 	private static final Logger LOGGER = Logger
 			.getLogger(JavaASTAnnotatedTokenizer.class.getName());
