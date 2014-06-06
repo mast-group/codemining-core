@@ -57,6 +57,9 @@ public class UsagePointExtractor {
 		 */
 		UsageExtractor(final String fullyQualifiedName) {
 			this.fullyQualifiedName = fullyQualifiedName;
+			// Add the fully qualified name in the rare case where
+			// no import is needed (i.e. in java.lang.)
+			className.add(fullyQualifiedName);
 		}
 
 		/*
