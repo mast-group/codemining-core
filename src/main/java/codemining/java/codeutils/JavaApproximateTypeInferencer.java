@@ -11,11 +11,16 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -32,8 +37,15 @@ public class JavaApproximateTypeInferencer {
 	private static class TypeInferencer extends ASTVisitor {
 		private int nextDeclarId = 0;
 
+		private String currentPackage = "";
+
 		/**
-		 * Map the names that are defined in each ast node, with their
+		 * A hash map between classNames and their respective packages
+		 */
+		private final Map<String, String> importedNames = Maps.newTreeMap();
+
+		/**
+		 * Map the names that are defined in each AST node, with their
 		 * respective ids.
 		 */
 		private final Map<ASTNode, Map<String, Integer>> variableNames = Maps
@@ -44,6 +56,7 @@ public class JavaApproximateTypeInferencer {
 		 * where the variable is referenced.
 		 */
 		Map<Integer, List<ASTNode>> variableBinding = Maps.newTreeMap();
+
 		/**
 		 * Contains the types of the variables at each scope.
 		 */
@@ -56,13 +69,14 @@ public class JavaApproximateTypeInferencer {
 		 * @param name
 		 */
 		private void addBinding(final ASTNode node, final String name,
-				final String type) {
+				final Type type) {
 			final int bindingId = nextDeclarId;
 			nextDeclarId++;
 			variableNames.get(node).put(name, bindingId);
 			variableNames.get(node.getParent()).put(name, bindingId);
 			variableBinding.put(bindingId, Lists.<ASTNode> newArrayList());
-			variableTypes.put(bindingId, type);
+			final String nameOfType = getNameOfType(type);
+			variableTypes.put(bindingId, nameOfType);
 		}
 
 		/**
@@ -77,6 +91,57 @@ public class JavaApproximateTypeInferencer {
 				return;
 			}
 			variableBinding.get(variableId).add(nameNode);
+		}
+
+		private final String getFullyQualifiedNameFor(final String className) {
+			if (importedNames.containsKey(className)) {
+				return importedNames.get(className);
+			} else {
+				try {
+					return Class.forName("java.lang." + className).getName();
+				} catch (ClassNotFoundException e) {
+					// Non a java lang class, thus it's in current package
+				}
+			}
+			return currentPackage + "." + className;
+		}
+
+		/**
+		 * @param type
+		 * @return
+		 */
+		private String getNameOfType(final Type type) {
+			final String nameOfType;
+			if (type.isPrimitiveType()) {
+				nameOfType = type.toString();
+			} else if (type.isParameterizedType()) {
+				nameOfType = getParametrizedType((ParameterizedType) type);
+			} else if (type.isArrayType()) {
+				ArrayType array = (ArrayType) type;
+				nameOfType = getNameOfType(array.getComponentType()) + "[]";
+			} else {
+				nameOfType = getFullyQualifiedNameFor(type.toString());
+			}
+			return nameOfType;
+		}
+
+		/**
+		 * @param type
+		 * @return
+		 */
+		private String getParametrizedType(final ParameterizedType type) {
+			final StringBuffer sb = new StringBuffer(
+					getFullyQualifiedNameFor(type.getType().toString()));
+			sb.append("<");
+			for (final Object typeArg : type.typeArguments()) {
+				Type arg = (Type) typeArg;
+				final String argString = getNameOfType(arg);
+				sb.append(argString);
+				sb.append(",");
+			}
+			sb.deleteCharAt(sb.length() - 1);
+			sb.append(">");
+			return sb.toString();
 		}
 
 		@Override
@@ -105,10 +170,25 @@ public class JavaApproximateTypeInferencer {
 		public boolean visit(final FieldDeclaration node) {
 			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
-				addBinding(node, frag.getName().getIdentifier(), node.getType()
-						.toString());
+				addBinding(node, frag.getName().getIdentifier(), node.getType());
 			}
 			return true;
+		}
+
+		@Override
+		public boolean visit(ImportDeclaration node) {
+			if (!node.isStatic()) {
+				final String qName = node.getName().getFullyQualifiedName();
+				importedNames.put(qName.substring(qName.lastIndexOf('.') + 1),
+						qName);
+			}
+			return false;
+		}
+
+		@Override
+		public boolean visit(PackageDeclaration node) {
+			currentPackage = node.getName().getFullyQualifiedName();
+			return false;
 		}
 
 		/**
@@ -137,8 +217,7 @@ public class JavaApproximateTypeInferencer {
 		 */
 		@Override
 		public boolean visit(final SingleVariableDeclaration node) {
-			addBinding(node, node.getName().getIdentifier(), node.getType()
-					.toString());
+			addBinding(node, node.getName().getIdentifier(), node.getType());
 			return true;
 		}
 
@@ -149,8 +228,7 @@ public class JavaApproximateTypeInferencer {
 		public boolean visit(final VariableDeclarationExpression node) {
 			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
-				addBinding(node, frag.getName().getIdentifier(), node.getType()
-						.toString());
+				addBinding(node, frag.getName().getIdentifier(), node.getType());
 			}
 			return true;
 		}
@@ -167,8 +245,7 @@ public class JavaApproximateTypeInferencer {
 		public boolean visit(final VariableDeclarationStatement node) {
 			for (final Object fragment : node.fragments()) {
 				final VariableDeclarationFragment frag = (VariableDeclarationFragment) fragment;
-				addBinding(node, frag.getName().getIdentifier(), node.getType()
-						.toString());
+				addBinding(node, frag.getName().getIdentifier(), node.getType());
 			}
 			return true;
 		}
@@ -182,6 +259,11 @@ public class JavaApproximateTypeInferencer {
 		rootNode = node;
 	}
 
+	/**
+	 * Return a naive variableName to variableType map.
+	 * 
+	 * @return
+	 */
 	public Map<String, String> getVariableTypes() {
 		final Map<String, String> variableNameTypes = Maps.newTreeMap();
 		for (final Entry<Integer, List<ASTNode>> variableBinding : inferencer.variableBinding
