@@ -21,14 +21,20 @@ import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.UnionType;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WildcardType;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
+ * Perform approximate type inference, assigning the type to all local fields
+ * and variables. This approximation does not resolve inherited field types and
+ * fields of the form this.name
+ * 
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
@@ -117,8 +123,21 @@ public class JavaApproximateTypeInferencer {
 			} else if (type.isParameterizedType()) {
 				nameOfType = getParametrizedType((ParameterizedType) type);
 			} else if (type.isArrayType()) {
-				ArrayType array = (ArrayType) type;
+				final ArrayType array = (ArrayType) type;
 				nameOfType = getNameOfType(array.getComponentType()) + "[]";
+			} else if (type.isUnionType()) {
+				final UnionType uType = (UnionType) type;
+				StringBuffer sb = new StringBuffer();
+				for (final Object unionedType : uType.types()) {
+					sb.append(getNameOfType(((Type) unionedType)));
+					sb.append(" | ");
+				}
+				sb.delete(sb.length() - 3, sb.length());
+				nameOfType = sb.toString();
+			} else if (type.isWildcardType()) {
+				final WildcardType wType = (WildcardType) type;
+				nameOfType = (wType.isUpperBound() ? "? extends " : "? super ")
+						+ getNameOfType(wType.getBound());
 			} else {
 				nameOfType = getFullyQualifiedNameFor(type.toString());
 			}

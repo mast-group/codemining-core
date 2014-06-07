@@ -3,6 +3,7 @@ package my.pack;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.IOException;
 import your.pack.Blah;
 import your.pack2.ParamType;
 import com.google.common.collect.Lists;
@@ -23,5 +24,19 @@ private class SomeName {
 	Map<Blah,Map<SomeNameInPkg,List<Double>>> complexParamType;
 	
 	ParamType<Blah> paraType = new ParamType<Blah>(listOfInt);
+	
+	ParamType<? extends Blah> lowerBoundPa = null;
+	
+	ParamType<? super Blah> upperBoundPa = null;
+	
+	ParamType<? super List<? super Blah>> upperBoundPa2 = null;
+	
+	void doSomething() {
+		try {
+			justDoIt();
+		} catch (IOException | ArithmeticException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

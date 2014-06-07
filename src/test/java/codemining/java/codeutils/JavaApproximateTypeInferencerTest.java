@@ -41,7 +41,14 @@ public class JavaApproximateTypeInferencerTest {
 				"java.util.Map<your.pack.Blah,java.util.Map<my.pack.SomeNameInPkg,java.util.List<java.lang.Double>>>");
 		assertEquals(vars.get("paraType"),
 				"your.pack2.ParamType<your.pack.Blah>");
+		assertEquals(vars.get("lowerBoundPa"),
+				"your.pack2.ParamType<? extends your.pack.Blah>");
+		assertEquals(vars.get("upperBoundPa"),
+				"your.pack2.ParamType<? super your.pack.Blah>");
+		assertEquals(vars.get("upperBoundPa2"),
+				"your.pack2.ParamType<? super java.util.List<? super your.pack.Blah>>");
+		assertEquals(vars.get("e"),
+				"java.io.IOException | java.lang.ArithmeticException");
 
 	}
-
 }
