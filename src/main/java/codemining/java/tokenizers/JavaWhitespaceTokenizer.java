@@ -3,8 +3,6 @@
  */
 package codemining.java.tokenizers;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -12,8 +10,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
@@ -24,6 +20,7 @@ import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.util.PublicScanner;
 
 import codemining.languagetools.ITokenizer;
+import codemining.languagetools.tokenizers.whitespace.WhitespaceToTokenConverter;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -48,9 +45,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		private final RegexFileFilter javaCodeFilter = new RegexFileFilter(
 				".*\\.java$");
 
-		int currentIdentationSpaces = 0;
-
-		int currentIdentationTabs = 0;
+		WhitespaceToTokenConverter whitespaceConverter = new WhitespaceToTokenConverter();
 
 		/*
 		 * (non-Javadoc)
@@ -85,7 +80,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			final String tokenString = scanner.getCurrentTokenString();
 
 			if (token == ITerminalSymbols.TokenNameWHITESPACE) {
-				tokens.addAll(toWhiteSpaceSymbol(tokenString));
+				tokens.add(whitespaceConverter.toWhiteSpaceSymbol(tokenString));
 			} else if (token == ITerminalSymbols.TokenNameIdentifier) {
 				tokens.add(toIdentifierSymbol(tokenString));
 			} else if (JavaTokenTypeTokenizer.isLiteralToken(token)) {
@@ -96,10 +91,10 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 				tokens.add(JavaTokenTypeTokenizer.COMMENT_LINE);
 				final int nextToken = scanner.getNextToken();
 				if (nextToken == ITerminalSymbols.TokenNameWHITESPACE) {
-					tokens.addAll(toWhiteSpaceSymbol("\n"
+					tokens.add(whitespaceConverter.toWhiteSpaceSymbol("\n"
 							+ scanner.getCurrentTokenString()));
 				} else {
-					tokens.addAll(toWhiteSpaceSymbol("\n"));
+					tokens.add(whitespaceConverter.toWhiteSpaceSymbol("\n"));
 					tokens.addAll(getConvertedToken(scanner, nextToken));
 				}
 			} else if (token == ITerminalSymbols.TokenNameCOMMENT_JAVADOC) {
@@ -219,8 +214,7 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			scanner.tokenizeWhiteSpace = true;
 			scanner.recordLineSeparator = true;
 			scanner.tokenizeComments = true;
-			currentIdentationSpaces = 0;
-			currentIdentationTabs = 0;
+			whitespaceConverter = new WhitespaceToTokenConverter();
 			return scanner;
 		}
 
@@ -349,45 +343,6 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 		public String toLiteralSymbol(final String token) {
 			return JavaTokenTypeTokenizer.LITERAL_TOKEN;
 		}
-
-		/**
-		 * @param scanner
-		 * @return
-		 */
-		public List<String> toWhiteSpaceSymbol(final String token) {
-			final List<String> symbols = Lists.newArrayList();
-			int spaces = 0;
-			int tabs = 0;
-			int newLines = 0;
-			for (final char c : token.replace("\r", "").toCharArray()) {
-				if (c == '\n') {
-					newLines++;
-				} else if (c == '\t') {
-					tabs++;
-				} else if (c == ' ') {
-					spaces++;
-				}
-			}
-
-			if (newLines == 0) {
-				symbols.add("WS_s" + spaces + "t" + tabs);
-			} else if (newLines > 0) {
-				final int spaceDiff = spaces - currentIdentationSpaces;
-				final int tabDiff = tabs - currentIdentationTabs;
-				currentIdentationSpaces = spaces;
-				currentIdentationTabs = tabs;
-
-				if (spaceDiff >= 0 && tabDiff >= 0) {
-					symbols.add("WS_INDENTs" + spaceDiff + "t" + tabDiff + "n"
-							+ newLines);
-				} else {
-					symbols.add("WS_DEDENTs" + -spaceDiff + "t" + -tabDiff
-							+ "n" + newLines);
-				}
-			}
-
-			return symbols;
-		}
 	}
 
 	/**
@@ -416,104 +371,6 @@ public class JavaWhitespaceTokenizer implements ITokenizer {
 			this.tokenType = tokenType;
 			this.width = width;
 			this.column = column;
-		}
-	}
-
-	/**
-	 * A utility stateful class for converting whitespace tokens to whitespace.
-	 * 
-	 */
-	public static final class WhitespaceConverter {
-
-		/**
-		 * A struct class.
-		 * 
-		 */
-		private static final class Whitespace {
-			int nTabs;
-			int nSpace;
-			int nNewLines;
-		}
-
-		private int currentSpaceIndentation = 0;
-		private int currentTabIndentation = 0;
-
-		public static final Pattern INDENT_PATTERN = Pattern
-				.compile("WS_INDENTs([0-9]+)t([0-9]+)n([0-9]+)");
-
-		public static final Pattern DEDENT_PATTERN = Pattern
-				.compile("WS_DEDENTs(-?\\d+)t(-?\\d+)n(\\d+)");
-
-		public static final Pattern SPACE_PATTERN = Pattern
-				.compile("WS_s(\\d+)t(\\d+)");
-
-		/**
-		 * Append whitespace to StringBuffer, given the specifications.
-		 * 
-		 * @param nSpace
-		 * @param nTab
-		 * @param startAtNewLine
-		 * @return
-		 */
-		public static final void createWhitespace(final Whitespace space,
-				final StringBuffer sb) {
-			for (int i = 0; i < space.nNewLines; i++) {
-				sb.append(System.getProperty("line.separator"));
-			}
-			for (int i = 0; i < space.nSpace; i++) {
-				sb.append(" ");
-			}
-			for (int i = 0; i < space.nTabs; i++) {
-				sb.append("\t");
-			}
-		}
-
-		/**
-		 * Whitespace token converter.
-		 * 
-		 * @param wsToken
-		 * @param buffer
-		 */
-		public void appendWS(final String wsToken, final StringBuffer buffer) {
-			checkArgument(wsToken.startsWith("WS_"));
-			final Whitespace space;
-			if (wsToken.startsWith("WS_INDENT")) {
-				space = convert(wsToken, INDENT_PATTERN);
-				currentSpaceIndentation += space.nSpace;
-				currentTabIndentation += space.nTabs;
-				space.nSpace = currentSpaceIndentation;
-				space.nTabs = currentTabIndentation;
-
-			} else if (wsToken.startsWith("WS_DEDENT")) {
-				space = convert(wsToken, DEDENT_PATTERN);
-				currentSpaceIndentation -= space.nSpace;
-				if (currentSpaceIndentation < 0) {
-					currentSpaceIndentation = 0;
-				}
-				currentTabIndentation -= space.nTabs;
-				if (currentTabIndentation < 0) {
-					currentTabIndentation = 0;
-				}
-				space.nSpace = currentSpaceIndentation;
-				space.nTabs = currentTabIndentation;
-			} else {
-				space = convert(wsToken, SPACE_PATTERN);
-			}
-			createWhitespace(space, buffer);
-		}
-
-		private Whitespace convert(final String wsToken,
-				final Pattern patternToMatch) {
-			final Whitespace space = new Whitespace();
-			final Matcher m = patternToMatch.matcher(wsToken);
-			checkArgument(m.matches(), "Pattern " + patternToMatch.toString()
-					+ " does not match " + wsToken);
-			space.nSpace = Integer.parseInt(m.group(1));
-			space.nTabs = Integer.parseInt(m.group(2));
-			if (m.groupCount() == 3) {
-				space.nNewLines = Integer.parseInt(m.group(3));
-			}
-			return space;
 		}
 	}
 

@@ -24,9 +24,11 @@ import org.eclipse.cdt.core.dom.ast.cpp.ICPPASTTemplateParameter;
 import org.eclipse.cdt.internal.core.dom.parser.ASTAmbiguousNode;
 import org.eclipse.core.runtime.CoreException;
 
+import codemining.languagetools.IAstAnnotatedTokenizer;
 import codemining.languagetools.ITokenizer;
 import codemining.util.SettingsLoader;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -36,10 +38,14 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
+public abstract class AbstractCdtASTAnnotatedTokenizer implements
+		IAstAnnotatedTokenizer {
+
 	private static class TokenDecorator extends ASTVisitor {
 		final SortedMap<Integer, FullToken> baseTokens;
-		final SortedMap<Integer, FullToken> annotatedTokens;
+		final SortedMap<Integer, AstAnnotatedToken> annotatedTokens;
+
+		public static final String NONE = "NONE";
 
 		public TokenDecorator(final SortedMap<Integer, FullToken> baseTokens) {
 			super(true);
@@ -47,8 +53,15 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 			annotatedTokens = Maps.newTreeMap();
 		}
 
-		SortedMap<Integer, FullToken> getAnnotatedTokens(final IASTNode node) {
-			annotatedTokens.putAll(baseTokens);
+		SortedMap<Integer, AstAnnotatedToken> getAnnotatedTokens(
+				final IASTNode node) {
+			annotatedTokens.putAll(Maps.transformValues(baseTokens,
+					new Function<FullToken, AstAnnotatedToken>() {
+						@Override
+						public AstAnnotatedToken apply(final FullToken input) {
+							return new AstAnnotatedToken(input, NONE, NONE);
+						}
+					}));
 			node.accept(this);
 			return annotatedTokens;
 		}
@@ -75,14 +88,16 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 				if (token.getValue().token.startsWith("WS_")) {
 					annotatedTokens.put(
 							token.getKey(),
-							new FullToken(token.getValue().token, token
-									.getValue().tokenType));
+							new AstAnnotatedToken(new FullToken(token
+									.getValue().token,
+									token.getValue().tokenType), null, null));
 				} else {
 					annotatedTokens.put(
 							token.getKey(),
-							new FullToken(token.getValue().token + "_i:"
-									+ nodeType + "_p:" + parentType, token
-									.getValue().tokenType));
+							new AstAnnotatedToken(new FullToken(token
+									.getValue().token,
+									token.getValue().tokenType), nodeType,
+									parentType));
 				}
 			}
 		}
@@ -259,7 +274,28 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 		throw new NotImplementedException();
 	}
 
-	private SortedMap<Integer, FullToken> getAnnotatedTokens(final char[] code) {
+	@Override
+	public List<AstAnnotatedToken> getAnnotatedTokenListFromCode(
+			final char[] code) {
+		final List<AstAnnotatedToken> tokens = Lists.newArrayList();
+		for (final Entry<Integer, AstAnnotatedToken> token : getAnnotatedTokens(
+				code).entrySet()) {
+			tokens.add(token.getValue());
+		}
+		return tokens;
+	}
+
+	@Override
+	public List<AstAnnotatedToken> getAnnotatedTokenListFromCode(
+			final File codeFile) throws IOException {
+		// TODO Get ast through the file
+		return getAnnotatedTokenListFromCode(FileUtils.readFileToString(
+				codeFile).toCharArray());
+	}
+
+	@Override
+	public SortedMap<Integer, AstAnnotatedToken> getAnnotatedTokens(
+			final char[] code) {
 		try {
 			final AbstractCdtAstExtractor ex = astExtractorClass.newInstance();
 			final IASTTranslationUnit cu = ex.getAST(code, codeIncludePath);
@@ -279,6 +315,11 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 					+ ExceptionUtils.getFullStackTrace(e));
 		}
 		return null;
+	}
+
+	@Override
+	public ITokenizer getBaseTokenizer() {
+		return baseTokenizer;
 	}
 
 	/*
@@ -321,9 +362,9 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 	@Override
 	public List<FullToken> getTokenListFromCode(final char[] code) {
 		final List<FullToken> tokens = Lists.newArrayList();
-		for (final Entry<Integer, FullToken> token : getAnnotatedTokens(code)
-				.entrySet()) {
-			tokens.add(token.getValue());
+		for (final Entry<Integer, AstAnnotatedToken> token : getAnnotatedTokens(
+				code).entrySet()) {
+			tokens.add(token.getValue().token);
 		}
 		return tokens;
 	}
@@ -343,9 +384,9 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 	@Override
 	public List<String> tokenListFromCode(final char[] code) {
 		final List<String> tokens = Lists.newArrayList();
-		for (final Entry<Integer, FullToken> token : getAnnotatedTokens(code)
-				.entrySet()) {
-			tokens.add(token.getValue().token);
+		for (final Entry<Integer, AstAnnotatedToken> token : getAnnotatedTokens(
+				code).entrySet()) {
+			tokens.add(token.getValue().token.token);
 		}
 		return tokens;
 	}
@@ -366,9 +407,9 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 	@Override
 	public SortedMap<Integer, String> tokenListWithPos(final char[] code) {
 		final SortedMap<Integer, String> tokens = Maps.newTreeMap();
-		for (final Entry<Integer, FullToken> token : getAnnotatedTokens(code)
-				.entrySet()) {
-			tokens.put(token.getKey(), token.getValue().token);
+		for (final Entry<Integer, AstAnnotatedToken> token : getAnnotatedTokens(
+				code).entrySet()) {
+			tokens.put(token.getKey(), token.getValue().token.token);
 		}
 		return tokens;
 	}

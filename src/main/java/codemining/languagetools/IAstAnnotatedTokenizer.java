@@ -80,17 +80,24 @@ public interface IAstAnnotatedTokenizer extends ITokenizer {
 
 	}
 
-	public abstract List<IAstAnnotatedTokenizer.AstAnnotatedToken> getAnnotatedTokenListFromCode(
+	public abstract List<AstAnnotatedToken> getAnnotatedTokenListFromCode(
 			char[] code);
 
-	public abstract List<IAstAnnotatedTokenizer.AstAnnotatedToken> getAnnotatedTokenListFromCode(
+	public abstract List<AstAnnotatedToken> getAnnotatedTokenListFromCode(
 			File codeFile) throws IOException;
 
 	/**
 	 * @param code
 	 * @return
 	 */
-	public abstract SortedMap<Integer, IAstAnnotatedTokenizer.AstAnnotatedToken> getAnnotatedTokens(
+	public abstract SortedMap<Integer, AstAnnotatedToken> getAnnotatedTokens(
 			char[] code);
+
+	/**
+	 * Return the base tokenizer whose tokens are annotated.
+	 * 
+	 * @return
+	 */
+	public ITokenizer getBaseTokenizer();
 
 }

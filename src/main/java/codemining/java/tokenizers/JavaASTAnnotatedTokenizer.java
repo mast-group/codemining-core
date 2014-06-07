@@ -195,6 +195,11 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 		return annotatedTokens;
 	}
 
+	@Override
+	public ITokenizer getBaseTokenizer() {
+		return baseTokenizer;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
