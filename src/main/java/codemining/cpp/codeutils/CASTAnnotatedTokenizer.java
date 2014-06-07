@@ -19,15 +19,24 @@ public class CASTAnnotatedTokenizer extends AbstractCdtASTAnnotatedTokenizer {
 	 * @param extractorClass
 	 */
 	public CASTAnnotatedTokenizer() {
-		super(CAstExtractor.class);
+		super(CAstExtractor.class, "");
 	}
 
 	/**
 	 * @param base
 	 * @param extractorClass
 	 */
-	public CASTAnnotatedTokenizer(ITokenizer base) {
-		super(base, CAstExtractor.class);
+	public CASTAnnotatedTokenizer(final ITokenizer base) {
+		super(base, CAstExtractor.class, "");
+	}
+
+	public CASTAnnotatedTokenizer(final ITokenizer base,
+			final String codeBasePath) {
+		super(base, CAstExtractor.class, codeBasePath);
+	}
+
+	public CASTAnnotatedTokenizer(final String codeBasePath) {
+		super(CAstExtractor.class, codeBasePath);
 	}
 
 }

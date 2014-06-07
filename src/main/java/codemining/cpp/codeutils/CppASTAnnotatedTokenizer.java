@@ -19,14 +19,23 @@ public class CppASTAnnotatedTokenizer extends AbstractCdtASTAnnotatedTokenizer {
 	 * 
 	 */
 	public CppASTAnnotatedTokenizer() {
-		super(CppASTExtractor.class);
+		super(CppASTExtractor.class, "");
 	}
 
 	/**
 	 * @param base
 	 */
-	public CppASTAnnotatedTokenizer(ITokenizer base) {
-		super(base, CppASTExtractor.class);
+	public CppASTAnnotatedTokenizer(final ITokenizer base) {
+		super(base, CppASTExtractor.class, "");
+	}
+
+	public CppASTAnnotatedTokenizer(final ITokenizer base,
+			final String codeBasePath) {
+		super(base, CppASTExtractor.class, codeBasePath);
+	}
+
+	public CppASTAnnotatedTokenizer(final String codeBasePath) {
+		super(CppASTExtractor.class, codeBasePath);
 	}
 
 }

@@ -55,6 +55,10 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 
 		public void preVisit(final IASTNode node) {
 			final IASTFileLocation fileLocation = node.getFileLocation();
+			if (fileLocation == null) {
+				return; // TODO: Is this right? This happens when we have a
+						// macro problem
+			}
 
 			final int fromPosition = fileLocation.getNodeOffset();
 			final int endPosition = fromPosition + fileLocation.getNodeLength();
@@ -211,10 +215,13 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 	private static final Logger LOGGER = Logger
 			.getLogger(AbstractCdtASTAnnotatedTokenizer.class.getName());
 
-	final Class<? extends ICdtAstExtractor> astExtractorClass;
+	final Class<? extends AbstractCdtAstExtractor> astExtractorClass;
+
+	private final String codeIncludePath;
 
 	public AbstractCdtASTAnnotatedTokenizer(
-			final Class<? extends ICdtAstExtractor> extractorClass) {
+			final Class<? extends AbstractCdtAstExtractor> extractorClass,
+			final String baseIncludePath) {
 		astExtractorClass = extractorClass;
 		try {
 			final Class<? extends ITokenizer> tokenizerClass = (Class<? extends ITokenizer>) Class
@@ -231,12 +238,15 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 			LOGGER.severe(ExceptionUtils.getFullStackTrace(e));
 			throw new IllegalArgumentException(e);
 		}
+		codeIncludePath = baseIncludePath;
 	}
 
 	public AbstractCdtASTAnnotatedTokenizer(final ITokenizer base,
-			final Class<? extends ICdtAstExtractor> extractorClass) {
+			final Class<? extends AbstractCdtAstExtractor> extractorClass,
+			final String baseIncludePath) {
 		astExtractorClass = extractorClass;
 		baseTokenizer = base;
+		codeIncludePath = baseIncludePath;
 	}
 
 	/*
@@ -251,8 +261,8 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements ITokenizer {
 
 	private SortedMap<Integer, FullToken> getAnnotatedTokens(final char[] code) {
 		try {
-			final ICdtAstExtractor ex = astExtractorClass.newInstance();
-			final IASTTranslationUnit cu = ex.getAST(code);
+			final AbstractCdtAstExtractor ex = astExtractorClass.newInstance();
+			final IASTTranslationUnit cu = ex.getAST(code, codeIncludePath);
 
 			final SortedMap<Integer, FullToken> baseTokens = baseTokenizer
 					.fullTokenListWithPos(code);
