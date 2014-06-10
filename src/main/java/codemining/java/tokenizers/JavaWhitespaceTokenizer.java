@@ -19,7 +19,9 @@ import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.compiler.InvalidInputException;
 import org.eclipse.jdt.internal.core.util.PublicScanner;
 
+import codemining.languagetools.IFormattingTokenizer;
 import codemining.languagetools.ITokenizer;
+import codemining.languagetools.ITokenizer.FullToken;
 import codemining.languagetools.tokenizers.whitespace.WhitespaceToTokenConverter;
 
 import com.google.common.collect.Lists;
@@ -32,7 +34,7 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public class JavaWhitespaceTokenizer implements ITokenizer {
+public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/**
 	 * The non-thread-safe implementation.

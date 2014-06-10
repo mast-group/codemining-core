@@ -15,7 +15,9 @@ import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.cdt.internal.formatter.scanner.Scanner;
 import org.eclipse.cdt.internal.formatter.scanner.Token;
 
+import codemining.languagetools.IFormattingTokenizer;
 import codemining.languagetools.ITokenizer;
+import codemining.languagetools.ITokenizer.FullToken;
 import codemining.languagetools.tokenizers.whitespace.WhitespaceToTokenConverter;
 
 import com.google.common.collect.Lists;
@@ -27,7 +29,7 @@ import com.google.common.collect.Maps;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  * 
  */
-public class CppWhitespaceTokenizer implements ITokenizer {
+public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
 	private static final long serialVersionUID = 575700076009928045L;
 	public static final String TYPE_LITERAL = "%LITERAL%";

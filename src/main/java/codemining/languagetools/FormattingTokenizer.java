@@ -1,4 +1,4 @@
-package codemining.java.tokenizers;
+package codemining.languagetools;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,8 +9,6 @@ import java.util.SortedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 
-import codemining.languagetools.ITokenizer;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -18,17 +16,13 @@ import com.google.common.collect.Maps;
  * Adds a NO_SPACE between tokens that contain, no space.
  * 
  */
-public class JavaFormattingTokenizer implements ITokenizer {
+public class FormattingTokenizer implements IFormattingTokenizer {
 
 	public static final String WS_NO_SPACE = "WS_NO_SPACE";
 	private static final long serialVersionUID = -1736507313790110846L;
-	final ITokenizer baseTokenizer;
+	final IFormattingTokenizer baseTokenizer;
 
-	public JavaFormattingTokenizer() {
-		baseTokenizer = new JavaWhitespaceTokenizer();
-	}
-
-	public JavaFormattingTokenizer(final ITokenizer baseTokenizer) {
+	public FormattingTokenizer(final IFormattingTokenizer baseTokenizer) {
 		this.baseTokenizer = baseTokenizer;
 	}
 
