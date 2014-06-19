@@ -31,6 +31,10 @@ public class FormattingTokenizer implements IFormattingTokenizer {
 		throw new IllegalArgumentException("Cannot be implemented");
 	}
 
+	public IFormattingTokenizer getBaseTokenizer() {
+		return baseTokenizer;
+	}
+
 	@Override
 	public AbstractFileFilter getFileFilter() {
 		return baseTokenizer.getFileFilter();
