@@ -20,9 +20,9 @@ public class FormattingTokenizer implements IFormattingTokenizer {
 
 	public static final String WS_NO_SPACE = "WS_NO_SPACE";
 	private static final long serialVersionUID = -1736507313790110846L;
-	final IFormattingTokenizer baseTokenizer;
+	final ITokenizer baseTokenizer;
 
-	public FormattingTokenizer(final IFormattingTokenizer baseTokenizer) {
+	public FormattingTokenizer(final ITokenizer baseTokenizer) {
 		this.baseTokenizer = baseTokenizer;
 	}
 
@@ -31,7 +31,7 @@ public class FormattingTokenizer implements IFormattingTokenizer {
 		throw new IllegalArgumentException("Cannot be implemented");
 	}
 
-	public IFormattingTokenizer getBaseTokenizer() {
+	public ITokenizer getBaseTokenizer() {
 		return baseTokenizer;
 	}
 
