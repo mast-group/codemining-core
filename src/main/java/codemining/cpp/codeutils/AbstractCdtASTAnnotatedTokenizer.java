@@ -83,7 +83,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 				parentType = "NONE";
 			}
 			final SortedMap<Integer, FullToken> nodeTokens = baseTokens.subMap(
-					fromPosition, endPosition);
+					fromPosition, endPosition + 1);
 			for (final Entry<Integer, FullToken> token : nodeTokens.entrySet()) {
 				if (token.getValue().token.startsWith("WS_")) {
 					annotatedTokens.put(
