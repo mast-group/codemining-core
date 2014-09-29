@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package codemining.java.codeutils;
 
@@ -26,9 +26,9 @@ import codemining.languagetools.ParseType;
 
 /**
  * A utility class to retrieve an Eclipse AST.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaASTExtractor {
 
@@ -51,7 +51,7 @@ public class JavaASTExtractor {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param useBindings
 	 *            calculate bindings on the extracted AST.
 	 */
@@ -68,7 +68,7 @@ public class JavaASTExtractor {
 	/**
 	 * Get the AST of a file. It is assumed that a CompilationUnit will be
 	 * returned. A heuristic is used to set the file's path variable.
-	 * 
+	 *
 	 * @param file
 	 * @return the compilation unit of the file
 	 * @throws IOException
@@ -84,7 +84,7 @@ public class JavaASTExtractor {
 	 * <p>
 	 * Note: this may only yield a big improvement if the above heuristic fails
 	 * and srcPaths contains the correct source path.
-	 * 
+	 *
 	 * @param file
 	 * @param srcPaths
 	 *            for binding resolution
@@ -94,13 +94,13 @@ public class JavaASTExtractor {
 	public final CompilationUnit getAST(final File file,
 			final Set<String> srcPaths) throws IOException {
 		final String sourceFile = FileUtils.readFileToString(file);
-		final ASTParser parser = ASTParser.newParser(AST.JLS4);
+		final ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
 		final Map<String, String> options = new Hashtable<String, String>();
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_7);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
+				JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 		if (useJavadocs) {
 			options.put(JavaCore.COMPILER_DOC_COMMENT_SUPPORT, JavaCore.ENABLED);
 		}
@@ -126,7 +126,7 @@ public class JavaASTExtractor {
 		srcPaths.add(srcFilePath);
 
 		final String[] sourcePathEntries = srcPaths.toArray(new String[srcPaths
-				.size()]);
+		                                                               .size()]);
 		final String[] classPathEntries = new String[0];
 		parser.setEnvironment(classPathEntries, sourcePathEntries, null, false);
 
@@ -137,7 +137,7 @@ public class JavaASTExtractor {
 
 	/**
 	 * Get a compilation unit of the given file content.
-	 * 
+	 *
 	 * @param fileContent
 	 * @param parseType
 	 * @return the compilation unit
@@ -149,13 +149,13 @@ public class JavaASTExtractor {
 
 	/**
 	 * Return an ASTNode given the content
-	 * 
+	 *
 	 * @param content
 	 * @return
 	 */
 	public final ASTNode getASTNode(final char[] content,
 			final ParseType parseType) {
-		final ASTParser parser = ASTParser.newParser(AST.JLS4);
+		final ASTParser parser = ASTParser.newParser(AST.JLS8);
 		final int astKind;
 		switch (parseType) {
 		case CLASS_BODY:
@@ -178,8 +178,8 @@ public class JavaASTExtractor {
 
 		final Map<String, String> options = new Hashtable<String, String>();
 		options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM,
-				JavaCore.VERSION_1_7);
-		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_7);
+				JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 		if (useJavadocs) {
 			options.put(JavaCore.COMPILER_DOC_COMMENT_SUPPORT, JavaCore.ENABLED);
 		}
@@ -200,7 +200,7 @@ public class JavaASTExtractor {
 
 	/**
 	 * Get the AST of a string. Path variables cannot be set.
-	 * 
+	 *
 	 * @param file
 	 * @param parseType
 	 * @return an AST node for the given file content
@@ -213,7 +213,7 @@ public class JavaASTExtractor {
 
 	/**
 	 * Get the AST by making the best effort to guess the type of the node.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public final ASTNode getBestEffortAstNode(final char[] content)
@@ -231,7 +231,7 @@ public class JavaASTExtractor {
 
 	/**
 	 * Get the AST of a string. Path variables cannot be set.
-	 * 
+	 *
 	 * @param file
 	 * @return an AST node for the given file content
 	 * @throws Exception
@@ -250,7 +250,7 @@ public class JavaASTExtractor {
 
 	/**
 	 * Hacky way to compare snippets.
-	 * 
+	 *
 	 * @param snippet
 	 * @return
 	 */
