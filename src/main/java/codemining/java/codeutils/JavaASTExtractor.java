@@ -126,9 +126,9 @@ public class JavaASTExtractor {
 		srcPaths.add(srcFilePath);
 
 		final String[] sourcePathEntries = srcPaths.toArray(new String[srcPaths
-		                                                               .size()]);
+				.size()]);
 		final String[] classPathEntries = new String[0];
-		parser.setEnvironment(classPathEntries, sourcePathEntries, null, false);
+		parser.setEnvironment(classPathEntries, sourcePathEntries, null, true);
 
 		final CompilationUnit compilationUnit = (CompilationUnit) parser
 				.createAST(null);
