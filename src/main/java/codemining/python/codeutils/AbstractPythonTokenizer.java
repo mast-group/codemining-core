@@ -2,12 +2,14 @@ package codemining.python.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.lang.NotImplementedException;
 import org.python.pydev.parser.grammarcommon.ITokenManager;
 import org.python.pydev.parser.jython.FastCharStream;
 import org.python.pydev.parser.jython.Token;
@@ -19,9 +21,9 @@ import com.google.common.collect.Maps;
 
 /**
  * An abstract python tokenizer using the PyDev interface.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public abstract class AbstractPythonTokenizer implements ITokenizer {
 
@@ -49,7 +51,7 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 				// TODO: Bad Heurisitc...
 				tokens.put(
 						nextToken.getBeginLine() * 500
-								+ nextToken.getBeginCol(),
+						+ nextToken.getBeginCol(),
 						new FullToken(nextToken.image, Integer
 								.toString(nextToken.kind)));
 			}
@@ -67,6 +69,26 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 	@Override
 	public String getIdentifierType() {
 		return "94"; // TODO from not hard coded?
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see codemining.languagetools.ITokenizer#getKeywordTypes()
+	 */
+	@Override
+	public Collection<String> getKeywordTypes() {
+		throw new NotImplementedException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see codemining.languagetools.ITokenizer#getLiteralTypes()
+	 */
+	@Override
+	public Collection<String> getLiteralTypes() {
+		throw new NotImplementedException();
 	}
 
 	public abstract ITokenManager getPythonTokenizer(final FastCharStream stream);
@@ -150,7 +172,7 @@ public abstract class AbstractPythonTokenizer implements ITokenizer {
 				// TODO: Bad Heurisitc...
 				tokens.put(
 						nextToken.getBeginLine() * 500
-								+ nextToken.getBeginCol(), nextToken.image);
+						+ nextToken.getBeginCol(), nextToken.image);
 			}
 			nextToken = mng.getNextToken();
 		}

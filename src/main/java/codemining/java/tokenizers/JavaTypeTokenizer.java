@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 package codemining.java.tokenizers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,7 +13,6 @@ import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
-import org.eclipse.jdt.core.compiler.ITerminalSymbols;
 import org.eclipse.jdt.core.dom.ASTNode;
 
 import codemining.java.codeutils.JavaASTExtractor;
@@ -25,19 +25,16 @@ import com.google.common.collect.Maps;
 /**
  * A best-effort type tokenizer. This tokenizer substitutes variable tokens with
  * their types in the special form 'var%TypeName%'
- * 
- * 
+ *
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaTypeTokenizer implements ITokenizer {
 
 	private static final long serialVersionUID = -5145031374089339996L;
 
-	final ITokenizer baseTokenizer = new JavaTokenizer();
-
-	public static final String IDENTIFIER_ID = Integer
-			.toString(ITerminalSymbols.TokenNameIdentifier);
+	final JavaTokenizer baseTokenizer = new JavaTokenizer();
 
 	/**
 	 * @param tokens
@@ -83,7 +80,7 @@ public class JavaTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getFileFilter()
 	 */
 	@Override
@@ -93,12 +90,22 @@ public class JavaTypeTokenizer implements ITokenizer {
 
 	@Override
 	public String getIdentifierType() {
-		return IDENTIFIER_ID;
+		return baseTokenizer.getIdentifierType();
+	}
+
+	@Override
+	public Collection<String> getKeywordTypes() {
+		return baseTokenizer.getKeywordTypes();
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		return baseTokenizer.getLiteralTypes();
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * codemining.languagetools.ITokenizer#getTokenFromString(java.lang.String)
 	 */
@@ -113,7 +120,7 @@ public class JavaTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getTokenListFromCode(char[])
 	 */
 	@Override
@@ -172,7 +179,7 @@ public class JavaTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
@@ -213,7 +220,7 @@ public class JavaTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override

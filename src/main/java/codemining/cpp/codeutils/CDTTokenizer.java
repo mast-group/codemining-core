@@ -1,16 +1,18 @@
 /**
- * 
+ *
  */
 package codemining.cpp.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.cdt.internal.formatter.scanner.Scanner;
 import org.eclipse.cdt.internal.formatter.scanner.Token;
 
@@ -21,9 +23,9 @@ import com.google.common.collect.Maps;
 
 /**
  * A C/C++ tokenizer provided by the Eclipse CDT.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class CDTTokenizer implements ITokenizer {
 
@@ -37,7 +39,7 @@ public class CDTTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#fullTokenListWithPos(char[])
 	 */
 	@Override
@@ -62,7 +64,7 @@ public class CDTTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getFileFilter()
 	 */
 	@Override
@@ -72,7 +74,7 @@ public class CDTTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getIdentifierType()
 	 */
 	@Override
@@ -80,9 +82,19 @@ public class CDTTokenizer implements ITokenizer {
 		return Integer.toString(Token.tIDENTIFIER);
 	}
 
+	@Override
+	public Collection<String> getKeywordTypes() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		throw new NotImplementedException();
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * codemining.languagetools.ITokenizer#getTokenFromString(java.lang.String)
 	 */
@@ -102,7 +114,7 @@ public class CDTTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getTokenListFromCode(char[])
 	 */
 	@Override
@@ -135,7 +147,7 @@ public class CDTTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
@@ -168,7 +180,7 @@ public class CDTTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override

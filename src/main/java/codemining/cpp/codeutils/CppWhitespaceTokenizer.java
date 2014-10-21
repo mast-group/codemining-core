@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 package codemining.cpp.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -17,7 +18,6 @@ import org.eclipse.cdt.internal.formatter.scanner.Token;
 
 import codemining.languagetools.IFormattingTokenizer;
 import codemining.languagetools.ITokenizer;
-import codemining.languagetools.ITokenizer.FullToken;
 import codemining.languagetools.tokenizers.whitespace.WhitespaceToTokenConverter;
 
 import com.google.common.collect.Lists;
@@ -25,9 +25,9 @@ import com.google.common.collect.Maps;
 
 /**
  * A C/C++ whitespace tokenizer using type tokens.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
@@ -42,7 +42,7 @@ public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#fullTokenListWithPos(char[])
 	 */
 	@Override
@@ -74,7 +74,7 @@ public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getFileFilter()
 	 */
 	@Override
@@ -84,7 +84,7 @@ public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getIdentifierType()
 	 */
 	@Override
@@ -92,9 +92,19 @@ public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public Collection<String> getKeywordTypes() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		throw new NotImplementedException();
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * codemining.languagetools.ITokenizer#getTokenFromString(java.lang.String)
 	 */
@@ -112,7 +122,7 @@ public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getTokenListFromCode(char[])
 	 */
 	@Override
@@ -173,7 +183,7 @@ public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
@@ -211,7 +221,7 @@ public class CppWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override

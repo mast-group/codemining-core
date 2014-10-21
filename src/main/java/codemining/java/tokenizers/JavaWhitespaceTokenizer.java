@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 package codemining.java.tokenizers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
@@ -21,7 +22,6 @@ import org.eclipse.jdt.internal.core.util.PublicScanner;
 
 import codemining.languagetools.IFormattingTokenizer;
 import codemining.languagetools.ITokenizer;
-import codemining.languagetools.ITokenizer.FullToken;
 import codemining.languagetools.tokenizers.whitespace.WhitespaceToTokenConverter;
 
 import com.google.common.collect.Lists;
@@ -30,15 +30,15 @@ import com.google.common.collect.Maps;
 /**
  * A token type tokenizer that tokenizes whitespace. The implementation is
  * thread safe.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/**
 	 * The non-thread-safe implementation.
-	 * 
+	 *
 	 */
 	static class TokenizerImplementation implements ITokenizer {
 
@@ -51,7 +51,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see codemining.languagetools.ITokenizer#fullTokenListWithPos(char[])
 		 */
 		@Override
@@ -110,7 +110,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see codemining.languagetools.ITokenizer#getFileFilter()
 		 */
 		@Override
@@ -120,18 +120,28 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see codemining.languagetools.ITokenizer#getIdentifierType()
 		 */
 		@Override
 		public String getIdentifierType() {
 			// We do not return types here...
-			return "";
+			throw new IllegalArgumentException("No token types are available");
+		}
+
+		@Override
+		public Collection<String> getKeywordTypes() {
+			throw new IllegalArgumentException("No token types are available");
+		}
+
+		@Override
+		public Collection<String> getLiteralTypes() {
+			throw new IllegalArgumentException("No token types are available");
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * codemining.languagetools.ITokenizer#getTokenFromString(java.lang.
 		 * String)
@@ -143,7 +153,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see codemining.languagetools.ITokenizer#getTokenListFromCode(char[])
 		 */
 		@Override
@@ -195,7 +205,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 						final int lineStart = scanner.getLineStart(currentLine);
 						tokens.add(new WhitespaceAnnotatedToken(cToken, "",
 								currentPosition - lineStart, scanner
-										.getCurrentTokenString().length()));
+								.getCurrentTokenString().length()));
 					}
 				} catch (final InvalidInputException e) {
 					LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
@@ -226,7 +236,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 		 */
 		@Override
@@ -258,7 +268,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 		 */
 		@Override
@@ -331,7 +341,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 									new WhitespaceAnnotatedToken(cToken, "",
 											currentPosition - lineStart,
 											scanner.getCurrentTokenString()
-													.length()));
+											.length()));
 							i++;
 						}
 					} catch (final InvalidInputException e) {
@@ -349,7 +359,7 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 
 	/**
 	 * A struct of an annotated token.
-	 * 
+	 *
 	 */
 	public static class WhitespaceAnnotatedToken {
 
@@ -397,6 +407,18 @@ public class JavaWhitespaceTokenizer implements IFormattingTokenizer {
 	public String getIdentifierType() {
 		final TokenizerImplementation tok = new TokenizerImplementation();
 		return tok.getIdentifierType();
+	}
+
+	@Override
+	public Collection<String> getKeywordTypes() {
+		final TokenizerImplementation tok = new TokenizerImplementation();
+		return tok.getKeywordTypes();
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		final TokenizerImplementation tok = new TokenizerImplementation();
+		return tok.getLiteralTypes();
 	}
 
 	@Override

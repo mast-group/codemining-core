@@ -2,6 +2,7 @@ package codemining.languagetools;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -14,7 +15,7 @@ import com.google.common.collect.Maps;
 
 /**
  * Adds a NO_SPACE between tokens that contain, no space.
- * 
+ *
  */
 public class FormattingTokenizer implements IFormattingTokenizer {
 
@@ -43,6 +44,16 @@ public class FormattingTokenizer implements IFormattingTokenizer {
 	@Override
 	public String getIdentifierType() {
 		return baseTokenizer.getIdentifierType();
+	}
+
+	@Override
+	public Collection<String> getKeywordTypes() {
+		return baseTokenizer.getKeywordTypes();
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		return baseTokenizer.getLiteralTypes();
 	}
 
 	@Override
@@ -113,7 +124,7 @@ public class FormattingTokenizer implements IFormattingTokenizer {
 
 	/**
 	 * Return the position of just the whitespaces in the code.
-	 * 
+	 *
 	 * @param code
 	 * @return
 	 */
@@ -127,7 +138,7 @@ public class FormattingTokenizer implements IFormattingTokenizer {
 				.entrySet()) {
 			if (tokenEntry.getValue().startsWith(ITokenizer.SENTENCE_START)
 					|| tokenEntry.getValue()
-							.startsWith(ITokenizer.SENTENCE_END)) {
+					.startsWith(ITokenizer.SENTENCE_END)) {
 				continue;
 			}
 			if (tokenEntry.getValue().startsWith("WS_")) {

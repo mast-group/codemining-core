@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package codemining.java.tokenizers;
 
@@ -7,6 +7,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -31,15 +32,15 @@ import com.google.common.collect.Maps;
 /**
  * A Java tokenizer that decorates another tokenizer's tokens with AST
  * information.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/**
 	 * Visit all AST nodes and annotate tokens.
-	 * 
+	 *
 	 */
 	private class TokenDecorator extends ASTVisitor {
 		final SortedMap<Integer, FullToken> baseTokens;
@@ -54,11 +55,11 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 				final ASTNode node) {
 			annotatedTokens.putAll(Maps.transformValues(baseTokens,
 					new Function<FullToken, AstAnnotatedToken>() {
-						@Override
-						public AstAnnotatedToken apply(final FullToken input) {
-							return new AstAnnotatedToken(input, NONE, NONE);
-						}
-					}));
+				@Override
+				public AstAnnotatedToken apply(final FullToken input) {
+					return new AstAnnotatedToken(input, NONE, NONE);
+				}
+			}));
 
 			node.accept(this);
 			checkArgument(baseTokens.size() == annotatedTokens.size());
@@ -133,7 +134,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#fullTokenListWithPos(char[])
 	 */
 	@Override
@@ -145,7 +146,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.java.tokenizers.IAstAnnotatedTokenizer#
 	 * getAnnotatedTokenListFromCode(char[])
 	 */
@@ -162,7 +163,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.java.tokenizers.IAstAnnotatedTokenizer#
 	 * getAnnotatedTokenListFromCode(java.io.File)
 	 */
@@ -176,7 +177,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * codemining.java.tokenizers.IAstAnnotatedTokenizer#getAnnotatedTokens(
 	 * char[])
@@ -202,7 +203,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getFileFilter()
 	 */
 	@Override
@@ -212,7 +213,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getIdentifierType()
 	 */
 	@Override
@@ -220,9 +221,19 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 		return baseTokenizer.getIdentifierType();
 	}
 
+	@Override
+	public Collection<String> getKeywordTypes() {
+		return baseTokenizer.getKeywordTypes();
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		return baseTokenizer.getLiteralTypes();
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * codemining.languagetools.ITokenizer#getTokenFromString(java.lang.String)
 	 */
@@ -234,7 +245,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getTokenListFromCode(char[])
 	 */
 	@Override
@@ -257,7 +268,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/**
 	 * Convert the numeric id of a node to its textual representation.
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 */
@@ -271,7 +282,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
@@ -294,7 +305,7 @@ public class JavaASTAnnotatedTokenizer implements IAstAnnotatedTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override

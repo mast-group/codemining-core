@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 package codemining.java.tokenizers;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.logging.Logger;
@@ -24,24 +25,11 @@ import com.google.common.collect.Maps;
 
 /**
  * A tokenizer of Java code but it returns the token type.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaTokenTypeTokenizer implements ITokenizer {
-
-	private static final long serialVersionUID = 7532823864395627836L;
-	private static final Logger LOGGER = Logger
-			.getLogger(JavaTokenTypeTokenizer.class.getName());
-
-	private final RegexFileFilter javaCodeFiler = new RegexFileFilter(
-			".*\\.java$");
-	private final boolean tokenizeComments;
-	public static final String LITERAL_TOKEN = "LITERAL";
-	public static final String IDENTIFIER_TOKEN = "IDENTIFIER";
-	public static final String COMMENT_JAVADOC = "COMMENT_JAVADOC";
-	public static final String COMMENT_LINE = "COMMENT_LINE";
-	public static final String COMMENT_BLOCK = "COMMENT_BLOCK";
 
 	/**
 	 * @param token
@@ -55,6 +43,20 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 				|| token == ITerminalSymbols.TokenNameLongLiteral
 				|| token == ITerminalSymbols.TokenNameDoubleLiteral;
 	}
+
+	private static final long serialVersionUID = 7532823864395627836L;
+
+	private static final Logger LOGGER = Logger
+			.getLogger(JavaTokenTypeTokenizer.class.getName());
+	private final RegexFileFilter javaCodeFiler = new RegexFileFilter(
+			".*\\.java$");
+	private final boolean tokenizeComments;
+	public static final String LITERAL_TOKEN = "LITERAL";
+	public static final String IDENTIFIER_TOKEN = "IDENTIFIER";
+	public static final String COMMENT_JAVADOC = "COMMENT_JAVADOC";
+	public static final String COMMENT_LINE = "COMMENT_LINE";
+
+	public static final String COMMENT_BLOCK = "COMMENT_BLOCK";
 
 	public JavaTokenTypeTokenizer() {
 		this.tokenizeComments = false;
@@ -122,7 +124,17 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 	@Override
 	public String getIdentifierType() {
 		// We do not return types here...
-		return "";
+		throw new IllegalArgumentException("Retrieving types is not possible");
+	}
+
+	@Override
+	public Collection<String> getKeywordTypes() {
+		throw new IllegalArgumentException("Retrieving types is not possible");
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		throw new IllegalArgumentException("Retrieving types is not possible");
 	}
 
 	@Override
@@ -173,7 +185,7 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.ed.inf.javacodeutils.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
@@ -218,7 +230,7 @@ public class JavaTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see uk.ac.ed.inf.javacodeutils.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override

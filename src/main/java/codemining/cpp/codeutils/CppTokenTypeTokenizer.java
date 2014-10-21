@@ -1,17 +1,17 @@
 /**
- * 
+ *
  */
 package codemining.cpp.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.RegexFileFilter;
-import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.cdt.internal.formatter.scanner.Scanner;
 import org.eclipse.cdt.internal.formatter.scanner.Token;
 
@@ -22,9 +22,9 @@ import com.google.common.collect.Maps;
 
 /**
  * A C/C++ token type tokenizer
- * 
+ *
  * @author Miltos Allamanis
- * 
+ *
  */
 public class CppTokenTypeTokenizer implements ITokenizer {
 
@@ -40,7 +40,7 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#fullTokenListWithPos(char[])
 	 */
 	@Override
@@ -65,7 +65,7 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getFileFilter()
 	 */
 	@Override
@@ -75,17 +75,27 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getIdentifierType()
 	 */
 	@Override
 	public String getIdentifierType() {
-		throw new NotImplementedException();
+		throw new IllegalArgumentException("No token types can be computed");
+	}
+
+	@Override
+	public Collection<String> getKeywordTypes() {
+		throw new IllegalArgumentException("No token types can be computed");
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		throw new IllegalArgumentException("No token types can be computed");
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * codemining.languagetools.ITokenizer#getTokenFromString(java.lang.String)
 	 */
@@ -103,7 +113,7 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getTokenListFromCode(char[])
 	 */
 	@Override
@@ -159,7 +169,7 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
@@ -192,7 +202,7 @@ public class CppTokenTypeTokenizer implements ITokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override

@@ -3,6 +3,7 @@ package codemining.languagetools;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -13,9 +14,9 @@ import com.google.common.base.Objects;
 
 /**
  * Interface of a code tokenizer.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public interface ITokenizer extends Serializable {
 
@@ -78,7 +79,7 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Return a list with the full tokens.
-	 * 
+	 *
 	 * @param code
 	 * @return
 	 */
@@ -86,22 +87,36 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Return a file filter, filtering the files that can be tokenized.
-	 * 
+	 *
 	 * @return
-	 * 
+	 *
 	 */
 	AbstractFileFilter getFileFilter();
 
 	/**
 	 * Return the token type that signifies that a token is an identifier.
-	 * 
+	 *
 	 * @return
 	 */
 	String getIdentifierType();
 
 	/**
-	 * Return a full token given a string token.
+	 * Return the token types that are keywords.
 	 * 
+	 * @return
+	 */
+	Collection<String> getKeywordTypes();
+
+	/**
+	 * Return the types the represent literals.
+	 *
+	 * @return
+	 */
+	Collection<String> getLiteralTypes();
+
+	/**
+	 * Return a full token given a string token.
+	 *
 	 * @param token
 	 * @return
 	 */
@@ -109,7 +124,7 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Get the list of tokens from the code.
-	 * 
+	 *
 	 * @param code
 	 * @return
 	 */
@@ -117,7 +132,7 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Get the list of tokens from the code.
-	 * 
+	 *
 	 * @param code
 	 * @return
 	 */
@@ -126,7 +141,7 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Tokenize some code.
-	 * 
+	 *
 	 * @param code
 	 *            the code
 	 * @return a list of tokens
@@ -135,7 +150,7 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Tokenize code given a file.
-	 * 
+	 *
 	 * @param codeFile
 	 * @return
 	 */
@@ -143,7 +158,7 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Return a list of tokens along with their positions.
-	 * 
+	 *
 	 * @param code
 	 * @return
 	 */
@@ -151,7 +166,7 @@ public interface ITokenizer extends Serializable {
 
 	/**
 	 * Return a list of tokens along with their positions.
-	 * 
+	 *
 	 * @param file
 	 * @return
 	 * @throws IOException

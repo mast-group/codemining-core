@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 package codemining.langs.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -17,9 +18,9 @@ import com.threecrickets.jygments.grammar.Token;
 
 /**
  * Tokenize the code but return only the token types.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class TokenTypeTokenizer extends AbstractJygmentsTokenizer {
 
@@ -53,7 +54,17 @@ public class TokenTypeTokenizer extends AbstractJygmentsTokenizer {
 
 	@Override
 	public String getIdentifierType() {
-		return "";
+		throw new IllegalArgumentException("Token types may not be computed");
+	}
+
+	@Override
+	public Collection<String> getKeywordTypes() {
+		throw new IllegalArgumentException("Token types may not be computed");
+	}
+
+	@Override
+	public Collection<String> getLiteralTypes() {
+		throw new IllegalArgumentException("Token types may not be computed");
 	}
 
 	@Override
@@ -78,7 +89,7 @@ public class TokenTypeTokenizer extends AbstractJygmentsTokenizer {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.langs.codeutils.AbstractCodeTokenizer#getTokenString(com.
 	 * threecrickets.jygments.grammar.Token)
 	 */

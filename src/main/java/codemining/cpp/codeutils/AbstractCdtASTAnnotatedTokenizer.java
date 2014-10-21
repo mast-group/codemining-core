@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 package codemining.cpp.codeutils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
@@ -34,12 +35,12 @@ import com.google.common.collect.Maps;
 
 /**
  * C/C++ AST Annotated Tokenizer
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public abstract class AbstractCdtASTAnnotatedTokenizer implements
-		IAstAnnotatedTokenizer {
+IAstAnnotatedTokenizer {
 
 	private static class TokenDecorator extends ASTVisitor {
 		final SortedMap<Integer, FullToken> baseTokens;
@@ -57,11 +58,11 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 				final IASTNode node) {
 			annotatedTokens.putAll(Maps.transformValues(baseTokens,
 					new Function<FullToken, AstAnnotatedToken>() {
-						@Override
-						public AstAnnotatedToken apply(final FullToken input) {
-							return new AstAnnotatedToken(input, NONE, NONE);
-						}
-					}));
+				@Override
+				public AstAnnotatedToken apply(final FullToken input) {
+					return new AstAnnotatedToken(input, NONE, NONE);
+				}
+			}));
 			node.accept(this);
 			return annotatedTokens;
 		}
@@ -70,7 +71,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 			final IASTFileLocation fileLocation = node.getFileLocation();
 			if (fileLocation == null) {
 				return; // TODO: Is this right? This happens when we have a
-						// macro problem
+				// macro problem
 			}
 
 			final int fromPosition = fileLocation.getNodeOffset();
@@ -266,7 +267,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#fullTokenListWithPos(char[])
 	 */
 	@Override
@@ -324,7 +325,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getFileFilter()
 	 */
 	@Override
@@ -334,7 +335,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getIdentifierType()
 	 */
 	@Override
@@ -345,6 +346,26 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 	/*
 	 * (non-Javadoc)
 	 * 
+	 * @see codemining.languagetools.ITokenizer#getKeywordTypes()
+	 */
+	@Override
+	public Collection<String> getKeywordTypes() {
+		throw new NotImplementedException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see codemining.languagetools.ITokenizer#getLiteralTypes()
+	 */
+	@Override
+	public Collection<String> getLiteralTypes() {
+		throw new NotImplementedException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see
 	 * codemining.languagetools.ITokenizer#getTokenFromString(java.lang.String)
 	 */
@@ -356,7 +377,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#getTokenListFromCode(char[])
 	 */
 	@Override
@@ -382,7 +403,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListFromCode(char[])
 	 */
 	@Override
@@ -405,7 +426,7 @@ public abstract class AbstractCdtASTAnnotatedTokenizer implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see codemining.languagetools.ITokenizer#tokenListWithPos(char[])
 	 */
 	@Override
