@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package codemining.languagetools;
 
@@ -14,9 +14,9 @@ import com.google.common.collect.ArrayListMultimap;
  * A full piece of source code that has the variable bindings resolved. The
  * variable bindings are "attached" to the source code, so any changes in the
  * token stream, will be reflected to the bindings.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class ResolvedSourceCode {
 	public final List<String> codeTokens;
@@ -25,7 +25,7 @@ public class ResolvedSourceCode {
 
 	/**
 	 * Assumes that the variable bindings use the same (as in ==) token list.
-	 * 
+	 *
 	 * @param codeTokens
 	 * @param variableBindings
 	 */
@@ -37,7 +37,7 @@ public class ResolvedSourceCode {
 
 	/**
 	 * Return all the bindings in source code.
-	 * 
+	 *
 	 * @return
 	 */
 	public Collection<TokenNameBinding> getAllBindings() {
@@ -46,7 +46,7 @@ public class ResolvedSourceCode {
 
 	/**
 	 * Return the bindings for a single name.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
@@ -56,7 +56,7 @@ public class ResolvedSourceCode {
 
 	/**
 	 * Rename a single bound set of tokens.
-	 * 
+	 *
 	 * @param binding
 	 * @param name
 	 */

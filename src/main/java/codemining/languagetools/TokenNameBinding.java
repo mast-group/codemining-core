@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package codemining.languagetools;
 
@@ -15,9 +15,9 @@ import com.google.common.collect.Lists;
 
 /**
  * A single name binding in source code. A struct-like class.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class TokenNameBinding implements Serializable {
 	private static final long serialVersionUID = 2020613810485746430L;
@@ -81,7 +81,7 @@ public class TokenNameBinding implements Serializable {
 	/**
 	 * Rename this name to the given binding. The source code tokens included in
 	 * this struct, now represent the new structure.
-	 * 
+	 *
 	 * @param name
 	 * @return
 	 */
