@@ -16,7 +16,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang.exception.ExceptionUtils;
 
+import codemining.java.codeutils.binding.AbstractJavaNameBindingsExtractor;
 import codemining.java.codeutils.binding.JavaApproximateVariableBindingExtractor;
+import codemining.java.codeutils.binding.JavaMethodBindingExtractor;
+import codemining.java.codeutils.binding.JavaTypeBindingExtractor;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ResolvedSourceCode;
 import codemining.languagetools.TokenNameBinding;
@@ -54,10 +57,10 @@ public class JavaBindingsToJson {
 		}
 	}
 
-	public static ResolvedSourceCode getResolvedCode(final File f) {
-		final JavaApproximateVariableBindingExtractor ex = new JavaApproximateVariableBindingExtractor();
+	public static ResolvedSourceCode getResolvedCode(final File f,
+			AbstractJavaNameBindingsExtractor extractor) {
 		try {
-			return ex.getResolvedSourceCode(f);
+			return extractor.getResolvedSourceCode(f);
 		} catch (final IOException e) {
 			LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
 		} finally {
@@ -73,23 +76,34 @@ public class JavaBindingsToJson {
 	 */
 	public static void main(final String[] args) throws JsonIOException,
 			IOException {
-		if (args.length != 2) {
-			System.err.println("Usage <inputFolder> <outputFile>");
+		if (args.length != 3) {
+			System.err
+					.println("Usage <inputFolder> variables|methods|types <outputFile>");
 			System.exit(-1);
 		}
 
+		final AbstractJavaNameBindingsExtractor ex;
+		if (args[1].equals("variables")) {
+			ex = new JavaApproximateVariableBindingExtractor();
+		} else if (args[1].equals("methods")) {
+			ex = new JavaMethodBindingExtractor();
+		} else if (args[1].equals("types")) {
+			ex = new JavaTypeBindingExtractor();
+		} else {
+			throw new IllegalArgumentException("Unrecognized option " + args[1]);
+		}
 		final Collection<File> allFiles = FileUtils.listFiles(
 				new File(args[0]), JavaTokenizer.javaCodeFileFilter,
 				DirectoryFileFilter.DIRECTORY);
 		final List<SerializableResolvedSourceCode> resolvedCode = allFiles
 				.parallelStream()
-				.map(f -> getResolvedCode(f))
+				.map(f -> getResolvedCode(f, ex))
 				.filter(r -> r != null)
 				.map(r -> SerializableResolvedSourceCode
 						.fromResolvedSourceCode(r))
 						.collect(Collectors.toList());
 
-		final FileWriter writer = new FileWriter(new File(args[1]));
+		final FileWriter writer = new FileWriter(new File(args[2]));
 		try {
 			final Gson gson = new Gson();
 			gson.toJson(resolvedCode, writer);
