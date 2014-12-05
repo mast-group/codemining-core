@@ -22,11 +22,11 @@ public class JavaVariableFeatureExtractor {
 
 	private static void addAstFeatures(final Set<String> features,
 			final ASTNode declarationNode) {
-		features.add("ParentAstType:"
+		features.add("DeclParentAstType:"
 				+ ASTNode.nodeClassForType(
 						declarationNode.getParent().getNodeType())
 						.getSimpleName());
-		features.add("GrandparentAstType:"
+		features.add("DeclGrandparentAstType:"
 				+ ASTNode.nodeClassForType(
 						declarationNode.getParent().getParent().getNodeType())
 						.getSimpleName());

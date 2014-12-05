@@ -48,17 +48,22 @@ public class JavaBindingsToJson {
 
 		public final List<List<Integer>> boundVariables;
 
+		public final List<List<String>> boundVariableFeatures;
+
 		private SerializableResolvedSourceCode(final ResolvedSourceCode rsc) {
 			codeTokens = rsc.codeTokens;
 			boundVariables = Lists.newArrayList();
+			boundVariableFeatures = Lists.newArrayList();
 			for (final TokenNameBinding binding : rsc.getAllBindings()) {
 				boundVariables.add(new ArrayList<Integer>(binding.nameIndexes));
+				boundVariableFeatures.add(new ArrayList<String>(
+						binding.features));
 			}
 		}
 	}
 
 	public static ResolvedSourceCode getResolvedCode(final File f,
-			AbstractJavaNameBindingsExtractor extractor) {
+			final AbstractJavaNameBindingsExtractor extractor) {
 		try {
 			return extractor.getResolvedSourceCode(f);
 		} catch (final IOException e) {
@@ -101,7 +106,7 @@ public class JavaBindingsToJson {
 				.filter(r -> r != null)
 				.map(r -> SerializableResolvedSourceCode
 						.fromResolvedSourceCode(r))
-						.collect(Collectors.toList());
+				.collect(Collectors.toList());
 
 		final FileWriter writer = new FileWriter(new File(args[2]));
 		try {
