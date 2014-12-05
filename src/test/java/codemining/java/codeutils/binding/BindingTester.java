@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import java.util.List;
 import java.util.Set;
 
-import codemining.languagetools.TokenNameBinding;
+import codemining.languagetools.bindings.TokenNameBinding;
 
 import com.google.common.collect.Sets;
 

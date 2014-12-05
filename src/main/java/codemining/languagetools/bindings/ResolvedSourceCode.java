@@ -1,7 +1,7 @@
 /**
  *
  */
-package codemining.languagetools;
+package codemining.languagetools.bindings;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

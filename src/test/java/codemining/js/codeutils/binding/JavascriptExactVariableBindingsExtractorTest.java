@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import codemining.java.codeutils.binding.BindingTester;
 import codemining.js.codeutils.JavascriptASTExtractorTest;
-import codemining.languagetools.TokenNameBinding;
+import codemining.languagetools.bindings.TokenNameBinding;
 
 // FIXME Tests commented out until binding resolution is fixed
 public class JavascriptExactVariableBindingsExtractorTest {

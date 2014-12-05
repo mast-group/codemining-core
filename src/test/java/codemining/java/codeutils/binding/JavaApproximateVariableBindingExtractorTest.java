@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import codemining.java.codeutils.JavaAstExtractorTest;
-import codemining.languagetools.TokenNameBinding;
+import codemining.languagetools.bindings.TokenNameBinding;
 
 public class JavaApproximateVariableBindingExtractorTest {
 

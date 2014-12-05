@@ -13,7 +13,7 @@ import java.util.Set;
 import org.eclipse.wst.jsdt.core.dom.*;
 
 import codemining.js.codeutils.JavascriptASTExtractor;
-import codemining.languagetools.TokenNameBinding;
+import codemining.languagetools.bindings.TokenNameBinding;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

@@ -1,7 +1,7 @@
 /**
  *
  */
-package codemining.languagetools;
+package codemining.languagetools.bindings;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -32,12 +32,18 @@ public class TokenNameBinding implements Serializable {
 	 */
 	public final Set<Integer> nameIndexes;
 
+	/**
+	 * Features of the binding
+	 */
+	public final Set<String> features;
+
 	public TokenNameBinding(final Set<Integer> nameIndexes,
-			final List<String> sourceCodeTokens) {
+			final List<String> sourceCodeTokens, final Set<String> features) {
 		checkArgument(nameIndexes.size() > 0);
 		checkArgument(sourceCodeTokens.size() > 0);
 		this.nameIndexes = Collections.unmodifiableSet(nameIndexes);
 		this.sourceCodeTokens = Collections.unmodifiableList(sourceCodeTokens);
+		this.features = features;
 	}
 
 	@Override
@@ -52,21 +58,9 @@ public class TokenNameBinding implements Serializable {
 			return false;
 		}
 		final TokenNameBinding other = (TokenNameBinding) obj;
-		if (nameIndexes == null) {
-			if (other.nameIndexes != null) {
-				return false;
-			}
-		} else if (!nameIndexes.equals(other.nameIndexes)) {
-			return false;
-		}
-		if (sourceCodeTokens == null) {
-			if (other.sourceCodeTokens != null) {
-				return false;
-			}
-		} else if (!sourceCodeTokens.equals(other.sourceCodeTokens)) {
-			return false;
-		}
-		return true;
+		return Objects.equal(nameIndexes, other.nameIndexes)
+				&& Objects.equal(features, other.features)
+				&& Objects.equal(sourceCodeTokens, other.sourceCodeTokens);
 	}
 
 	public String getName() {
@@ -75,7 +69,7 @@ public class TokenNameBinding implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(sourceCodeTokens, nameIndexes);
+		return Objects.hashCode(sourceCodeTokens, nameIndexes, features);
 	}
 
 	/**
@@ -90,11 +84,11 @@ public class TokenNameBinding implements Serializable {
 		for (final int position : nameIndexes) {
 			renamedCode.set(position, name);
 		}
-		return new TokenNameBinding(nameIndexes, renamedCode);
+		return new TokenNameBinding(nameIndexes, renamedCode, features);
 	}
 
 	@Override
 	public String toString() {
-		return getName() + nameIndexes;
+		return getName() + nameIndexes + " " + features;
 	}
 }

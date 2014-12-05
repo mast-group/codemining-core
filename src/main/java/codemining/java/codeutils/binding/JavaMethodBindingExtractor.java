@@ -1,8 +1,9 @@
 /**
- * 
+ *
  */
 package codemining.java.codeutils.binding;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -20,9 +21,9 @@ import com.google.common.collect.Sets;
 /**
  * Extract Java method bindings by using similar named method calls and
  * definitions.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaMethodBindingExtractor extends
 		AbstractJavaNameBindingsExtractor {
@@ -57,6 +58,11 @@ public class JavaMethodBindingExtractor extends
 
 	public JavaMethodBindingExtractor(final ITokenizer tokenizer) {
 		super(tokenizer);
+	}
+
+	@Override
+	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
+		return Collections.emptySet();
 	}
 
 	@Override

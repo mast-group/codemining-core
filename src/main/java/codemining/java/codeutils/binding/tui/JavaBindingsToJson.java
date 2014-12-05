@@ -21,8 +21,8 @@ import codemining.java.codeutils.binding.JavaApproximateVariableBindingExtractor
 import codemining.java.codeutils.binding.JavaMethodBindingExtractor;
 import codemining.java.codeutils.binding.JavaTypeBindingExtractor;
 import codemining.java.tokenizers.JavaTokenizer;
-import codemining.languagetools.ResolvedSourceCode;
-import codemining.languagetools.TokenNameBinding;
+import codemining.languagetools.bindings.ResolvedSourceCode;
+import codemining.languagetools.bindings.TokenNameBinding;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;

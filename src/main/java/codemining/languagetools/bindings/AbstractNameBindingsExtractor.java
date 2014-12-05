@@ -1,7 +1,7 @@
 /**
  * 
  */
-package codemining.languagetools;
+package codemining.languagetools.bindings;
 
 import java.io.File;
 import java.io.IOException;

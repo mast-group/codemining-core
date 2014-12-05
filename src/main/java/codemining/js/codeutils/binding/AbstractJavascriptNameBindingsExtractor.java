@@ -1,10 +1,11 @@
 /**
- * 
+ *
  */
 package codemining.js.codeutils.binding;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
@@ -14,9 +15,9 @@ import org.eclipse.wst.jsdt.core.dom.ASTNode;
 
 import codemining.js.codeutils.JavascriptASTExtractor;
 import codemining.js.codeutils.JavascriptTokenizer;
-import codemining.languagetools.AbstractNameBindingsExtractor;
-import codemining.languagetools.ResolvedSourceCode;
-import codemining.languagetools.TokenNameBinding;
+import codemining.languagetools.bindings.AbstractNameBindingsExtractor;
+import codemining.languagetools.bindings.ResolvedSourceCode;
+import codemining.languagetools.bindings.TokenNameBinding;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
@@ -25,12 +26,17 @@ import com.google.common.collect.Sets;
 
 /**
  * A name bindings extractor interface for Javascript.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public abstract class AbstractJavascriptNameBindingsExtractor extends
 		AbstractNameBindingsExtractor {
+
+	public static Set<String> getFeatures(final Set<ASTNode> boundAstNodes) {
+		// TODO
+		return Collections.emptySet();
+	}
 
 	public static ResolvedSourceCode getResolvedSourceCode(
 			final String sourceCode, final Set<Set<ASTNode>> nodeBindings) {
@@ -56,7 +62,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 			}
 			bindings.put(tokens.get(boundPositions.get(0)),
 					new TokenNameBinding(Sets.newTreeSet(boundPositions),
-							tokens));
+							tokens, getFeatures(boundName)));
 		}
 
 		return new ResolvedSourceCode(tokens, bindings);
@@ -65,7 +71,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 	/**
 	 * Get the token bindings given the ASTNode bindings and the source code
 	 * positions.
-	 * 
+	 *
 	 * @param sourceCode
 	 * @param nodeBindings
 	 * @return
@@ -89,7 +95,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 				boundPositions.add(tokenIdx);
 			}
 			bindings.add(new TokenNameBinding(Sets.newTreeSet(boundPositions),
-					tokens));
+					tokens, getFeatures(boundName)));
 		}
 
 		return bindings;
@@ -97,7 +103,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 
 	/**
 	 * Return the token index for the given position.
-	 * 
+	 *
 	 * @param sourceCode
 	 * @return
 	 */
@@ -119,7 +125,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 	/**
 	 * Return a set of sets of SimpleName ASTNode objects that are bound
 	 * together
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 */
@@ -128,7 +134,7 @@ public abstract class AbstractJavascriptNameBindingsExtractor extends
 	/**
 	 * Get the name bindings for the given ASTNode. This assumes that the
 	 * ASTNode has been produced by the sourceCode, code with no variation.
-	 * 
+	 *
 	 * @param node
 	 *            the ASTNode where bindings will be computed.
 	 * @param sourceCode

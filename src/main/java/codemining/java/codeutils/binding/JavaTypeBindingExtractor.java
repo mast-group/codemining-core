@@ -1,21 +1,12 @@
 /**
- * 
+ *
  */
 package codemining.java.codeutils.binding;
 
+import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CastExpression;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.TypeLiteral;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
-import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.*;
 
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
@@ -26,9 +17,9 @@ import com.google.common.collect.Sets;
 
 /**
  * Extract Java type name bindings.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaTypeBindingExtractor extends AbstractJavaNameBindingsExtractor {
 
@@ -107,6 +98,11 @@ public class JavaTypeBindingExtractor extends AbstractJavaNameBindingsExtractor 
 
 	public JavaTypeBindingExtractor(final ITokenizer tokenizer) {
 		super(tokenizer);
+	}
+
+	@Override
+	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
+		return Collections.emptySet();
 	}
 
 	@Override

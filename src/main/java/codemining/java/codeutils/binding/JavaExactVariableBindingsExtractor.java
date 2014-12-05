@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package codemining.java.codeutils.binding;
 
@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.*;
 import codemining.java.codeutils.JavaASTExtractor;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
-import codemining.languagetools.TokenNameBinding;
+import codemining.languagetools.bindings.TokenNameBinding;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -24,9 +24,9 @@ import com.google.common.collect.Sets;
 /**
  * Retrieve the variable bindings, given an ASTNode. This finds exact bindings
  * to the detriment of recall. Partial code snippets are not supported.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaExactVariableBindingsExtractor extends
 		AbstractJavaNameBindingsExtractor {
@@ -34,7 +34,7 @@ public class JavaExactVariableBindingsExtractor extends
 	/**
 	 * This class looks for declarations of variables and the references to
 	 * them.
-	 * 
+	 *
 	 */
 	private static class VariableBindingFinder extends ASTVisitor {
 		/**
@@ -79,7 +79,7 @@ public class JavaExactVariableBindingsExtractor extends
 		 * Visits {@link SimpleName} AST nodes. Resolves the binding of the
 		 * simple name and looks for it in the {@link #variableScope} map. If
 		 * the binding is found, this is a reference to a variable.
-		 * 
+		 *
 		 * @param node
 		 *            the node to visit
 		 */
@@ -123,7 +123,7 @@ public class JavaExactVariableBindingsExtractor extends
 		 * Looks for local variable declarations. For every declaration of a
 		 * variable, the parent {@link Block} denoting the variable's scope is
 		 * stored in {@link #variableScope} map.
-		 * 
+		 *
 		 * @param node
 		 *            the node to visit
 		 */
@@ -151,6 +151,11 @@ public class JavaExactVariableBindingsExtractor extends
 	@Override
 	protected JavaASTExtractor createExtractor() {
 		return new JavaASTExtractor(true);
+	}
+
+	@Override
+	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
+		return JavaVariableFeatureExtractor.variableFeatures(boundNodes);
 	}
 
 	@Override

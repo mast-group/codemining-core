@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package codemining.java.codeutils.binding;
 
@@ -27,9 +27,9 @@ import com.google.common.collect.Sets;
 
 /**
  * An approximate best-effort (worse-precision) variable binding extractor.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
- * 
+ *
  */
 public class JavaApproximateVariableBindingExtractor extends
 		AbstractJavaNameBindingsExtractor {
@@ -37,7 +37,7 @@ public class JavaApproximateVariableBindingExtractor extends
 	/**
 	 * This class looks for declarations of variables and the references to
 	 * them.
-	 * 
+	 *
 	 */
 	private static class VariableBindingFinder extends ASTVisitor {
 		private int nextDeclarId = 0;
@@ -57,7 +57,7 @@ public class JavaApproximateVariableBindingExtractor extends
 
 		/**
 		 * Add the binding to the current scope.
-		 * 
+		 *
 		 * @param scopeBindings
 		 * @param name
 		 */
@@ -118,7 +118,7 @@ public class JavaApproximateVariableBindingExtractor extends
 		 * Visits {@link SimpleName} AST nodes. Resolves the binding of the
 		 * simple name and looks for it in the {@link #variableScope} map. If
 		 * the binding is found, this is a reference to a variable.
-		 * 
+		 *
 		 * @param node
 		 *            the node to visit
 		 */
@@ -153,7 +153,7 @@ public class JavaApproximateVariableBindingExtractor extends
 		 * Looks for local variable declarations. For every declaration of a
 		 * variable, the parent {@link Block} denoting the variable's scope is
 		 * stored in {@link #variableScope} map.
-		 * 
+		 *
 		 * @param node
 		 *            the node to visit
 		 */
@@ -173,6 +173,11 @@ public class JavaApproximateVariableBindingExtractor extends
 
 	public JavaApproximateVariableBindingExtractor(final ITokenizer tokenizer) {
 		super(tokenizer);
+	}
+
+	@Override
+	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
+		return JavaVariableFeatureExtractor.variableFeatures(boundNodes);
 	}
 
 	@Override
