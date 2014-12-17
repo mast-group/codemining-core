@@ -8,6 +8,15 @@
 	<name>Code Mining Base Package</name>
 	<packaging>jar</packaging>
 
+  <properties>
+    <findbugs.version>3.0.0</findbugs.version>
+    <checkstyle.version>5.7</checkstyle.version>
+    <surefire.reportplugin.version>2.12.4</surefire.reportplugin.version>
+    <cobertura.version>2.5.2</cobertura.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+
   <build>
         <pluginManagement>
             <plugins>
