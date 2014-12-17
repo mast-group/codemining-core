@@ -103,46 +103,34 @@
 			<version>3.9.1.v20130814-1242</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipe.cdt.core</groupId>
-			<artifactId>cdt</artifactId>
-			<version>UNKNOWN</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../dependencies/eclipse.cdt/org.eclipse.cdt.core.jar</systemPath>
+			<groupId>codemining.deps</groupId>
+			<artifactId>org.eclipse.cdt.core</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipe.wst.jsdt.core</groupId>
-			<artifactId>jsdt</artifactId>
-			<version>UNKNOWN</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../dependencies/eclipse.jsdt/org.eclipse.wst.jsdt.core.jar</systemPath>
+			<groupId>codemining.deps</groupId>
+			<artifactId>org.eclipse.wst.jsdt.core</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>jygments</groupId>
-			<artifactId>jygments</artifactId>
-			<version>UNKNOWN</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../dependencies/jygments/com.threecrickets.jygments.jar</systemPath>
+			<groupId>codemining.deps</groupId>
+			<artifactId>com.threecrickets.jygments</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>pydev-core</groupId>
-			<artifactId>pydev-core</artifactId>
-			<version>UNKNOWN</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../dependencies/pydev/core.jar</systemPath>
+			<groupId>codemining.deps</groupId>
+			<artifactId>pydev.core</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>pydev-parser</groupId>
-			<artifactId>pydev-parser</artifactId>
-			<version>UNKNOWN</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../dependencies/pydev/parser.jar</systemPath>
+			<groupId>codemining.deps</groupId>
+			<artifactId>pydev.parser</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>pydev-sharedcore</groupId>
-			<artifactId>pydev-sharedcore</artifactId>
-			<version>UNKNOWN</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/../dependencies/pydev/shared_core.jar</systemPath>
+			<groupId>codemining.deps</groupId>
+			<artifactId>pydev.shared_core</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
