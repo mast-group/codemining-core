@@ -8,7 +8,17 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.core.dom.*;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ArrayType;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.ParameterizedType;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Type;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 import com.google.common.collect.Sets;
 
@@ -20,7 +30,7 @@ import com.google.common.collect.Sets;
  */
 public class JavaVariableFeatureExtractor {
 
-	private static void addAstFeatures(final Set<String> features,
+	public static void addAstFeatures(final Set<String> features,
 			final ASTNode declarationNode) {
 		features.add("DeclParentAstType:"
 				+ ASTNode.nodeClassForType(
@@ -38,7 +48,7 @@ public class JavaVariableFeatureExtractor {
 	 * @param features
 	 * @param modifiers
 	 */
-	private static void addModifierFeatures(final Set<String> features,
+	public static void addModifierFeatures(final Set<String> features,
 			final List<?> modifiers) {
 		for (final Object modifier : modifiers) {
 			final IExtendedModifier extendedModifier = (IExtendedModifier) modifier;

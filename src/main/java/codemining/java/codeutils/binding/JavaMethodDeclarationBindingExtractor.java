@@ -3,13 +3,15 @@
  */
 package codemining.java.codeutils.binding;
 
-import java.util.Collections;
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
@@ -19,14 +21,14 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 /**
- * Extract Java method bindings by using similar named method calls and
- * definitions.
+ * Extract bindings (and features) for method delarations.
  *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  *
  */
-public class JavaMethodBindingExtractor extends
-		AbstractJavaNameBindingsExtractor {
+public class JavaMethodDeclarationBindingExtractor
+
+extends AbstractJavaNameBindingsExtractor {
 
 	private static class MethodBindings extends ASTVisitor {
 		/**
@@ -43,26 +45,38 @@ public class JavaMethodBindingExtractor extends
 			methodNamePostions.put(name, node.getName());
 			return super.visit(node);
 		}
-
-		@Override
-		public boolean visit(final MethodInvocation node) {
-			final String name = node.getName().toString();
-			methodNamePostions.put(name, node.getName());
-			return super.visit(node);
-		}
 	}
 
-	public JavaMethodBindingExtractor() {
+	public JavaMethodDeclarationBindingExtractor() {
 		super(new JavaTokenizer());
 	}
 
-	public JavaMethodBindingExtractor(final ITokenizer tokenizer) {
+	public JavaMethodDeclarationBindingExtractor(final ITokenizer tokenizer) {
 		super(tokenizer);
 	}
 
 	@Override
 	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
-		return Collections.emptySet();
+		checkArgument(boundNodes.size() == 1);
+		final ASTNode method = boundNodes.iterator().next().getParent();
+		final Set<String> features = Sets.newHashSet();
+
+		checkArgument(method instanceof MethodDeclaration);
+		final MethodDeclaration md = (MethodDeclaration) method;
+		features.add("nParams:" + md.parameters().size());
+		for (int i = 0; i < md.parameters().size(); i++) {
+			final SingleVariableDeclaration varDecl = (SingleVariableDeclaration) md
+					.parameters().get(i);
+			features.add("param" + i + "Type:" + varDecl.getType().toString());
+			features.add("param" + i + "Name:" + varDecl.getName().toString());
+		}
+
+		features.add("returnType:" + md.getReturnType2().toString());
+		JavaVariableFeatureExtractor.addModifierFeatures(features,
+				md.modifiers());
+
+		JavaVariableFeatureExtractor.addAstFeatures(features, method);
+		return features;
 	}
 
 	@Override
@@ -71,9 +85,10 @@ public class JavaMethodBindingExtractor extends
 		node.accept(mb);
 
 		final Set<Set<ASTNode>> nameBindings = Sets.newHashSet();
-		for (final String methodName : mb.methodNamePostions.keySet()) {
+		for (final Entry<String, ASTNode> entry : mb.methodNamePostions
+				.entries()) {
 			final Set<ASTNode> boundNodes = Sets.newIdentityHashSet();
-			boundNodes.addAll(mb.methodNamePostions.get(methodName));
+			boundNodes.add(entry.getValue());
 			nameBindings.add(boundNodes);
 		}
 		return nameBindings;

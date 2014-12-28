@@ -38,7 +38,7 @@ public class JavaMethodBindingExtractorTest {
 
 	@Test
 	public void testClassLevelBindings() throws IOException {
-		final JavaMethodBindingExtractor jame = new JavaMethodBindingExtractor();
+		final JavaMethodInvocationBindingExtractor jame = new JavaMethodInvocationBindingExtractor();
 
 		final List<TokenNameBinding> classMethodBindings = jame
 				.getNameBindings(classContent);

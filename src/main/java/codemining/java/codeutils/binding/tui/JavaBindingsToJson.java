@@ -18,9 +18,11 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 
 import codemining.java.codeutils.binding.AbstractJavaNameBindingsExtractor;
 import codemining.java.codeutils.binding.JavaApproximateVariableBindingExtractor;
-import codemining.java.codeutils.binding.JavaMethodBindingExtractor;
+import codemining.java.codeutils.binding.JavaMethodDeclarationBindingExtractor;
+import codemining.java.codeutils.binding.JavaMethodInvocationBindingExtractor;
 import codemining.java.codeutils.binding.JavaTypeBindingExtractor;
 import codemining.java.tokenizers.JavaTokenizer;
+import codemining.java.tokenizers.JavaTypeTokenizer;
 import codemining.languagetools.bindings.ResolvedSourceCode;
 import codemining.languagetools.bindings.TokenNameBinding;
 
@@ -66,10 +68,9 @@ public class JavaBindingsToJson {
 			final AbstractJavaNameBindingsExtractor extractor) {
 		try {
 			return extractor.getResolvedSourceCode(f);
-		} catch (final IOException e) {
-			LOGGER.warning(ExceptionUtils.getFullStackTrace(e));
-		} finally {
-
+		} catch (final Throwable t) {
+			LOGGER.warning("Error for file " + f + ": "
+					+ ExceptionUtils.getFullStackTrace(t));
 		}
 		return null;
 	}
@@ -83,15 +84,25 @@ public class JavaBindingsToJson {
 			IOException {
 		if (args.length != 3) {
 			System.err
-					.println("Usage <inputFolder> variables|methods|types <outputFile>");
+					.println("Usage <inputFolder> variables|methodinvocations|"
+							+ "methodinvocations_typegram|methoddeclarations|"
+							+ "methoddeclarations_typegram|types <outputFile>");
 			System.exit(-1);
 		}
 
 		final AbstractJavaNameBindingsExtractor ex;
 		if (args[1].equals("variables")) {
 			ex = new JavaApproximateVariableBindingExtractor();
-		} else if (args[1].equals("methods")) {
-			ex = new JavaMethodBindingExtractor();
+		} else if (args[1].equals("methodinvocations")) {
+			ex = new JavaMethodInvocationBindingExtractor();
+		} else if (args[1].equals("methodinvocations_typegram")) {
+			ex = new JavaMethodInvocationBindingExtractor(
+					new JavaTypeTokenizer());
+		} else if (args[1].equals("methoddeclarations")) {
+			ex = new JavaMethodDeclarationBindingExtractor();
+		} else if (args[1].equals("methoddeclarations_typegram")) {
+			ex = new JavaMethodDeclarationBindingExtractor(
+					new JavaTypeTokenizer());
 		} else if (args[1].equals("types")) {
 			ex = new JavaTypeBindingExtractor();
 		} else {
@@ -106,6 +117,7 @@ public class JavaBindingsToJson {
 				.filter(r -> r != null)
 				.map(r -> SerializableResolvedSourceCode
 						.fromResolvedSourceCode(r))
+				.filter(s -> !s.boundVariables.isEmpty())
 				.collect(Collectors.toList());
 
 		final FileWriter writer = new FileWriter(new File(args[2]));
@@ -120,11 +132,8 @@ public class JavaBindingsToJson {
 	private static final Logger LOGGER = Logger
 			.getLogger(JavaBindingsToJson.class.getName());
 
-	/**
-	 *
-	 */
-	public JavaBindingsToJson() {
-		// TODO Auto-generated constructor stub
+	private JavaBindingsToJson() {
+		// No instantations
 	}
 
 }
