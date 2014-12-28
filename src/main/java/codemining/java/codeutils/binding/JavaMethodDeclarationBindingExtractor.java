@@ -11,8 +11,12 @@ import java.util.Set;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.ReturnStatement;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
+import codemining.java.codedata.JavaIdentifierUtils;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 
@@ -47,6 +51,39 @@ extends AbstractJavaNameBindingsExtractor {
 		}
 	}
 
+	private static class MethodTopicNames extends ASTVisitor {
+		Set<String> nameParts = Sets.newHashSet();
+
+		void populateNames(final MethodDeclaration declaration) {
+			for (Object param : declaration.parameters()) {
+				((ASTNode) param).accept(this);
+			}
+			if (declaration.getBody() != null) {
+				declaration.getBody().accept(this);
+			}
+		}
+
+		@Override
+		public boolean visit(ReturnStatement node) {
+			// TODO Auto-generated method stub
+			return super.visit(node);
+		}
+
+		@Override
+		public boolean visit(final SimpleName node) {
+			nameParts.addAll(JavaIdentifierUtils.getNameParts(node
+					.getIdentifier()));
+			return super.visit(node);
+		}
+	}
+
+	public static void getMethodTopicFeatures(
+			final MethodDeclaration declaration, final Set<String> features) {
+		MethodTopicNames namesExtractor = new MethodTopicNames();
+		namesExtractor.populateNames(declaration);
+		features.addAll(namesExtractor.nameParts);
+	}
+
 	public JavaMethodDeclarationBindingExtractor() {
 		super(new JavaTokenizer());
 	}
@@ -71,11 +108,25 @@ extends AbstractJavaNameBindingsExtractor {
 			features.add("param" + i + "Name:" + varDecl.getName().toString());
 		}
 
-		features.add("returnType:" + md.getReturnType2().toString());
+		if (md.isVarargs()) {
+			features.add("isVarArg");
+		}
+
+		for (final Object exception : md.thrownExceptionTypes()) {
+			final SimpleType ex = (SimpleType) exception;
+			features.add("thrownException:" + ex.toString());
+		}
+
+		features.add("returnType:" + md.getReturnType2());
 		JavaVariableFeatureExtractor.addModifierFeatures(features,
 				md.modifiers());
 
+		if (md.getBody() == null) {
+			features.add("isInterfaceDeclaration");
+		}
+
 		JavaVariableFeatureExtractor.addAstFeatures(features, method);
+		getMethodTopicFeatures(md, features);
 		return features;
 	}
 

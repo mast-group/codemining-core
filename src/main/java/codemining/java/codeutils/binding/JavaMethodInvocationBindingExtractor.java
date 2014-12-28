@@ -15,11 +15,11 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
+import codemining.java.codedata.JavaIdentifierUtils;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -55,11 +55,13 @@ public class JavaMethodInvocationBindingExtractor extends
 			currentNode = currentNode.getParent();
 			if (currentNode instanceof MethodDeclaration) {
 				MethodDeclaration md = (MethodDeclaration) currentNode;
-				tokenParts = getNameParts(md.getName().toString());
+				tokenParts = JavaIdentifierUtils.getNameParts(md.getName()
+						.toString());
 				break;
 			} else if (currentNode instanceof TypeDeclaration) {
 				TypeDeclaration td = (TypeDeclaration) currentNode;
-				tokenParts = getNameParts(td.getName().toString());
+				tokenParts = JavaIdentifierUtils.getNameParts(td.getName()
+						.toString());
 				break;
 			}
 		}
@@ -69,17 +71,6 @@ public class JavaMethodInvocationBindingExtractor extends
 				features.add("inName:" + tokenPart);
 			}
 		}
-	}
-
-	private static List<String> getNameParts(final String name) {
-		List<String> nameParts = Lists.newArrayList();
-		for (String snakecasePart : name.split("_")) {
-			for (String w : snakecasePart
-					.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")) {
-				nameParts.add(w.toLowerCase());
-			}
-		}
-		return nameParts;
 	}
 
 	public JavaMethodInvocationBindingExtractor() {
