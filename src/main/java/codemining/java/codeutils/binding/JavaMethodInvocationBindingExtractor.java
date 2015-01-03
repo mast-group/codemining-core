@@ -5,17 +5,13 @@ package codemining.java.codeutils.binding;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-import codemining.java.codedata.JavaIdentifierUtils;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 
@@ -47,32 +43,6 @@ public class JavaMethodInvocationBindingExtractor extends
 		}
 	}
 
-	private static void addImplementorVocab(final MethodInvocation method,
-			Set<String> features) {
-		ASTNode currentNode = method;
-		List<String> tokenParts = null;
-		while (currentNode.getParent() != null) {
-			currentNode = currentNode.getParent();
-			if (currentNode instanceof MethodDeclaration) {
-				MethodDeclaration md = (MethodDeclaration) currentNode;
-				tokenParts = JavaIdentifierUtils.getNameParts(md.getName()
-						.toString());
-				break;
-			} else if (currentNode instanceof TypeDeclaration) {
-				TypeDeclaration td = (TypeDeclaration) currentNode;
-				tokenParts = JavaIdentifierUtils.getNameParts(td.getName()
-						.toString());
-				break;
-			}
-		}
-
-		if (tokenParts != null) {
-			for (final String tokenPart : tokenParts) {
-				features.add("inName:" + tokenPart);
-			}
-		}
-	}
-
 	public JavaMethodInvocationBindingExtractor() {
 		super(new JavaTokenizer());
 	}
@@ -89,8 +59,8 @@ public class JavaMethodInvocationBindingExtractor extends
 		checkArgument(method instanceof MethodInvocation);
 		final MethodInvocation mi = (MethodInvocation) method;
 		features.add("nArgs:" + mi.arguments().size());
-		addImplementorVocab(mi, features);
-		JavaVariableFeatureExtractor.addAstFeatures(features, method);
+		JavaFeatureExtractor.addImplementorVocab(mi, features);
+		JavaFeatureExtractor.addAstAncestryFeatures(features, method);
 		return features;
 	}
 

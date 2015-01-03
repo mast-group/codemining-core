@@ -5,16 +5,11 @@ package codemining.java.codeutils.binding;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -30,32 +25,6 @@ import com.google.common.collect.Sets;
  */
 public class JavaVariableFeatureExtractor {
 
-	public static void addAstFeatures(final Set<String> features,
-			final ASTNode declarationNode) {
-		features.add("DeclParentAstType:"
-				+ ASTNode.nodeClassForType(
-						declarationNode.getParent().getNodeType())
-						.getSimpleName());
-		features.add("DeclGrandparentAstType:"
-				+ ASTNode.nodeClassForType(
-						declarationNode.getParent().getParent().getNodeType())
-						.getSimpleName());
-	}
-
-	/**
-	 * Add any modifiers as features.
-	 *
-	 * @param features
-	 * @param modifiers
-	 */
-	public static void addModifierFeatures(final Set<String> features,
-			final List<?> modifiers) {
-		for (final Object modifier : modifiers) {
-			final IExtendedModifier extendedModifier = (IExtendedModifier) modifier;
-			features.add(extendedModifier.toString());
-		}
-	}
-
 	/**
 	 * @param features
 	 * @param declarationPoint
@@ -65,56 +34,50 @@ public class JavaVariableFeatureExtractor {
 		if (declarationPoint.getParent() instanceof SingleVariableDeclaration) {
 			final SingleVariableDeclaration declaration = (SingleVariableDeclaration) declarationPoint
 					.getParent();
-			getTypeFeatures(features, declaration.getType());
-			addModifierFeatures(features, declaration.modifiers());
-			addAstFeatures(features, declaration);
+			JavaFeatureExtractor.getTypeFeatures(features,
+					declaration.getType());
+			JavaFeatureExtractor.addModifierFeatures(features,
+					declaration.modifiers());
+			JavaFeatureExtractor.addAstAncestryFeatures(features, declaration);
 		} else if (declarationPoint.getParent() instanceof VariableDeclarationStatement) {
 			final VariableDeclarationStatement declaration = (VariableDeclarationStatement) declarationPoint
 					.getParent();
-			getTypeFeatures(features, declaration.getType());
-			addModifierFeatures(features, declaration.modifiers());
-			addAstFeatures(features, declaration);
+			JavaFeatureExtractor.getTypeFeatures(features,
+					declaration.getType());
+			JavaFeatureExtractor.addModifierFeatures(features,
+					declaration.modifiers());
+			JavaFeatureExtractor.addAstAncestryFeatures(features, declaration);
 		} else if (declarationPoint.getParent() instanceof VariableDeclarationFragment) {
 			if (declarationPoint.getParent().getParent() instanceof VariableDeclarationStatement) {
 				final VariableDeclarationStatement declaration = (VariableDeclarationStatement) declarationPoint
 						.getParent().getParent();
-				getTypeFeatures(features, declaration.getType());
-				addModifierFeatures(features, declaration.modifiers());
-				addAstFeatures(features, declaration);
+				JavaFeatureExtractor.getTypeFeatures(features,
+						declaration.getType());
+				JavaFeatureExtractor.addModifierFeatures(features,
+						declaration.modifiers());
+				JavaFeatureExtractor.addAstAncestryFeatures(features,
+						declaration);
 			} else if (declarationPoint.getParent().getParent() instanceof FieldDeclaration) {
 				final FieldDeclaration declaration = (FieldDeclaration) declarationPoint
 						.getParent().getParent();
-				getTypeFeatures(features, declaration.getType());
-				addModifierFeatures(features, declaration.modifiers());
-				addAstFeatures(features, declaration);
+				JavaFeatureExtractor.getTypeFeatures(features,
+						declaration.getType());
+				JavaFeatureExtractor.addModifierFeatures(features,
+						declaration.modifiers());
+				JavaFeatureExtractor.addAstAncestryFeatures(features,
+						declaration);
 			} else if (declarationPoint.getParent().getParent() instanceof VariableDeclarationExpression) {
 				final VariableDeclarationExpression declaration = (VariableDeclarationExpression) declarationPoint
 						.getParent().getParent();
-				getTypeFeatures(features, declaration.getType());
-				addModifierFeatures(features, declaration.modifiers());
-				addAstFeatures(features, declaration);
+				JavaFeatureExtractor.getTypeFeatures(features,
+						declaration.getType());
+				JavaFeatureExtractor.addModifierFeatures(features,
+						declaration.modifiers());
+				JavaFeatureExtractor.addAstAncestryFeatures(features,
+						declaration);
 			}
 		} else {
 			throw new IllegalStateException("Should not reach this");
-		}
-	}
-
-	/**
-	 * @param features
-	 * @param type
-	 */
-	private static void getTypeFeatures(final Set<String> features,
-			final Type type) {
-		features.add(type.toString());
-		if (type.isParameterizedType()) {
-			features.add("isParameterizedType");
-			final ParameterizedType paramType = (ParameterizedType) type;
-			features.add(paramType.getType().toString());
-		} else if (type.isArrayType()) {
-			features.add("isArrayType");
-			final ArrayType arrayType = (ArrayType) type;
-			features.add("arrayDims:" + arrayType.dimensions().size());
-			features.add("arrayType:" + arrayType.getElementType().toString());
 		}
 	}
 
@@ -127,6 +90,7 @@ public class JavaVariableFeatureExtractor {
 				continue;
 			}
 			getDeclarationFeatures(features, node);
+			JavaFeatureExtractor.addImplementorVocab(node, features);
 			break;
 		}
 		checkArgument(!features.isEmpty());
