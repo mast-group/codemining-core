@@ -33,7 +33,8 @@ public class JavaMethodInvocationBindingExtractor extends
 		/**
 		 * A map from the method name to the position.
 		 */
-		Multimap<String, ASTNode> methodNamePostions = HashMultimap.create();
+		final Multimap<String, ASTNode> methodNamePostions = HashMultimap
+				.create();
 
 		@Override
 		public boolean visit(final MethodInvocation node) {

@@ -20,7 +20,7 @@ import codemining.java.codeutils.binding.AbstractJavaNameBindingsExtractor;
 import codemining.java.codeutils.binding.JavaApproximateVariableBindingExtractor;
 import codemining.java.codeutils.binding.JavaMethodDeclarationBindingExtractor;
 import codemining.java.codeutils.binding.JavaMethodInvocationBindingExtractor;
-import codemining.java.codeutils.binding.JavaTypeBindingExtractor;
+import codemining.java.codeutils.binding.JavaTypeDeclarationBindingExtractor;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.java.tokenizers.JavaTypeTokenizer;
 import codemining.languagetools.bindings.ResolvedSourceCode;
@@ -104,7 +104,7 @@ public class JavaBindingsToJson {
 			ex = new JavaMethodDeclarationBindingExtractor(
 					new JavaTypeTokenizer());
 		} else if (args[1].equals("types")) {
-			ex = new JavaTypeBindingExtractor();
+			ex = new JavaTypeDeclarationBindingExtractor();
 		} else {
 			throw new IllegalArgumentException("Unrecognized option " + args[1]);
 		}

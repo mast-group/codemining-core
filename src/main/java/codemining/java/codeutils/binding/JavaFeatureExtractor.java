@@ -82,12 +82,12 @@ public class JavaFeatureExtractor {
 		while (currentNode.getParent() != null) {
 			currentNode = currentNode.getParent();
 			if (currentNode instanceof MethodDeclaration) {
-				MethodDeclaration md = (MethodDeclaration) currentNode;
+				final MethodDeclaration md = (MethodDeclaration) currentNode;
 				tokenParts = JavaFeatureExtractor.getNameParts(md.getName()
 						.toString());
 				break;
 			} else if (currentNode instanceof TypeDeclaration) {
-				TypeDeclaration td = (TypeDeclaration) currentNode;
+				final TypeDeclaration td = (TypeDeclaration) currentNode;
 				tokenParts = JavaFeatureExtractor.getNameParts(td.getName()
 						.toString());
 				break;
