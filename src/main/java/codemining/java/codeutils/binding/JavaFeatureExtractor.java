@@ -34,7 +34,10 @@ public class JavaFeatureExtractor {
 	private static class MethodTopicNames extends ASTVisitor {
 		final Set<String> nameParts = Sets.newHashSet();
 
+		private String methodName = "";
+
 		void populateNames(final MethodDeclaration declaration) {
+			methodName = declaration.getName().getIdentifier();
 			for (final Object param : declaration.parameters()) {
 				((ASTNode) param).accept(this);
 			}
@@ -45,8 +48,10 @@ public class JavaFeatureExtractor {
 
 		@Override
 		public boolean visit(final SimpleName node) {
-			nameParts.addAll(JavaFeatureExtractor.getNameParts(node
-					.getIdentifier()));
+			if (!node.getIdentifier().equals(methodName)) {
+				nameParts.addAll(JavaFeatureExtractor.getNameParts(node
+						.getIdentifier()));
+			}
 			return super.visit(node);
 		}
 	}
@@ -131,7 +136,7 @@ public class JavaFeatureExtractor {
 
 	public static List<String> getNameParts(final String name) {
 		final List<String> nameParts = Lists.newArrayList();
-		for (String snakecasePart : name.split("_")) {
+		for (final String snakecasePart : name.split("_")) {
 			for (final String w : snakecasePart
 					.split("(?<!(^|[A-Z]))(?=[A-Z0-9])|(?<!^)(?=[A-Z][a-z])")) {
 				nameParts.add(w.toLowerCase());

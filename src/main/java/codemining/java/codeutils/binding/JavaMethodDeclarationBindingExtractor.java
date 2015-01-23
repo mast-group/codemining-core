@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
+import codemining.java.codedata.metrics.CyclomaticCalculator;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 
@@ -82,8 +83,7 @@ extends AbstractJavaNameBindingsExtractor {
 		}
 
 		features.add("returnType:" + md.getReturnType2());
-		JavaFeatureExtractor.addModifierFeatures(features,
-				md.modifiers());
+		JavaFeatureExtractor.addModifierFeatures(features, md.modifiers());
 
 		if (md.getBody() == null) {
 			features.add("isInterfaceDeclaration");
@@ -91,6 +91,9 @@ extends AbstractJavaNameBindingsExtractor {
 
 		JavaFeatureExtractor.addAstAncestryFeatures(features, method);
 		JavaFeatureExtractor.getMethodTopicFeatures(md, features);
+		JavaFeatureExtractor.addImplementorVocab(method, features);
+		features.add("cyclomatic:"
+				+ (int) (new CyclomaticCalculator().getMetricForASTNode(method)));
 		return features;
 	}
 

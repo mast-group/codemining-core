@@ -120,7 +120,7 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 			throws IOException {
 		final JavaASTExtractor ex = createExtractor();
 		return getResolvedSourceCode(FileUtils.readFileToString(f),
-				getNameBindings(ex.getAST(f)));
+				getNameBindings(ex.getAST(f)), f.getAbsolutePath());
 	}
 
 	@Override
@@ -128,14 +128,15 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 		final JavaASTExtractor ex = createExtractor();
 		try {
 			return getResolvedSourceCode(code,
-					getNameBindings(ex.getBestEffortAstNode(code)));
+					getNameBindings(ex.getBestEffortAstNode(code)),
+					"UnkownSourceFile");
 		} catch (final Exception e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
 
 	public ResolvedSourceCode getResolvedSourceCode(final String sourceCode,
-			final Set<Set<ASTNode>> nodeBindings) {
+			final Set<Set<ASTNode>> nodeBindings, final String filename) {
 		final SortedMap<Integer, String> tokenPositions = tokenizer
 				.tokenListWithPos(sourceCode.toCharArray());
 		final SortedMap<Integer, Integer> positionToIndex = getTokenIndexForPostion(tokenPositions);
@@ -160,7 +161,7 @@ public abstract class AbstractJavaNameBindingsExtractor extends
 							tokens, getFeatures(boundName)));
 		}
 
-		return new ResolvedSourceCode(tokens, bindings);
+		return new ResolvedSourceCode(filename, tokens, bindings);
 	}
 
 	/**

@@ -46,6 +46,8 @@ public class JavaBindingsToJson {
 			return new SerializableResolvedSourceCode(rsc);
 		}
 
+		public final String provenance;
+
 		public final List<String> codeTokens;
 
 		public final List<List<Integer>> boundVariables;
@@ -61,6 +63,7 @@ public class JavaBindingsToJson {
 				boundVariableFeatures.add(new ArrayList<String>(
 						binding.features));
 			}
+			provenance = rsc.name;
 		}
 	}
 
