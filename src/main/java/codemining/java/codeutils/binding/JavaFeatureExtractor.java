@@ -83,19 +83,25 @@ public class JavaFeatureExtractor {
 	public static void addImplementorVocab(final ASTNode node,
 			final Set<String> features) {
 		ASTNode currentNode = node;
-		List<String> tokenParts = null;
+		final List<String> tokenParts = Lists.newArrayList();
 		while (currentNode.getParent() != null) {
 			currentNode = currentNode.getParent();
 			if (currentNode instanceof MethodDeclaration) {
 				final MethodDeclaration md = (MethodDeclaration) currentNode;
-				tokenParts = JavaFeatureExtractor.getNameParts(md.getName()
-						.toString());
-				break;
+				tokenParts.addAll(JavaFeatureExtractor.getNameParts(md
+						.getName().toString()));
 			} else if (currentNode instanceof TypeDeclaration) {
 				final TypeDeclaration td = (TypeDeclaration) currentNode;
-				tokenParts = JavaFeatureExtractor.getNameParts(td.getName()
-						.toString());
-				break;
+				tokenParts.addAll(JavaFeatureExtractor.getNameParts(td
+						.getName().toString()));
+				if (td.getSuperclassType() != null) {
+					tokenParts.addAll(JavaFeatureExtractor.getNameParts(td
+							.getSuperclassType().toString()));
+				}
+				for (final Object ifaceType : td.superInterfaceTypes()) {
+					tokenParts.addAll(JavaFeatureExtractor
+							.getNameParts((((Type) ifaceType).toString())));
+				}
 			}
 		}
 

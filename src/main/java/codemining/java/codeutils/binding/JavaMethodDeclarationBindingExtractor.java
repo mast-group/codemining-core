@@ -70,7 +70,10 @@ extends AbstractJavaNameBindingsExtractor {
 			final SingleVariableDeclaration varDecl = (SingleVariableDeclaration) md
 					.parameters().get(i);
 			features.add("param" + i + "Type:" + varDecl.getType().toString());
-			features.add("param" + i + "Name:" + varDecl.getName().toString());
+			for (final String namepart : JavaFeatureExtractor
+					.getNameParts(varDecl.getName().toString())) {
+				features.add("paramName:" + namepart);
+			}
 		}
 
 		if (md.isVarargs()) {
