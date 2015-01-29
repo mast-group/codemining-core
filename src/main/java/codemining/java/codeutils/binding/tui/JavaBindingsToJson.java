@@ -88,7 +88,7 @@ public class JavaBindingsToJson {
 		if (args.length != 3) {
 			System.err
 					.println("Usage <inputFolder> variables|methodinvocations|"
-							+ "methodinvocations_typegram|methoddeclarations|"
+							+ "methodinvocations_typegram|methoddeclarations|methoddeclarations_nooverride"
 							+ "methoddeclarations_typegram|types <outputFile>");
 			System.exit(-1);
 		}
@@ -103,6 +103,8 @@ public class JavaBindingsToJson {
 					new JavaTypeTokenizer());
 		} else if (args[1].equals("methoddeclarations")) {
 			ex = new JavaMethodDeclarationBindingExtractor();
+		} else if (args[1].equals("methoddeclarations_nooverride")) {
+			ex = new JavaMethodDeclarationBindingExtractor(false);
 		} else if (args[1].equals("methoddeclarations_typegram")) {
 			ex = new JavaMethodDeclarationBindingExtractor(
 					new JavaTypeTokenizer());

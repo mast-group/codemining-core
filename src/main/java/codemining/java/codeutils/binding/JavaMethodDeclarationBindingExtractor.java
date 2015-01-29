@@ -5,11 +5,14 @@ package codemining.java.codeutils.binding;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Annotation;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -32,15 +35,31 @@ public class JavaMethodDeclarationBindingExtractor
 
 extends AbstractJavaNameBindingsExtractor {
 
-	private static class MethodBindings extends ASTVisitor {
+	private class MethodBindings extends ASTVisitor {
 		/**
 		 * A map from the method name to the position.
 		 */
 		Multimap<String, ASTNode> methodNamePostions = HashMultimap.create();
 
+		private boolean isOverride(final MethodDeclaration node) {
+			final List modifiers = node.modifiers();
+			for (final Object mod : modifiers) {
+				final IExtendedModifier modifier = (IExtendedModifier) mod;
+				if (modifier.isAnnotation()) {
+					final Annotation annotation = (Annotation) modifier;
+					if (annotation.getTypeName().toString().equals("Override")) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		@Override
 		public boolean visit(final MethodDeclaration node) {
 			if (node.isConstructor()) {
+				return super.visit(node);
+			} else if (!includeOverrides && isOverride(node)) {
 				return super.visit(node);
 			}
 			final String name = node.getName().toString();
@@ -49,12 +68,27 @@ extends AbstractJavaNameBindingsExtractor {
 		}
 	}
 
+	private final boolean includeOverrides;
+
 	public JavaMethodDeclarationBindingExtractor() {
 		super(new JavaTokenizer());
+		this.includeOverrides = true;
+	}
+
+	public JavaMethodDeclarationBindingExtractor(final boolean includeOverrides) {
+		super(new JavaTokenizer());
+		this.includeOverrides = includeOverrides;
 	}
 
 	public JavaMethodDeclarationBindingExtractor(final ITokenizer tokenizer) {
 		super(tokenizer);
+		this.includeOverrides = true;
+	}
+
+	public JavaMethodDeclarationBindingExtractor(final ITokenizer tokenizer,
+			final boolean includeOverrides) {
+		super(tokenizer);
+		this.includeOverrides = includeOverrides;
 	}
 
 	@Override
