@@ -5,6 +5,7 @@ package codemining.java.codeutils.binding;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -32,6 +33,10 @@ import com.google.common.collect.Sets;
 public class JavaTypeDeclarationBindingExtractor extends
 		AbstractJavaNameBindingsExtractor {
 
+	public static enum AvailableFeatures {
+		METHOD_VOCABULARY, FIELD_VOCABULARY, IMPLEMENTOR_VOCABULARY
+	}
+
 	private static class ClassnameFinder extends ASTVisitor {
 
 		final Multimap<String, ASTNode> classNamePostions = HashMultimap
@@ -45,6 +50,9 @@ public class JavaTypeDeclarationBindingExtractor extends
 		}
 	}
 
+	private final Set<AvailableFeatures> activeFeatures = Sets
+			.newHashSet(AvailableFeatures.values());
+
 	public JavaTypeDeclarationBindingExtractor() {
 		super(new JavaTokenizer());
 	}
@@ -53,15 +61,37 @@ public class JavaTypeDeclarationBindingExtractor extends
 		super(tokenizer);
 	}
 
-	@Override
-	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
-		checkArgument(boundNodes.size() == 1);
-		final ASTNode decl = boundNodes.iterator().next().getParent();
+	/**
+	 * @param td
+	 * @param currentTypeName
+	 * @param features
+	 */
+	private void addFieldVocabulary(final TypeDeclaration td,
+			final String currentTypeName, final Set<String> features) {
+		for (final FieldDeclaration fd : td.getFields()) {
+			for (final Object vdf : fd.fragments()) {
+				final VariableDeclarationFragment frag = (VariableDeclarationFragment) vdf;
+				for (final String namePart : JavaFeatureExtractor
+						.getNameParts(frag.getName().toString())) {
+					features.add("fieldVoc:" + namePart);
+				}
+			}
+			if (!currentTypeName.equals(fd.getType().toString())) {
+				features.add("fieldType:" + fd.getType().toString());
+				for (final String namePart : JavaFeatureExtractor
+						.getNameParts(fd.getType().toString())) {
+					features.add("fieldVoc:" + namePart);
+				}
+			}
+		}
+	}
 
-		checkArgument(decl instanceof TypeDeclaration);
-		final TypeDeclaration td = (TypeDeclaration) decl;
-		final String currentTypeName = td.getName().getIdentifier();
-		final Set<String> features = Sets.newHashSet();
+	/**
+	 * @param td
+	 * @param features
+	 */
+	private void addImplementorVocabulary(final TypeDeclaration td,
+			final Set<String> features) {
 		if (td.isInterface()) {
 			features.add("isInterface");
 		}
@@ -80,24 +110,15 @@ public class JavaTypeDeclarationBindingExtractor extends
 				features.add("implementVoc:" + namePart);
 			}
 		}
+	}
 
-		for (final FieldDeclaration fd : td.getFields()) {
-			for (final Object vdf : fd.fragments()) {
-				final VariableDeclarationFragment frag = (VariableDeclarationFragment) vdf;
-				for (final String namePart : JavaFeatureExtractor
-						.getNameParts(frag.getName().toString())) {
-					features.add("fieldVoc:" + namePart);
-				}
-			}
-			if (!currentTypeName.equals(fd.getType().toString())) {
-				features.add("fieldType:" + fd.getType().toString());
-				for (final String namePart : JavaFeatureExtractor
-						.getNameParts(fd.getType().toString())) {
-					features.add("fieldVoc:" + namePart);
-				}
-			}
-		}
-
+	/**
+	 * @param td
+	 * @param currentTypeName
+	 * @param features
+	 */
+	private void addMethodFeatures(final TypeDeclaration td,
+			final String currentTypeName, final Set<String> features) {
 		for (final MethodDeclaration md : td.getMethods()) {
 			if (md.isConstructor()) {
 				continue;
@@ -120,6 +141,33 @@ public class JavaTypeDeclarationBindingExtractor extends
 				}
 			}
 		}
+	}
+
+	@Override
+	public Set<?> getAvailableFeatures() {
+		return Sets.newHashSet(AvailableFeatures.values());
+	}
+
+	@Override
+	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
+		checkArgument(boundNodes.size() == 1);
+		final ASTNode decl = boundNodes.iterator().next().getParent();
+
+		checkArgument(decl instanceof TypeDeclaration);
+		final TypeDeclaration td = (TypeDeclaration) decl;
+		final String currentTypeName = td.getName().getIdentifier();
+		final Set<String> features = Sets.newHashSet();
+		if (activeFeatures.contains(AvailableFeatures.IMPLEMENTOR_VOCABULARY)) {
+			addImplementorVocabulary(td, features);
+		}
+
+		if (activeFeatures.contains(AvailableFeatures.FIELD_VOCABULARY)) {
+			addFieldVocabulary(td, currentTypeName, features);
+		}
+
+		if (activeFeatures.contains(AvailableFeatures.METHOD_VOCABULARY)) {
+			addMethodFeatures(td, currentTypeName, features);
+		}
 
 		return features;
 	}
@@ -136,6 +184,13 @@ public class JavaTypeDeclarationBindingExtractor extends
 			nameBindings.add(boundNodes);
 		}
 		return nameBindings;
+	}
+
+	@Override
+	public void setActiveFeatures(final Set<?> activeFeatures) {
+		this.activeFeatures.clear();
+		this.activeFeatures
+				.addAll((Collection<? extends AvailableFeatures>) activeFeatures);
 	}
 
 }

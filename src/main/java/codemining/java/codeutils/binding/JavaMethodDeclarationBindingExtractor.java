@@ -5,6 +5,7 @@ package codemining.java.codeutils.binding;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -31,9 +32,12 @@ import com.google.common.collect.Sets;
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  *
  */
-public class JavaMethodDeclarationBindingExtractor
+public class JavaMethodDeclarationBindingExtractor extends
+		AbstractJavaNameBindingsExtractor {
 
-extends AbstractJavaNameBindingsExtractor {
+	public static enum AvailableFeatures {
+		ARGUMENTS, EXCEPTIONS, RETURN_TYPE, MODIFIERS, ANCESTRY, METHOD_TOPICS, IMPLEMENTOR_VOCABULARY, FIELDS, SIBLING_METHODS, CYCLOMATIC
+	}
 
 	private class MethodBindings extends ASTVisitor {
 		/**
@@ -70,6 +74,9 @@ extends AbstractJavaNameBindingsExtractor {
 
 	private final boolean includeOverrides;
 
+	private final Set<AvailableFeatures> activeFeatures = Sets
+			.newHashSet(AvailableFeatures.values());
+
 	public JavaMethodDeclarationBindingExtractor() {
 		super(new JavaTokenizer());
 		this.includeOverrides = true;
@@ -91,14 +98,15 @@ extends AbstractJavaNameBindingsExtractor {
 		this.includeOverrides = includeOverrides;
 	}
 
-	@Override
-	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
-		checkArgument(boundNodes.size() == 1);
-		final ASTNode method = boundNodes.iterator().next().getParent();
-		final Set<String> features = Sets.newHashSet();
-
-		checkArgument(method instanceof MethodDeclaration);
-		final MethodDeclaration md = (MethodDeclaration) method;
+	/**
+	 * Add argument-related features.
+	 *
+	 * @param md
+	 * @param features
+	 */
+	private void addArgumentFeatures(final MethodDeclaration md,
+			final Set<String> features) {
+		checkArgument(activeFeatures.contains(AvailableFeatures.ARGUMENTS));
 		features.add("nParams:" + md.parameters().size());
 		for (int i = 0; i < md.parameters().size(); i++) {
 			final SingleVariableDeclaration varDecl = (SingleVariableDeclaration) md
@@ -113,26 +121,86 @@ extends AbstractJavaNameBindingsExtractor {
 		if (md.isVarargs()) {
 			features.add("isVarArg");
 		}
+	}
 
+	/**
+	 * Add exception related features.
+	 *
+	 * @param md
+	 * @param features
+	 */
+	private void addExceptionFeatures(final MethodDeclaration md,
+			final Set<String> features) {
+		checkArgument(activeFeatures.contains(AvailableFeatures.EXCEPTIONS));
 		for (final Object exception : md.thrownExceptionTypes()) {
 			final SimpleType ex = (SimpleType) exception;
 			features.add("thrownException:" + ex.toString());
 		}
+	}
 
-		features.add("returnType:" + md.getReturnType2());
+	/**
+	 * Add modifier-related features.
+	 *
+	 * @param md
+	 * @param features
+	 */
+	private void addModifierFeatures(final MethodDeclaration md,
+			final Set<String> features) {
+		checkArgument(activeFeatures.contains(AvailableFeatures.MODIFIERS));
 		JavaFeatureExtractor.addModifierFeatures(features, md.modifiers());
 
 		if (md.getBody() == null) {
 			features.add("isInterfaceDeclaration");
 		}
+	}
 
-		JavaFeatureExtractor.addAstAncestryFeatures(features, method);
-		JavaFeatureExtractor.addMethodTopicFeatures(md, features);
-		JavaFeatureExtractor.addImplementorVocab(method, features);
-		JavaFeatureExtractor.addFields(method, features);
-		JavaFeatureExtractor.addSiblingMethodNames(md, features);
-		features.add("cyclomatic:"
-				+ (int) (new CyclomaticCalculator().getMetricForASTNode(method)));
+	@Override
+	public Set<?> getAvailableFeatures() {
+		return Sets.newHashSet(AvailableFeatures.values());
+	}
+
+	@Override
+	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
+		checkArgument(boundNodes.size() == 1);
+		final ASTNode method = boundNodes.iterator().next().getParent();
+		final Set<String> features = Sets.newHashSet();
+
+		checkArgument(method instanceof MethodDeclaration);
+		final MethodDeclaration md = (MethodDeclaration) method;
+		if (activeFeatures.contains(AvailableFeatures.ARGUMENTS)) {
+			addArgumentFeatures(md, features);
+		}
+		if (activeFeatures.contains(AvailableFeatures.EXCEPTIONS)) {
+			addExceptionFeatures(md, features);
+		}
+
+		if (activeFeatures.contains(AvailableFeatures.RETURN_TYPE)) {
+			features.add("returnType:" + md.getReturnType2());
+		}
+		if (activeFeatures.contains(AvailableFeatures.MODIFIERS)) {
+			addModifierFeatures(md, features);
+		}
+
+		if (activeFeatures.contains(AvailableFeatures.ANCESTRY)) {
+			JavaFeatureExtractor.addAstAncestryFeatures(features, method);
+		}
+		if (activeFeatures.contains(AvailableFeatures.METHOD_TOPICS)) {
+			JavaFeatureExtractor.addMethodTopicFeatures(md, features);
+		}
+		if (activeFeatures.contains(AvailableFeatures.IMPLEMENTOR_VOCABULARY)) {
+			JavaFeatureExtractor.addImplementorVocab(method, features);
+		}
+		if (activeFeatures.contains(AvailableFeatures.FIELDS)) {
+			JavaFeatureExtractor.addFields(method, features);
+		}
+		if (activeFeatures.contains(AvailableFeatures.SIBLING_METHODS)) {
+			JavaFeatureExtractor.addSiblingMethodNames(md, features);
+		}
+		if (activeFeatures.contains(AvailableFeatures.CYCLOMATIC)) {
+			features.add("cyclomatic:"
+					+ (int) (new CyclomaticCalculator()
+							.getMetricForASTNode(method)));
+		}
 		return features;
 	}
 
@@ -149,6 +217,13 @@ extends AbstractJavaNameBindingsExtractor {
 			nameBindings.add(boundNodes);
 		}
 		return nameBindings;
+	}
+
+	@Override
+	public void setActiveFeatures(final Set<?> activeFeatures) {
+		this.activeFeatures.clear();
+		this.activeFeatures
+				.addAll((Collection<? extends AvailableFeatures>) activeFeatures);
 	}
 
 }

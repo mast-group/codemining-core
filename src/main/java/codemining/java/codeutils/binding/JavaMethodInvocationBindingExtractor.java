@@ -5,6 +5,7 @@ package codemining.java.codeutils.binding;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -29,6 +30,10 @@ import com.google.common.collect.Sets;
 public class JavaMethodInvocationBindingExtractor extends
 		AbstractJavaNameBindingsExtractor {
 
+	public static enum AvailableFeatures {
+		IMPLEMENTOR_VOCABULARY, ANCESTRY, NUMBER_ARGUMENTS
+	}
+
 	private static class MethodBindings extends ASTVisitor {
 		/**
 		 * A map from the method name to the position.
@@ -44,6 +49,9 @@ public class JavaMethodInvocationBindingExtractor extends
 		}
 	}
 
+	private final Set<AvailableFeatures> activeFeatures = Sets
+			.newHashSet(AvailableFeatures.values());
+
 	public JavaMethodInvocationBindingExtractor() {
 		super(new JavaTokenizer());
 	}
@@ -53,15 +61,26 @@ public class JavaMethodInvocationBindingExtractor extends
 	}
 
 	@Override
+	public Set<?> getAvailableFeatures() {
+		return Sets.newHashSet(AvailableFeatures.values());
+	}
+
+	@Override
 	protected Set<String> getFeatures(final Set<ASTNode> boundNodes) {
 		checkArgument(boundNodes.size() == 1);
 		final ASTNode method = boundNodes.iterator().next().getParent();
 		final Set<String> features = Sets.newHashSet();
 		checkArgument(method instanceof MethodInvocation);
 		final MethodInvocation mi = (MethodInvocation) method;
-		features.add("nArgs:" + mi.arguments().size());
-		JavaFeatureExtractor.addImplementorVocab(mi, features);
-		JavaFeatureExtractor.addAstAncestryFeatures(features, method);
+		if (activeFeatures.contains(AvailableFeatures.NUMBER_ARGUMENTS)) {
+			features.add("nArgs:" + mi.arguments().size());
+		}
+		if (activeFeatures.contains(AvailableFeatures.IMPLEMENTOR_VOCABULARY)) {
+			JavaFeatureExtractor.addImplementorVocab(mi, features);
+		}
+		if (activeFeatures.contains(AvailableFeatures.ANCESTRY)) {
+			JavaFeatureExtractor.addAstAncestryFeatures(features, method);
+		}
 		return features;
 	}
 
@@ -78,6 +97,13 @@ public class JavaMethodInvocationBindingExtractor extends
 			nameBindings.add(boundNodes);
 		}
 		return nameBindings;
+	}
+
+	@Override
+	public void setActiveFeatures(final Set<?> activeFeatures) {
+		this.activeFeatures.clear();
+		this.activeFeatures
+				.addAll((Collection<? extends AvailableFeatures>) activeFeatures);
 	}
 
 }
