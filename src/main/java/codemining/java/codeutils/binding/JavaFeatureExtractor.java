@@ -3,18 +3,12 @@
  */
 package codemining.java.codeutils.binding;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.ArrayType;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.ParameterizedType;
-import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.Type;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.*;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -73,8 +67,26 @@ public class JavaFeatureExtractor {
 						.getSimpleName());
 	}
 
+	public static void addFields(final ASTNode node, final Set<String> features) {
+		checkArgument(node.getRoot() instanceof CompilationUnit);
+		final CompilationUnit cu = (CompilationUnit) node.getRoot();
+		for (final Object type : cu.types()) {
+			if (type instanceof TypeDeclaration) {
+				final TypeDeclaration td = (TypeDeclaration) type;
+				for (final FieldDeclaration fd : td.getFields()) {
+					for (final Object decl : fd.fragments()) {
+						final VariableDeclarationFragment vdf = (VariableDeclarationFragment) decl;
+						final List<String> nameParts = getNameParts(vdf
+								.getName().getIdentifier());
+						nameParts.forEach(np -> features.add("inScope:" + np));
+					}
+				}
+			}
+		}
+	}
+
 	/**
-	 * Add the token parts of the method or class where the current node is
+	 * Add the token parts of the method and class where the current node is
 	 * placed.
 	 *
 	 * @param node
@@ -113,6 +125,20 @@ public class JavaFeatureExtractor {
 	}
 
 	/**
+	 * Return the features to
+	 *
+	 * @param declaration
+	 * @param features
+	 *            where the features will be added.
+	 */
+	public static void addMethodTopicFeatures(
+			final MethodDeclaration declaration, final Set<String> features) {
+		final MethodTopicNames namesExtractor = new MethodTopicNames();
+		namesExtractor.populateNames(declaration);
+		features.addAll(namesExtractor.nameParts);
+	}
+
+	/**
 	 * Add any modifiers as features.
 	 *
 	 * @param features
@@ -126,37 +152,29 @@ public class JavaFeatureExtractor {
 		}
 	}
 
-	/**
-	 * Return the features to
-	 *
-	 * @param declaration
-	 * @param features
-	 *            where the features will be added.
-	 */
-	public static void getMethodTopicFeatures(
+	public static void addSiblingMethodNames(
 			final MethodDeclaration declaration, final Set<String> features) {
-		final MethodTopicNames namesExtractor = new MethodTopicNames();
-		namesExtractor.populateNames(declaration);
-		features.addAll(namesExtractor.nameParts);
-	}
-
-	public static List<String> getNameParts(final String name) {
-		final List<String> nameParts = Lists.newArrayList();
-		for (final String snakecasePart : name.split("_")) {
-			for (final String w : snakecasePart
-					.split("(?<!(^|[A-Z]))(?=[A-Z0-9])|(?<!^)(?=[A-Z][a-z])")) {
-				nameParts.add(w.toLowerCase());
-			}
+		if (!(declaration.getParent() instanceof TypeDeclaration)) {
+			return;
 		}
-		return nameParts;
+		final TypeDeclaration td = (TypeDeclaration) declaration.getParent();
+		for (final MethodDeclaration md : td.getMethods()) {
+			if (md.getName().getIdentifier()
+					.equals(declaration.getName().getIdentifier())) {
+				continue;
+			}
+			final List<String> nameparts = getNameParts(md.getName()
+					.getIdentifier());
+			nameparts.forEach(p -> features.add("sibling:" + p));
+		}
 	}
 
 	/**
-	 * @param features
 	 * @param type
+	 * @param features
 	 */
-	public static void getTypeFeatures(final Set<String> features,
-			final Type type) {
+	public static void addTypeFeatures(final Type type,
+			final Set<String> features) {
 		features.add(type.toString());
 		if (type.isParameterizedType()) {
 			features.add("isParameterizedType");
@@ -168,6 +186,17 @@ public class JavaFeatureExtractor {
 			features.add("arrayDims:" + arrayType.dimensions().size());
 			features.add("arrayType:" + arrayType.getElementType().toString());
 		}
+	}
+
+	public static List<String> getNameParts(final String name) {
+		final List<String> nameParts = Lists.newArrayList();
+		for (final String snakecasePart : name.split("_")) {
+			for (final String w : snakecasePart
+					.split("(?<!(^|[A-Z]))(?=[A-Z0-9])|(?<!^)(?=[A-Z][a-z])")) {
+				nameParts.add(w.toLowerCase());
+			}
+		}
+		return nameParts;
 	}
 
 	private JavaFeatureExtractor() {

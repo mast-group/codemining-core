@@ -34,16 +34,16 @@ public class JavaVariableFeatureExtractor {
 		if (declarationPoint.getParent() instanceof SingleVariableDeclaration) {
 			final SingleVariableDeclaration declaration = (SingleVariableDeclaration) declarationPoint
 					.getParent();
-			JavaFeatureExtractor.getTypeFeatures(features,
-					declaration.getType());
+			JavaFeatureExtractor.addTypeFeatures(declaration.getType(),
+					features);
 			JavaFeatureExtractor.addModifierFeatures(features,
 					declaration.modifiers());
 			JavaFeatureExtractor.addAstAncestryFeatures(features, declaration);
 		} else if (declarationPoint.getParent() instanceof VariableDeclarationStatement) {
 			final VariableDeclarationStatement declaration = (VariableDeclarationStatement) declarationPoint
 					.getParent();
-			JavaFeatureExtractor.getTypeFeatures(features,
-					declaration.getType());
+			JavaFeatureExtractor.addTypeFeatures(declaration.getType(),
+					features);
 			JavaFeatureExtractor.addModifierFeatures(features,
 					declaration.modifiers());
 			JavaFeatureExtractor.addAstAncestryFeatures(features, declaration);
@@ -51,8 +51,8 @@ public class JavaVariableFeatureExtractor {
 			if (declarationPoint.getParent().getParent() instanceof VariableDeclarationStatement) {
 				final VariableDeclarationStatement declaration = (VariableDeclarationStatement) declarationPoint
 						.getParent().getParent();
-				JavaFeatureExtractor.getTypeFeatures(features,
-						declaration.getType());
+				JavaFeatureExtractor.addTypeFeatures(declaration.getType(),
+						features);
 				JavaFeatureExtractor.addModifierFeatures(features,
 						declaration.modifiers());
 				JavaFeatureExtractor.addAstAncestryFeatures(features,
@@ -60,8 +60,8 @@ public class JavaVariableFeatureExtractor {
 			} else if (declarationPoint.getParent().getParent() instanceof FieldDeclaration) {
 				final FieldDeclaration declaration = (FieldDeclaration) declarationPoint
 						.getParent().getParent();
-				JavaFeatureExtractor.getTypeFeatures(features,
-						declaration.getType());
+				JavaFeatureExtractor.addTypeFeatures(declaration.getType(),
+						features);
 				JavaFeatureExtractor.addModifierFeatures(features,
 						declaration.modifiers());
 				JavaFeatureExtractor.addAstAncestryFeatures(features,
@@ -69,8 +69,8 @@ public class JavaVariableFeatureExtractor {
 			} else if (declarationPoint.getParent().getParent() instanceof VariableDeclarationExpression) {
 				final VariableDeclarationExpression declaration = (VariableDeclarationExpression) declarationPoint
 						.getParent().getParent();
-				JavaFeatureExtractor.getTypeFeatures(features,
-						declaration.getType());
+				JavaFeatureExtractor.addTypeFeatures(declaration.getType(),
+						features);
 				JavaFeatureExtractor.addModifierFeatures(features,
 						declaration.modifiers());
 				JavaFeatureExtractor.addAstAncestryFeatures(features,

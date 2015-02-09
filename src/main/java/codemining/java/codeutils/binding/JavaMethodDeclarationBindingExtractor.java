@@ -127,8 +127,10 @@ extends AbstractJavaNameBindingsExtractor {
 		}
 
 		JavaFeatureExtractor.addAstAncestryFeatures(features, method);
-		JavaFeatureExtractor.getMethodTopicFeatures(md, features);
+		JavaFeatureExtractor.addMethodTopicFeatures(md, features);
 		JavaFeatureExtractor.addImplementorVocab(method, features);
+		JavaFeatureExtractor.addFields(method, features);
+		JavaFeatureExtractor.addSiblingMethodNames(md, features);
 		features.add("cyclomatic:"
 				+ (int) (new CyclomaticCalculator().getMetricForASTNode(method)));
 		return features;
