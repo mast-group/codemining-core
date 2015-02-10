@@ -178,10 +178,13 @@ public class JavaTypeDeclarationBindingExtractor extends
 		node.accept(finder);
 
 		final Set<Set<ASTNode>> nameBindings = Sets.newHashSet();
-		for (final String methodName : finder.classNamePostions.keySet()) {
-			final Set<ASTNode> boundNodes = Sets.newIdentityHashSet();
-			boundNodes.addAll(finder.classNamePostions.get(methodName));
-			nameBindings.add(boundNodes);
+		for (final String typeName : finder.classNamePostions.keySet()) {
+			for (final ASTNode nameNode : finder.classNamePostions
+					.get(typeName)) {
+				final Set<ASTNode> boundNodes = Sets.newIdentityHashSet();
+				boundNodes.add(nameNode);
+				nameBindings.add(boundNodes);
+			}
 		}
 		return nameBindings;
 	}

@@ -3,8 +3,6 @@
  */
 package codemining.java.codeutils.binding;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -114,7 +112,6 @@ public class JavaVariableFeatureExtractor {
 			}
 			break;
 		}
-		checkArgument(!features.isEmpty());
 		return features;
 	}
 
