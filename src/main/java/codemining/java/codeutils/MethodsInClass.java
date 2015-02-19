@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -35,9 +36,15 @@ public class MethodsInClass {
 
 		private String currentPackageName;
 
+		@Override
+		public void endVisit(final EnumDeclaration node) {
+			className.pop();
+			super.endVisit(node);
+		}
+
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#endVisit(org.eclipse.jdt.core
 		 * .dom.TypeDeclaration)
@@ -50,7 +57,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .CompilationUnit)
@@ -64,9 +71,21 @@ public class MethodsInClass {
 			return super.visit(node);
 		}
 
+		@Override
+		public boolean visit(final EnumDeclaration node) {
+			if (className.isEmpty()) {
+				className.push(currentPackageName + "."
+						+ node.getName().getIdentifier());
+			} else {
+				className.push(className.peek() + "."
+						+ node.getName().getIdentifier());
+			}
+			return super.visit(node);
+		}
+
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .ImportDeclaration)
@@ -79,7 +98,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .MethodDeclaration)
@@ -94,7 +113,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .TypeDeclaration)
@@ -161,7 +180,7 @@ public class MethodsInClass {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
