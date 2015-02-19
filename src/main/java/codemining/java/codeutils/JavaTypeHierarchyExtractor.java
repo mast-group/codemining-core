@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -35,7 +36,7 @@ import com.google.common.collect.Sets;
  *
  * Uses fully qualified names.
  *
- * TODO: Still we can infer hierarchies from assignments
+ * TODO: Still we can infer hierarchies from assignments and downcasting.
  *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  *
@@ -54,6 +55,17 @@ public class JavaTypeHierarchyExtractor {
 		Stack<String> className = new Stack<String>();
 
 		private void addTypes(String parent, String child) {
+			if (parent.contains("<")) {
+				// Manually compute erasure.
+				parent = parent.substring(0, parent.indexOf("<"))
+						+ parent.substring(parent.indexOf(">") + 1);
+			}
+			if (child.contains("<")) {
+				// Manually compute erasure.
+				child = child.substring(0, child.indexOf("<"))
+						+ child.substring(child.indexOf(">") + 1);
+			}
+
 			if (!child.contains(".") && importedNames.containsKey(child)) {
 				child = importedNames.get(child);
 			} else if (!child.contains(".")) {
@@ -71,7 +83,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#endVisit(org.eclipse.jdt.core
 		 * .dom.TypeDeclaration)
@@ -82,28 +94,35 @@ public class JavaTypeHierarchyExtractor {
 			super.endVisit(node);
 		}
 
-		private void getTypeBindingParents(final ITypeBinding binding) {
+		private void getTypeBindingParents(ITypeBinding binding) {
+			if (binding.isParameterizedType()) {
+				binding = binding.getErasure();
+			}
+			final String bindingName = binding.isRecovered() ? binding
+					.getName() : binding.getQualifiedName();
 			final ITypeBinding superclassBinding = binding.getSuperclass();
-			if (superclassBinding == null) {
-				return;
+			if (superclassBinding != null) {
+				addTypes(
+						superclassBinding.isRecovered() ? superclassBinding.getName()
+								: superclassBinding.getQualifiedName(),
+						bindingName);
+				getTypeBindingParents(superclassBinding);
 			}
 
-			addTypes(
-					superclassBinding.isRecovered() ? superclassBinding.getName()
-							: superclassBinding.getQualifiedName(),
-					binding.isRecovered() ? binding.getName() : binding
-							.getQualifiedName());
-			getTypeBindingParents(superclassBinding);
-
-			for (final ITypeBinding iface : binding.getInterfaces()) {
-				addTypes(iface.getQualifiedName(), binding.getQualifiedName());
+			for (ITypeBinding iface : binding.getInterfaces()) {
+				if (iface.isParameterizedType()) {
+					iface = iface.getErasure();
+				}
+				addTypes(
+						iface.isRecovered() ? iface.getName()
+								: iface.getQualifiedName(), bindingName);
 				getTypeBindingParents(iface);
 			}
 		}
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .CompilationUnit)
@@ -127,7 +146,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .ImportDeclaration)
@@ -139,7 +158,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .SimpleType)
@@ -155,7 +174,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .TypeDeclaration)
@@ -163,19 +182,26 @@ public class JavaTypeHierarchyExtractor {
 		@Override
 		public boolean visit(final TypeDeclaration node) {
 			for (final Object supType : node.superInterfaceTypes()) {
-				final Type superType = (Type) supType;
+				Type superType = (Type) supType;
+				if (superType.isParameterizedType()) {
+					superType = ((ParameterizedType) superType).getType();
+				}
+				final String qName = superType.resolveBinding().getErasure()
+						.getQualifiedName();
 				if (className.isEmpty()) {
-					addTypes(superType.resolveBinding().getQualifiedName(),
-							currentPackageName + "." + node.getName());
+					addTypes(qName, currentPackageName + "." + node.getName());
 				} else {
-					addTypes(superType.resolveBinding().getQualifiedName(),
-							className.peek() + "." + node.getName());
+					addTypes(qName, className.peek() + "." + node.getName());
 				}
 			}
 
-			if (node.getSuperclassType() != null) {
-				addTypes(node.getSuperclassType().resolveBinding()
-						.getQualifiedName(),
+			Type superclassType = node.getSuperclassType();
+			if (superclassType != null) {
+				if (superclassType.isParameterizedType()) {
+					superclassType = ((ParameterizedType) superclassType)
+							.getType();
+				}
+				addTypes(superclassType.resolveBinding().getQualifiedName(),
 						currentPackageName + "." + node.getName());
 			}
 

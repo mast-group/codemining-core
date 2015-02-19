@@ -3,8 +3,6 @@
  */
 package codemining.java.codeutils;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.io.File;
 import java.util.Collection;
 
@@ -46,13 +44,17 @@ public class ProjectTypeInformation {
 
 	public boolean isMethodOverride(final String fullyQualifiedNameOfClass,
 			final MethodDeclaration method) {
-		final String methodSignature = fullyQualifiedNameOfClass + ":"
-				+ method.getName().getIdentifier();
-		checkArgument(methodInformation.getMethodsForClass(
-				fullyQualifiedNameOfClass).contains(methodSignature));
+		final String methodSignature = method.getName().getIdentifier() + ":"
+				+ MethodUtils.getMethodType(method);
+		if (!methodInformation.getMethodsForClass(fullyQualifiedNameOfClass)
+				.contains(methodSignature)) {
+			return false;
+		}
 		final Optional<Type> type = hierarchy
 				.getTypeForName(fullyQualifiedNameOfClass);
-		checkArgument(type.isPresent());
+		if (!type.isPresent()) {
+			return false;
+		}
 		for (final Type implementor : type.get().getImplementingTypesClosure()) {
 			if (methodInformation.getMethodsForClass(
 					implementor.fullQualifiedName).contains(methodSignature)) {

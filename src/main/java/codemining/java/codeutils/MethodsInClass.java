@@ -37,7 +37,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#endVisit(org.eclipse.jdt.core
 		 * .dom.TypeDeclaration)
@@ -50,7 +50,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .CompilationUnit)
@@ -66,7 +66,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .ImportDeclaration)
@@ -79,7 +79,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .MethodDeclaration)
@@ -94,7 +94,7 @@ public class MethodsInClass {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .TypeDeclaration)
@@ -135,6 +135,13 @@ public class MethodsInClass {
 	private static final Logger LOGGER = Logger.getLogger(MethodsInClass.class
 			.getName());
 
+	public MethodsInClass() {
+		methodsForClasses.put("java.lang.Object", "toString:String()");
+		methodsForClasses.put("java.lang.Object", "equals:boolean(Object,)");
+		methodsForClasses.put("java.lang.Object", "hashCode:int()");
+		methodsForClasses.put("java.lang.Runnable", "run:void()");
+	}
+
 	public Collection<String> getMethodsForClass(final String classname) {
 		return methodsForClasses.get(classname);
 	}
@@ -154,7 +161,7 @@ public class MethodsInClass {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

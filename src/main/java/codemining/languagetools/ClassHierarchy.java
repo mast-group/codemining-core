@@ -96,7 +96,9 @@ public class ClassHierarchy implements Serializable {
 		}
 
 		public Collection<Type> getImplementingTypesClosure() {
-			return ImmutableList.copyOf(implementingTypesClosure);
+			return new ImmutableList.Builder<Type>()
+					.addAll(implementingTypesClosure).addAll(implementingTypes)
+					.build();
 		}
 
 		@Override

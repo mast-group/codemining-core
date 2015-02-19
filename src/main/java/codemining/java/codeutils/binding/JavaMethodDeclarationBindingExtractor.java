@@ -9,12 +9,16 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import codemining.java.codedata.metrics.CyclomaticCalculator;
 import codemining.java.codeutils.MethodUtils;
@@ -40,10 +44,21 @@ public class JavaMethodDeclarationBindingExtractor extends
 	}
 
 	private class MethodBindings extends ASTVisitor {
+
+		Stack<String> className = new Stack<String>();
+
+		private String currentPackageName;
+
 		/**
 		 * A map from the method name to the position.
 		 */
 		Multimap<String, ASTNode> methodNamePostions = HashMultimap.create();
+
+		@Override
+		public void endVisit(final TypeDeclaration node) {
+			className.pop();
+			super.endVisit(node);
+		}
 
 		/**
 		 * @param node
@@ -52,11 +67,26 @@ public class JavaMethodDeclarationBindingExtractor extends
 		public boolean methodOverrides(final MethodDeclaration node) {
 			final boolean hasAnnotation = MethodUtils
 					.hasOverrideAnnotation(node);
-			final boolean isOverride = pti.isMethodOverride(null, node); // TODO
-			if (hasAnnotation) {
-				checkArgument(isOverride);
-			}
+			final boolean isOverride = pti.isMethodOverride(className.peek(),
+					node);
 			return hasAnnotation || isOverride;
+		}
+
+		@Override
+		public boolean visit(final CompilationUnit node) {
+			if (node.getPackage() != null) {
+				currentPackageName = node.getPackage().getName()
+						.getFullyQualifiedName();
+			} else {
+				currentPackageName = "";
+			}
+			return super.visit(node);
+		}
+
+		@Override
+		public boolean visit(final ImportDeclaration node) {
+			// Don't visit. It's boring
+			return false;
 		}
 
 		@Override
@@ -68,6 +98,18 @@ public class JavaMethodDeclarationBindingExtractor extends
 			}
 			final String name = node.getName().toString();
 			methodNamePostions.put(name, node.getName());
+			return super.visit(node);
+		}
+
+		@Override
+		public boolean visit(final TypeDeclaration node) {
+			if (className.isEmpty()) {
+				className.push(currentPackageName + "."
+						+ node.getName().getIdentifier());
+			} else {
+				className.push(className.peek() + "."
+						+ node.getName().getIdentifier());
+			}
 			return super.visit(node);
 		}
 	}
