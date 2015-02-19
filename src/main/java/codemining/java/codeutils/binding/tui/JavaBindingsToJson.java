@@ -105,11 +105,13 @@ public class JavaBindingsToJson {
 	/**
 	 * @param bindingExtractor
 	 * @param extractorType
+	 * @param inputFolder
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
 	public static AbstractJavaNameBindingsExtractor getExtractorForName(
-			final String extractorType) throws IllegalArgumentException {
+			final String extractorType, final File inputFolder)
+			throws IllegalArgumentException {
 		final AbstractJavaNameBindingsExtractor bindingExtractor;
 		if (extractorType.equals("variables")) {
 			bindingExtractor = new JavaApproximateVariableBindingExtractor();
@@ -121,7 +123,8 @@ public class JavaBindingsToJson {
 		} else if (extractorType.equals("methoddeclarations")) {
 			bindingExtractor = new JavaMethodDeclarationBindingExtractor();
 		} else if (extractorType.equals("methoddeclarations_nooverride")) {
-			bindingExtractor = new JavaMethodDeclarationBindingExtractor(false);
+			bindingExtractor = new JavaMethodDeclarationBindingExtractor(false,
+					inputFolder);
 		} else if (extractorType.equals("methoddeclarations_typegram")) {
 			bindingExtractor = new JavaMethodDeclarationBindingExtractor(
 					new JavaTypeTokenizer());
@@ -162,7 +165,8 @@ public class JavaBindingsToJson {
 
 		final File inputFolder = new File(args[0]);
 		final File outputFile = new File(args[2]);
-		final AbstractJavaNameBindingsExtractor bindingExtractor = getExtractorForName(args[1]);
+		final AbstractJavaNameBindingsExtractor bindingExtractor = getExtractorForName(
+				args[1], inputFolder);
 
 		extractBindings(inputFolder, outputFile, bindingExtractor);
 	}

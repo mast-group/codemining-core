@@ -34,7 +34,7 @@ public class JavaBindingsPerFeatureTypeToJson {
 		final File inputFolder = new File(args[0]);
 		final String outputFolderAndPrefix = args[2];
 		final AbstractJavaNameBindingsExtractor bindingExtractor = JavaBindingsToJson
-				.getExtractorForName(args[1]);
+				.getExtractorForName(args[1], inputFolder);
 
 		for (final Object featureType : bindingExtractor.getAvailableFeatures()) {
 			try {

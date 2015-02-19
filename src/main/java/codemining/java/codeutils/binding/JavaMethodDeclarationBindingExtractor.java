@@ -5,6 +5,7 @@ package codemining.java.codeutils.binding;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,6 +18,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import codemining.java.codedata.metrics.CyclomaticCalculator;
 import codemining.java.codeutils.MethodUtils;
+import codemining.java.codeutils.ProjectTypeInformation;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 
@@ -43,11 +45,25 @@ public class JavaMethodDeclarationBindingExtractor extends
 		 */
 		Multimap<String, ASTNode> methodNamePostions = HashMultimap.create();
 
+		/**
+		 * @param node
+		 * @return
+		 */
+		public boolean methodOverrides(final MethodDeclaration node) {
+			final boolean hasAnnotation = MethodUtils
+					.hasOverrideAnnotation(node);
+			final boolean isOverride = pti.isMethodOverride(null, node); // TODO
+			if (hasAnnotation) {
+				checkArgument(isOverride);
+			}
+			return hasAnnotation || isOverride;
+		}
+
 		@Override
 		public boolean visit(final MethodDeclaration node) {
 			if (node.isConstructor()) {
 				return super.visit(node);
-			} else if (!includeOverrides && MethodUtils.hasOverrideAnnotation(node)) {
+			} else if (!includeOverrides && methodOverrides(node)) {
 				return super.visit(node);
 			}
 			final String name = node.getName().toString();
@@ -61,25 +77,40 @@ public class JavaMethodDeclarationBindingExtractor extends
 	private final Set<AvailableFeatures> activeFeatures = Sets
 			.newHashSet(AvailableFeatures.values());
 
+	private final ProjectTypeInformation pti;
+
 	public JavaMethodDeclarationBindingExtractor() {
 		super(new JavaTokenizer());
 		this.includeOverrides = true;
+		pti = null;
 	}
 
-	public JavaMethodDeclarationBindingExtractor(final boolean includeOverrides) {
+	public JavaMethodDeclarationBindingExtractor(
+			final boolean includeOverrides, final File inputFolder) {
 		super(new JavaTokenizer());
 		this.includeOverrides = includeOverrides;
+		if (!includeOverrides) {
+			pti = buildProjectTypeInformation(inputFolder);
+		} else {
+			pti = null;
+		}
 	}
 
 	public JavaMethodDeclarationBindingExtractor(final ITokenizer tokenizer) {
 		super(tokenizer);
 		this.includeOverrides = true;
+		pti = null;
 	}
 
 	public JavaMethodDeclarationBindingExtractor(final ITokenizer tokenizer,
-			final boolean includeOverrides) {
+			final boolean includeOverrides, final File inputFolder) {
 		super(tokenizer);
 		this.includeOverrides = includeOverrides;
+		if (!includeOverrides) {
+			pti = buildProjectTypeInformation(inputFolder);
+		} else {
+			pti = null;
+		}
 	}
 
 	/**
@@ -136,6 +167,14 @@ public class JavaMethodDeclarationBindingExtractor extends
 		if (md.getBody() == null) {
 			features.add("isInterfaceDeclaration");
 		}
+	}
+
+	private ProjectTypeInformation buildProjectTypeInformation(
+			final File inputFolder) {
+		final ProjectTypeInformation pti = new ProjectTypeInformation(
+				inputFolder);
+		pti.collect();
+		return pti;
 	}
 
 	@Override
