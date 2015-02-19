@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -81,7 +80,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .CastExpression)
@@ -94,7 +93,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .CompilationUnit)
@@ -127,7 +126,7 @@ public class JavaTypeHierarchyExtractor {
 					if (t.getSuperclassType() != null) {
 						addTypes(t.getSuperclassType().resolveBinding()
 								.getQualifiedName(), currentPackageName + "."
-										+ t.getName());
+								+ t.getName());
 					}
 
 				} else if (type instanceof EnumDeclaration) {
@@ -141,7 +140,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .ImportDeclaration)
@@ -153,7 +152,7 @@ public class JavaTypeHierarchyExtractor {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
 		 * .SimpleType)
@@ -194,11 +193,8 @@ public class JavaTypeHierarchyExtractor {
 	private final ClassHierarchy hierarchy = new ClassHierarchy();
 
 	public void addFilesToCorpus(final Collection<File> files) {
-		final Set<String> srcPaths = files.stream()
-				.map(f -> f.getAbsolutePath()).collect(Collectors.toSet());
-
 		files.parallelStream()
-				.map(f -> getParentTypeRelationshipsFrom(f, srcPaths))
+				.map(f -> getParentTypeRelationshipsFrom(f))
 				.flatMap(rel -> rel.stream())
 				.sequential()
 				.forEach(
@@ -207,7 +203,7 @@ public class JavaTypeHierarchyExtractor {
 	}
 
 	private Collection<Pair<String, String>> getParentTypeRelationshipsFrom(
-			final File file, final Set<String> srcPaths) {
+			final File file) {
 		final JavaASTExtractor ex = new JavaASTExtractor(true);
 		try {
 			final CompilationUnit ast = ex.getAST(file);

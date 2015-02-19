@@ -6,19 +6,17 @@ package codemining.java.codeutils.binding;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.Annotation;
-import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import codemining.java.codedata.metrics.CyclomaticCalculator;
+import codemining.java.codeutils.MethodUtils;
 import codemining.java.tokenizers.JavaTokenizer;
 import codemining.languagetools.ITokenizer;
 
@@ -45,25 +43,11 @@ public class JavaMethodDeclarationBindingExtractor extends
 		 */
 		Multimap<String, ASTNode> methodNamePostions = HashMultimap.create();
 
-		private boolean isOverride(final MethodDeclaration node) {
-			final List modifiers = node.modifiers();
-			for (final Object mod : modifiers) {
-				final IExtendedModifier modifier = (IExtendedModifier) mod;
-				if (modifier.isAnnotation()) {
-					final Annotation annotation = (Annotation) modifier;
-					if (annotation.getTypeName().toString().equals("Override")) {
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
 		@Override
 		public boolean visit(final MethodDeclaration node) {
 			if (node.isConstructor()) {
 				return super.visit(node);
-			} else if (!includeOverrides && isOverride(node)) {
+			} else if (!includeOverrides && MethodUtils.hasOverrideAnnotation(node)) {
 				return super.visit(node);
 			}
 			final String name = node.getName().toString();
