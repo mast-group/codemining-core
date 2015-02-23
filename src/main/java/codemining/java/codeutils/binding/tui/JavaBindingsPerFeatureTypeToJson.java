@@ -5,6 +5,7 @@ package codemining.java.codeutils.binding.tui;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import codemining.java.codeutils.binding.AbstractJavaNameBindingsExtractor;
 
@@ -49,6 +50,18 @@ public class JavaBindingsPerFeatureTypeToJson {
 			} catch (JsonIOException | IOException e) {
 				e.printStackTrace();
 			}
+		}
+
+		try {
+			System.out.println("Using no features");
+			bindingExtractor.setActiveFeatures(Collections.EMPTY_SET);
+			final File outputFile = new File(outputFolderAndPrefix
+					+ "NO_FEAT.json");
+			System.out.println("Generating at " + outputFile);
+			JavaBindingsToJson.extractBindings(inputFolder, outputFile,
+					bindingExtractor);
+		} catch (JsonIOException | IOException e) {
+			e.printStackTrace();
 		}
 	}
 

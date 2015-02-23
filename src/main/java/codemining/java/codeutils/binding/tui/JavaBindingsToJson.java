@@ -54,7 +54,7 @@ public class JavaBindingsToJson {
 
 		public final List<List<String>> boundVariableFeatures;
 
-		private SerializableResolvedSourceCode(final ResolvedSourceCode rsc) {
+		protected SerializableResolvedSourceCode(final ResolvedSourceCode rsc) {
 			codeTokens = rsc.codeTokens;
 			boundVariables = Lists.newArrayList();
 			boundVariableFeatures = Lists.newArrayList();
