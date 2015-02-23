@@ -12,14 +12,11 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 /**
  * A set of utility methods for Java Methods.
- * 
+ *
  * @author Miltos Allamanis <m.allamanis@ed.ac.uk>
  *
  */
 public final class MethodUtils {
-
-	private MethodUtils() {
-	}
 
 	/**
 	 * @param node
@@ -29,6 +26,8 @@ public final class MethodUtils {
 		final StringBuffer typeSb = new StringBuffer();
 		if (node.getReturnType2() != null) {
 			typeSb.append(node.getReturnType2().toString()).append("(");
+		} else if (node.isConstructor()) {
+			typeSb.append("constructor(");
 		} else {
 			typeSb.append("void(");
 		}
@@ -38,7 +37,7 @@ public final class MethodUtils {
 			typeSb.append(",");
 		}
 		typeSb.append(")");
-	
+
 		final String methodType = typeSb.toString();
 		return methodType;
 	}
@@ -55,6 +54,9 @@ public final class MethodUtils {
 			}
 		}
 		return false;
+	}
+
+	private MethodUtils() {
 	}
 
 }
